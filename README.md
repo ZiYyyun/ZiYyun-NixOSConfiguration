@@ -1,64 +1,66 @@
-<div align="center">
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/NixOS/nixos-artwork/master/logo/nix-snowflake-colours.svg" alt="NixOS Logo" width="100px" />
+  <br>
+  ZiYyun's NixOS Configuration
+  <br>
+  <a href="https://github.com/catppuccin/catppuccin">
+    <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" alt="Catppuccin Macchiato Palette" width="600px" />
+  </a>
+  <br>
+</h1>
 
-# ZiYyun NixOS Configuration
-
-My personal NixOS configuration, managed with Nix Flakes.
-
-<p>
-  <img alt="NixOS" src="https://img.shields.io/badge/NixOS-26.05-89b4fa?style=for-the-badge&logo=nixos&logoColor=white&labelColor=313244">
-  <img alt="Flakes" src="https://img.shields.io/badge/Nix-Flakes-cba6f7?style=for-the-badge&logo=nixos&logoColor=white&labelColor=313244">
-  <img alt="Home Manager" src="https://img.shields.io/badge/Home_Manager-enabled-a6e3a1?style=for-the-badge&labelColor=313244">
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-fab387?style=for-the-badge&labelColor=313244">
+<p align="center">
+  My personal NixOS configuration, managed with Nix Flakes.
 </p>
 
-<table>
-  <tr>
-    <td bgcolor="#f5e0dc" width="80px">&nbsp;</td>
-    <td bgcolor="#f2cdcd" width="80px">&nbsp;</td>
-    <td bgcolor="#f5c2e7" width="80px">&nbsp;</td>
-    <td bgcolor="#cba6f7" width="80px">&nbsp;</td>
-    <td bgcolor="#f38ba8" width="80px">&nbsp;</td>
-    <td bgcolor="#eba0ac" width="80px">&nbsp;</td>
-    <td bgcolor="#fab387" width="80px">&nbsp;</td>
-    <td bgcolor="#f9e2af" width="80px">&nbsp;</td>
-    <td bgcolor="#a6e3a1" width="80px">&nbsp;</td>
-    <td bgcolor="#94e2d5" width="80px">&nbsp;</td>
-    <td bgcolor="#89dceb" width="80px">&nbsp;</td>
-    <td bgcolor="#89b4fa" width="80px">&nbsp;</td>
-  </tr>
-</table>
-
-<sub>Author: ziyun · Date: 2026-07-29 · Status: personal NixOS flake configuration</sub>
-
+<div align="center">
+  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration/stargazers">
+    <img src="https://img.shields.io/github/stars/0zhangchibang0/ZiYyun-NixOSConfiguration?color=F5BDE6&labelColor=303446&style=for-the-badge&logo=starship&logoColor=F5BDE6" alt="GitHub Stars">
+  </a>
+  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration">
+    <img src="https://img.shields.io/github/repo-size/0zhangchibang0/ZiYyun-NixOSConfiguration?color=C6A0F6&labelColor=303446&style=for-the-badge&logo=github&logoColor=C6A0F6" alt="Repo Size">
+  </a>
+  <a href="https://nixos.org">
+    <img src="https://img.shields.io/badge/NixOS-26.05-blue?style=for-the-badge&logo=NixOS&logoColor=white&label=NixOS&labelColor=303446&color=91D7E3" alt="NixOS 26.05">
+  </a>
+  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration/blob/main/LICENSE">
+    <img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&colorA=313244&colorB=F5A97F&logo=unlicense&logoColor=F5A97F" alt="License MIT">
+  </a>
 </div>
+
+<p align="center">
+  <sub>Author: ziyun · Date: 2026-07-29 · Status: personal NixOS flake configuration</sub>
+</p>
 
 ## 📖 项目简介
 
 这是 **ziyun** 的个人 NixOS 配置仓库，旨在将系统配置、桌面环境、开发工具链、嵌入式工具、Home Manager 用户配置以及 Flatpak 应用管理拆分为**清晰、可复用**的 Nix 模块，让日常维护变得集中、可控且易于审查。
 
-## 🧩 目标桌面栈
+## 🧩 Configured Software Stack
 
-| Category | Choice |
+The table below lists what this repository currently enables or installs. Future desktop ideas such as Niri, Noctalia, tuigreet, Catppuccin, Fcitx5/Rime, LUKS+Btrfs, and lanzaboote are tracked in the roadmap instead of being presented as active configuration.
+
+| Layer | Current Configuration |
 |---|---|
-| Operating System | **NixOS (Wayland)** |
-| Window Manager | [Niri](https://github.com/YaLTeR/niri) |
-| Terminal Emulator | [Zellij](https://github.com/zellij-org/zellij) + [foot](https://codeberg.org/dnkl/foot) / [Kitty](https://github.com/kovidgoyal/kitty) / [Alacritty](https://github.com/alacritty/alacritty) / [Ghostty](https://github.com/ghostty-org/ghostty) |
-| Status Bar / Notifier / Launcher / Lockscreens | [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell) |
-| Display Manager | [tuigreet](https://github.com/apognu/tuigreet) |
-| Color Scheme | [catppuccin-nix](https://github.com/catppuccin/nix) |
-| Network Management Tool | [NetworkManager](https://wiki.gnome.org/Projects/NetworkManager) |
-| Input Method Framework | [Fcitx5](https://github.com/fcitx/fcitx5) + [Rime](https://wiki.archlinux.org/title/Rime) + [小鹤音形 flypy](https://flypy.cc/) |
-| System Resource Monitor | [Btop](https://github.com/aristocratos/btop) |
-| File Manager | [Yazi](https://github.com/sxyazi/yazi) + [Thunar](https://gitlab.xfce.org/xfce/thunar) |
-| Shell | [Nushell](https://github.com/nushell/nushell) + [Starship](https://github.com/starship/starship) |
-| Media Player | [mpv](https://github.com/mpv-player/mpv) |
-| Editors / IDE | [Helix](https://github.com/helix-editor/helix) as primary, [Neovim](https://github.com/neovim/neovim) as backup |
-| Fonts | [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) |
-| Image Viewer | [imv](https://sr.ht/~exec64/imv/) |
-| Screenshot Software | Niri builtin screenshot |
-| Screen Recording | [OBS](https://obsproject.com/) |
-| Filesystem & Encryption | tmpfs as `/`, [Btrfs](https://btrfs.readthedocs.io/) subvolumes on a [LUKS](https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system) encrypted partition, unlocked by passphrase |
-| Secure Boot | [lanzaboote](https://github.com/nix-community/lanzaboote) |
+| System Base | NixOS `26.05`, Flakes enabled, unfree packages enabled, hostname `nixos`, timezone `Asia/Shanghai`, locale `zh_CN.UTF-8` |
+| Bootloader | GRUB with OS prober, default disk `/dev/sda`; install-time overrides can be generated by `scripts/install.sh` |
+| Display Server / Desktop | X11 enabled, GDM enabled, GNOME enabled |
+| Networking | NetworkManager enabled |
+| Audio | PipeWire with ALSA, 32-bit ALSA, PulseAudio compatibility, and RTKit |
+| System Services | OpenSSH, CUPS printing, Flatpak via `nix-flatpak`, VS Code Server flake module imported |
+| Browser | Firefox enabled by `programs.firefox.enable` |
+| Base CLI Tools | `vim`, `wget`, `git`, user package `honeyfetch` |
+| Desktop Applications | `bottles`, `kdePackages.discover`, `kdePackages.marble`, `kdePackages.okular` |
+| Home Manager Apps | `spotify`, `winboat`, `clash-verge-rev`, `obsidian`, `koodo-reader`, `qq`, `microsoft-edge`, `eudic`, `libreoffice`, `wine` |
+| Editors / IDE | `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
+| General Development | `docker`, `clang`, `kicad` |
+| Embedded Common Tools | `cmake`, `gcc`, `gdb`, `gnumake`, `ninja`, `pkg-config`, `openocd`, `probe-rs-tools`, `dfu-util`, `libusb1`, `minicom`, `picocom`, `screen`, `usbutils` |
+| Espressif Tools | `esphome`, `esptool`, `espflash` |
+| Nordic Tools | `nrf-command-line-tools`, `nrfconnect`, `nrf5-sdk`, `nrf-udev`, `nrfutil` |
+| STM32 Tools | `stm32cubemx`, `stm32flash`, `stlink` |
+| ThinkPad Tools | `tpacpi-bat`, `hdapsd` |
+| Flatpak Remote | Flathub via SJTU mirror; Flatpak app list is currently empty/commented |
+| Commented / Reserved | `steam`, `wechat`, `claude-code`, `.NET runtimes`, Noctalia template module |
 
 ✨ **核心特点**：
 
