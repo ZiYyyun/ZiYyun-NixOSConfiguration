@@ -1,4 +1,9 @@
-# ./modules/flatpak.nix
+/**
+ * File: flatpak.nix
+ * Author: ziyun
+ * Date: 2026-07-29
+ * Description: System Flatpak service and remote configuration.
+ */
 { config, pkgs, lib, ... }:
 
 {

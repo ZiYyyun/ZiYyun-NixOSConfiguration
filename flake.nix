@@ -24,18 +24,19 @@
         vscode-server.nixosModules.default
         # 你原有的配置
         ./configuration.nix
-        ./home/apps/kdePackages.nix
-        ./home/apps/ThinkPadPackages.nix
-        ./home/apps/gnomePackages.nix
-        ./home/apps/dev_pkgs.nix
-        ./home/apps/flatpakPackages.nix
+        ./modules/nixos/packages/desktop/kde.nix
+        ./modules/nixos/packages/desktop/gnome.nix
+        ./modules/nixos/packages/hardware/thinkpad.nix
+        ./modules/nixos/packages/development/general.nix
+        ./modules/nixos/packages/development/embedded.nix
+        ./modules/nixos/services/flatpak.nix
         # Home Manager 模块（必须）
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.ziyun = { config, pkgs, ... }: {
-            imports = [ ./home.nix ];
+            imports = [ ./modules/home-manager/home.nix ];
          };
         }
       ];

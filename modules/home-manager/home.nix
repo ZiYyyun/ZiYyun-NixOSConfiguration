@@ -1,3 +1,9 @@
+/**
+ * File: home.nix
+ * Author: ziyun
+ * Date: 2026-07-29
+ * Description: Home Manager user configuration for ziyun.
+ */
 { config, pkgs, ... }:
 {
   home.stateVersion = "26.05";   # 与系统版本保持一致
