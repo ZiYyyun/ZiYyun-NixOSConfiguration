@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_url="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration.git"
+repo_url="https://github.com/ZiYyun/ZiYyun-NixOSConfiguration.git"
 branch="main"
 workdir="/tmp/ziyyun-nixos-config"
 install_args=()
@@ -18,7 +18,7 @@ Options:
   -h, --help       Show this help.
 
 Examples:
-  curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
+  curl -L https://raw.githubusercontent.com/ZiYyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
 
   sudo bash bootstrap.sh -- --mountpoint /mnt --flake nixos
   sudo bash bootstrap.sh -- --disk /dev/sda --erase --flake nixos
