@@ -13,9 +13,11 @@
 
     # Add application IDs here when system-wide Flatpak apps are needed.
     packages = [
+
       # "org.blender.Blender"
       # "com.spotify.Client"
       # "org.mozilla.firefox"
+      "org.torproject.torbrowser-laucher"
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.

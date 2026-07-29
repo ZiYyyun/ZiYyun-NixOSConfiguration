@@ -16,7 +16,7 @@
   home.packages = with pkgs; [
 	spotify
 	winboat
-   	clash-verge-rev
+  clash-verge-rev
 	obsidian
 	koodo-reader
 	qq
@@ -26,10 +26,5 @@
 	libreoffice
 	wine
 	# wechat
-];
-
-
-
-
-
+	];
 }

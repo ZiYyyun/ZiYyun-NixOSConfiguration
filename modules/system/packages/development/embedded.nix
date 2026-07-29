@@ -8,7 +8,7 @@
 {
   imports = [
     ./embedded/espressif.nix
-    ./embedded/nordic.nix
+    #./embedded/nordic.nix
     ./embedded/stm.nix
   ];
 
