@@ -1,94 +1,116 @@
-# ZiYyun-NixOSConfiguration
+# ZiYyun NixOS Configuration
 
-作者：ziyun
+> Author: ziyun
+>
+> Date: 2026-07-29
+>
+> Status: personal NixOS flake configuration
 
-日期：2026-07-29
+这是 ziyun 的个人 NixOS 配置仓库。项目目标是把系统配置、桌面环境、开发工具、嵌入式工具链、Home Manager 用户配置和 Flatpak 应用管理拆成清晰的 Nix 模块，让日常维护尽量集中、可复用、可审查。
 
+## Features
 
-## 配置概述：
+- 基于 Flake 固定 `nixpkgs`、Home Manager、`nix-flatpak` 和 VS Code Server 输入。
+- 系统级配置和用户级配置分离：NixOS 模块负责系统能力，Home Manager 模块负责用户环境。
+- 桌面、硬件、通用开发、嵌入式开发和服务配置按主题拆分。
+- 嵌入式开发环境使用统一入口 `embedded.nix`，再导入 Espressif、Nordic、STM32 原子模块。
+- Flatpak 使用 `nix-flatpak.nixosModules.nix-flatpak` 声明式管理远程仓库和应用。
+- 已配置国内镜像：NJU nixpkgs Git 镜像、USTC Nix 二进制缓存、SJTU Flathub 镜像。
 
-- 使用 `flake.nix` 固定 NixOS、Home Manager、`nix-flatpak` 和 VS Code Server 的输入。
-- 通过独立模块管理 KDE、GNOME系列软件包。
-- 通过独立模块管理 硬件驱动。
-- 一些嵌入式开发环境`nix-shell`。
-- `embedded.nix` 集中提供 CMake、GCC、GDB、OpenOCD、串口工具等通用工具，并自动导入 Espressif、Nordic 和 STM32 模块。
-- 使用 `nix-flatpak` 的 NixOS 模块声明 Flatpak 远程仓库和应用。
-- 配置了南京大学 nixpkgs Git 镜像、USTC 二进制缓存和官方缓存回退地址。
-
-## 目录结构
+## Repository Layout
 
 ```text
 .
 ├── flake.nix                         # Flake 输入和 NixOS 构建入口
-├── flake.lock                        # 已锁定的输入版本和哈希
-├── configuration.nix                 # 主机基础系统配置
+├── flake.lock                        # 锁定的输入版本和哈希
+├── configuration.nix                 # 当前主机的基础系统配置
+├── configuration.nix.d               # 旧配置备份/迁移参考
 ├── hardware/
-│   └── hardware-configuration.nix   # 安装时生成的硬件配置
+│   └── hardware-configuration.nix    # 安装时生成的硬件配置
 ├── modules/
 │   ├── home-manager/
-│   │   └── home.nix                 # ziyun 的 Home Manager 配置
-│   └── nixos/
+│   │   └── home.nix                  # ziyun 的 Home Manager 用户配置
+│   └── system/
 │       ├── packages/
 │       │   ├── desktop/
-│       │   │   ├── gnome.nix         # GNOME 相关软件
-│       │   │   └── kde.nix           # KDE 相关软件
+│       │   │   ├── gnome.nix         # GNOME 相关包
+│       │   │   └── kde.nix           # KDE 相关包
 │       │   ├── development/
-│       │   │   ├── general.nix       # 通用开发软件
+│       │   │   ├── general.nix       # 通用开发工具和 IDE
 │       │   │   ├── embedded.nix      # 嵌入式通用包和厂商模块入口
 │       │   │   └── embedded/
-│       │   │       ├── espressif.nix
-│       │   │       ├── nordic.nix
-│       │   │       └── stm.nix
+│       │   │       ├── espressif.nix # Espressif ESP 工具
+│       │   │       ├── nordic.nix    # Nordic nRF 工具
+│       │   │       └── stm.nix       # STM32 工具
 │       │   └── hardware/
-│       │       └── thinkpad.nix      # ThinkPad 工具
+│       │       └── thinkpad.nix      # ThinkPad 相关工具
 │       └── services/
 │           ├── flatpak.nix           # nix-flatpak 服务配置
-│           └── vscode-server.nix     # 可选的 VS Code Server 模块
+│           └── vscode-server.nix     # VS Code Server 模块配置
 └── shells/
     └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
 ```
 
-## 模块使用方法
+`modules/system` 只表示“系统级 NixOS 模块集合”，故意不命名为 `modules/nixos`，避免和真实系统目录 `/etc/nixos` 混淆。
 
-### NixOS 主配置
+## Usage
 
-`flake.nix` 的 `nixosConfigurations.nixos` 已经导入当前主机所需模块。正常情况下，在仓库根目录执行：
+### Rebuild System
+
+在仓库根目录执行：
 
 ```bash
 sudo nixos-rebuild switch --flake .#nixos
 ```
 
-只想验证配置和模块是否能求值时，可以执行：
+只验证配置能否求值和构建时，建议先使用：
 
 ```bash
 nix flake check
+sudo nixos-rebuild test --flake .#nixos
 ```
 
-`configuration.nix` 负责硬件配置、启动项、网络、桌面服务、用户、基础工具和系统版本等主机级设置。硬件扫描产生的文件位于 `hardware/hardware-configuration.nix`，更换机器时应重新生成或替换该文件。
+### Add A System Module
 
-### 嵌入式开发环境
-
-只需在 NixOS 模块列表中导入：
+系统级模块放在 `modules/system/` 下，再加入 `flake.nix` 的 `nixosConfigurations.nixos.modules` 列表。例如新增一个服务模块：
 
 ```nix
-./modules/nixos/packages/development/embedded.nix
+./modules/system/services/example.nix
 ```
 
-该模块会自动导入：
+适合放在系统模块里的内容包括系统服务、驱动、桌面环境、系统级开发工具、udev 规则、Flatpak 远程和需要 root 激活的能力。
 
-- `espressif.nix`：`esphome`、`esptool`、`espflash`
-- `nordic.nix`：nRF Command Line Tools、nRF Connect、nRF5 SDK、nRF Udev 和 `nrfutil`
-- `stm.nix`：STM32CubeMX、`stm32flash` 和 `stlink`
+### Add Home Manager Packages
 
-通用工具包括 `cmake`、`gcc`、`gdb`、`gnumake`、`ninja`、`pkg-config`、`openocd`、`probe-rs-tools`、`dfu-util`、USB 工具和串口终端工具。厂商模块可以单独导入，也可以在 `embedded.nix` 中统一管理。
+用户级配置入口是 `modules/home-manager/home.nix`。只服务于 `ziyun` 用户会话的软件、Git 用户信息、Shell 配置、编辑器用户配置等，优先放在这里，而不是 `environment.systemPackages`。
 
-### Home Manager
+### Embedded Development
 
-用户配置由 `home-manager.nixosModules.home-manager` 接入，当前用户是 `ziyun`，入口文件为 `modules/home-manager/home.nix`。用户级软件放在 `home.packages`，Git 用户名和邮箱也在该文件中设置。新增只属于用户环境的软件时，应优先放在这里，而不是系统级 `environment.systemPackages`。
+嵌入式开发总入口是：
+
+```nix
+./modules/system/packages/development/embedded.nix
+```
+
+这个模块提供通用嵌入式工具，例如 `cmake`、`gcc`、`gdb`、`gnumake`、`ninja`、`pkg-config`、`openocd`、`probe-rs-tools`、`dfu-util`、`libusb1`、`minicom`、`picocom`、`screen` 和 `usbutils`。
+
+厂商相关工具拆在独立原子模块中：
+
+- `embedded/espressif.nix`: `esphome`、`esptool`、`espflash`
+- `embedded/nordic.nix`: `nrf-command-line-tools`、`nrfconnect`、`nrf5-sdk`、`nrf-udev`、`nrfutil`
+- `embedded/stm.nix`: `stm32cubemx`、`stm32flash`、`stlink`
+
+默认情况下只需要在 `flake.nix` 导入 `embedded.nix`，不需要单独导入厂商模块。
 
 ### Flatpak
 
-`flake.nix` 先导入 `nix-flatpak.nixosModules.nix-flatpak`，再导入 `modules/nixos/services/flatpak.nix`。在该文件的 `services.flatpak.packages` 中填写 Flatpak 应用 ID，例如：
+Flatpak 通过 `nix-flatpak.nixosModules.nix-flatpak` 提供的 NixOS module 实现，仓库内配置文件是：
+
+```nix
+./modules/system/services/flatpak.nix
+```
+
+在 `services.flatpak.packages` 中添加应用 ID：
 
 ```nix
 services.flatpak.packages = [
@@ -96,30 +118,58 @@ services.flatpak.packages = [
 ];
 ```
 
-当前配置使用 SJTU 的 Flathub 镜像仓库文件，并关闭每次系统激活时的自动更新。首次安装或新增应用时，网络和 Flatpak 远程仓库可用性会影响激活时间。
+当前远程仓库使用 SJTU Flathub 镜像：
 
-### 开发 Shell
+```text
+https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo
+```
 
-`shells/imx6ull-cross.nix` 是独立的 `mkShell` 配置，使用 `nix-shell shells/imx6ull-cross.nix` 进入 IMX6ULL 交叉编译环境。它使用 `<nixpkgs>` 通道，因此在使用前需要确保本机通道或 `NIX_PATH` 已正确设置；长期维护时可以再将它改造成 flake devShell，使其与主配置使用同一份锁定的 nixpkgs。
+### Development Shells
 
-## 输入和源
+`shells/imx6ull-cross.nix` 是独立的 `mkShell`：
 
-- nixpkgs：南京大学 Git 镜像，分支为 `nixos-26.05`。
-- 二进制缓存：优先使用 USTC 镜像，官方 `cache.nixos.org` 作为回退。
-- Flatpak：使用 SJTU Flathub 镜像的 `flathub.flatpakrepo`。
-- `nix-flatpak`、Home Manager 和 VS Code Server：通过 Flake 输入并由 `flake.lock` 锁定。
+```bash
+nix-shell shells/imx6ull-cross.nix
+```
 
-修改 Flake 输入后应同步更新并检查锁文件：
+它目前使用 `<nixpkgs>` 通道。长期维护时可以迁移到 flake `devShells`，这样交叉编译环境会和系统配置共享同一份锁定的 nixpkgs。
+
+## Mirrors
+
+- nixpkgs: NJU Git 镜像，分支 `nixos-26.05`
+- Nix substituter: USTC 二进制缓存，官方 `cache.nixos.org` 作为回退
+- Flatpak: SJTU Flathub 镜像
+
+更新 flake 输入后建议执行：
 
 ```bash
 nix flake lock
 nix flake check
 ```
 
-## 维护建议
+## Roadmap
 
-添加 Nix 包前，先用 `nix search nixpkgs <包名>` 或 [NixOS Packages](https://search.nixos.org/packages) 确认属性名，再运行 `nix flake check` 和 `nixos-rebuild test`。系统实际切换前建议先执行：
+- [ ] 阶段一：稳定当前模块结构，确保 `nix flake check` 和 `nixos-rebuild test` 通过。
+- [ ] 阶段二：继续原子化桌面模块，把 KDE、GNOME 和公共桌面工具拆分得更清楚。
+- [ ] 阶段三：补全 ThinkPad 硬件模块，覆盖 T480、X230i、P14s 的常用驱动和电源管理。
+- [ ] 阶段四：原子化语言开发环境，例如 Python、Rust、Node.js、Java、.NET。
+- [ ] 阶段五：细分 IDE 和编辑器模块，例如 VS Code、JetBrains、Neovim。
+- [ ] 阶段六：评估 Noctalia 的上游地址和模块接入方式，再加入 flake 输入。
+- [ ] 阶段七：把 `shells/imx6ull-cross.nix` 迁移为 flake devShell。
+
+## Maintenance Notes
+
+添加 Nix 包前，先用下面任一方式确认包名：
 
 ```bash
+nix search nixpkgs <package-name>
+```
+
+或访问 [NixOS Packages](https://search.nixos.org/packages)。新增或移动模块后，至少执行：
+
+```bash
+nix flake check
 sudo nixos-rebuild test --flake .#nixos
 ```
+
+确认无误后再执行 `switch`。
