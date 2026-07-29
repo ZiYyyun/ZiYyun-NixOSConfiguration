@@ -15,18 +15,23 @@
 
     # Noctalia can be enabled later after the final source is selected.
     # noctalia.url = "github:noctalia-dev/noctalia";
+    # noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, nix-flatpak, vscode-server, ... }: {
+  outputs = { nixpkgs, home-manager, nix-flatpak, vscode-server, ... }@inputs: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
+
       modules = [
         nix-flatpak.nixosModules.nix-flatpak
         vscode-server.nixosModules.default
+        # inputs.noctalia.nixosModules.default
 
         ./configuration.nix
         ./hardware/installation-boot.nix
         ./modules/system/packages/desktop/kde.nix
         ./modules/system/packages/desktop/gnome.nix
+        # ./modules/system/packages/desktop/noctalia.nix
         ./modules/system/packages/hardware/thinkpad.nix
         ./modules/system/packages/development/general.nix
         ./modules/system/packages/development/embedded.nix

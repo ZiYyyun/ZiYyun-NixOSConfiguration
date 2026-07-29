@@ -1,14 +1,64 @@
-# 🐧 ZiYyun NixOS Configuration
+<div align="center">
 
-> **Author**: ziyun  
-> **Date**: 2026-07-29  
-> **Status**: Personal NixOS flake configuration 📌
+# ZiYyun NixOS Configuration
 
----
+My personal NixOS configuration, managed with Nix Flakes.
+
+<p>
+  <img alt="NixOS" src="https://img.shields.io/badge/NixOS-26.05-89b4fa?style=for-the-badge&logo=nixos&logoColor=white&labelColor=313244">
+  <img alt="Flakes" src="https://img.shields.io/badge/Nix-Flakes-cba6f7?style=for-the-badge&logo=nixos&logoColor=white&labelColor=313244">
+  <img alt="Home Manager" src="https://img.shields.io/badge/Home_Manager-enabled-a6e3a1?style=for-the-badge&labelColor=313244">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-fab387?style=for-the-badge&labelColor=313244">
+</p>
+
+<table>
+  <tr>
+    <td bgcolor="#f5e0dc" width="80px">&nbsp;</td>
+    <td bgcolor="#f2cdcd" width="80px">&nbsp;</td>
+    <td bgcolor="#f5c2e7" width="80px">&nbsp;</td>
+    <td bgcolor="#cba6f7" width="80px">&nbsp;</td>
+    <td bgcolor="#f38ba8" width="80px">&nbsp;</td>
+    <td bgcolor="#eba0ac" width="80px">&nbsp;</td>
+    <td bgcolor="#fab387" width="80px">&nbsp;</td>
+    <td bgcolor="#f9e2af" width="80px">&nbsp;</td>
+    <td bgcolor="#a6e3a1" width="80px">&nbsp;</td>
+    <td bgcolor="#94e2d5" width="80px">&nbsp;</td>
+    <td bgcolor="#89dceb" width="80px">&nbsp;</td>
+    <td bgcolor="#89b4fa" width="80px">&nbsp;</td>
+  </tr>
+</table>
+
+<sub>Author: ziyun · Date: 2026-07-29 · Status: personal NixOS flake configuration</sub>
+
+</div>
 
 ## 📖 项目简介
 
-这是 **ziyun** 的个人 NixOS 配置仓库，旨在将系统配置、桌面环境、开发工具链、嵌入式工具、Home Manager 用户配置以及 Flatpak 应用管理拆分为**清晰、可复用**的 Nix 模块，让日常维护变得集中、可控且易于审查。  
+这是 **ziyun** 的个人 NixOS 配置仓库，旨在将系统配置、桌面环境、开发工具链、嵌入式工具、Home Manager 用户配置以及 Flatpak 应用管理拆分为**清晰、可复用**的 Nix 模块，让日常维护变得集中、可控且易于审查。
+
+## 🧩 目标桌面栈
+
+| Category | Choice |
+|---|---|
+| Operating System | **NixOS (Wayland)** |
+| Window Manager | [Niri](https://github.com/YaLTeR/niri) |
+| Terminal Emulator | [Zellij](https://github.com/zellij-org/zellij) + [foot](https://codeberg.org/dnkl/foot) / [Kitty](https://github.com/kovidgoyal/kitty) / [Alacritty](https://github.com/alacritty/alacritty) / [Ghostty](https://github.com/ghostty-org/ghostty) |
+| Status Bar / Notifier / Launcher / Lockscreens | [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell) |
+| Display Manager | [tuigreet](https://github.com/apognu/tuigreet) |
+| Color Scheme | [catppuccin-nix](https://github.com/catppuccin/nix) |
+| Network Management Tool | [NetworkManager](https://wiki.gnome.org/Projects/NetworkManager) |
+| Input Method Framework | [Fcitx5](https://github.com/fcitx/fcitx5) + [Rime](https://wiki.archlinux.org/title/Rime) + [小鹤音形 flypy](https://flypy.cc/) |
+| System Resource Monitor | [Btop](https://github.com/aristocratos/btop) |
+| File Manager | [Yazi](https://github.com/sxyazi/yazi) + [Thunar](https://gitlab.xfce.org/xfce/thunar) |
+| Shell | [Nushell](https://github.com/nushell/nushell) + [Starship](https://github.com/starship/starship) |
+| Media Player | [mpv](https://github.com/mpv-player/mpv) |
+| Editors / IDE | [Helix](https://github.com/helix-editor/helix) as primary, [Neovim](https://github.com/neovim/neovim) as backup |
+| Fonts | [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) |
+| Image Viewer | [imv](https://sr.ht/~exec64/imv/) |
+| Screenshot Software | Niri builtin screenshot |
+| Screen Recording | [OBS](https://obsproject.com/) |
+| Filesystem & Encryption | tmpfs as `/`, [Btrfs](https://btrfs.readthedocs.io/) subvolumes on a [LUKS](https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system) encrypted partition, unlocked by passphrase |
+| Secure Boot | [lanzaboote](https://github.com/nix-community/lanzaboote) |
 
 ✨ **核心特点**：
 
@@ -38,7 +88,8 @@
 │       ├── packages/
 │       │   ├── desktop/
 │       │   │   ├── gnome.nix         # GNOME 相关包
-│       │   │   └── kde.nix           # KDE 相关包
+│       │   │   ├── kde.nix           # KDE 相关包
+│       │   │   └── noctalia.nix      # Noctalia 预留配置模板
 │       │   ├── development/
 │       │   │   ├── general.nix       # 通用开发工具和 IDE
 │       │   │   ├── embedded.nix      # 嵌入式通用包和厂商模块入口
