@@ -47,13 +47,54 @@
 │       └── services/
 │           ├── flatpak.nix           # nix-flatpak 服务配置
 │           └── vscode-server.nix     # VS Code Server 模块配置
-└── shells/
-    └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
+├── shells/
+│   └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
+└── scripts/
+    ├── bootstrap.sh                  # Live ISO 一键拉取仓库入口
+    └── install.sh                    # NixOS 安装脚本
 ```
 
 `modules/system` 只表示“系统级 NixOS 模块集合”，故意不命名为 `modules/nixos`，避免和真实系统目录 `/etc/nixos` 混淆。
 
 ## Usage
+
+### Install From Live ISO
+
+进入 NixOS 启动盘后，先确认网络可用，再执行：
+
+```bash
+curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
+```
+
+默认模式要求你已经手动分区、格式化并把目标根分区挂载到 `/mnt`。脚本会 clone 仓库、复制配置到 `/mnt/etc/nixos`、生成硬件配置、执行 `nix flake check`，最后运行：
+
+```bash
+nixos-install --flake .#nixos
+```
+
+如果你手动挂载，但启动盘不是配置里默认的 `/dev/sda`，可以只传 `--disk` 生成安装机对应的 bootloader 覆盖，不会格式化磁盘：
+
+```bash
+curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
+```
+
+如果要让脚本自动清空整块磁盘、分区、格式化并挂载，必须显式传入目标磁盘和 `--erase`：
+
+```bash
+curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
+```
+
+脚本会显示目标磁盘信息，并要求输入 `ERASE /dev/sda` 才会继续。NVMe 设备示例：
+
+```bash
+curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1 --erase
+```
+
+只想准备文件但暂不安装时：
+
+```bash
+sudo bash scripts/install.sh --mountpoint /mnt --skip-install
+```
 
 ### Rebuild System
 

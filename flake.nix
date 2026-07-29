@@ -24,6 +24,7 @@
         vscode-server.nixosModules.default
 
         ./configuration.nix
+        ./hardware/installation-boot.nix
         ./modules/system/packages/desktop/kde.nix
         ./modules/system/packages/desktop/gnome.nix
         ./modules/system/packages/hardware/thinkpad.nix
