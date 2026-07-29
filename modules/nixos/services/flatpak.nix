@@ -4,46 +4,29 @@
  * Date: 2026-07-29
  * Description: System Flatpak service and remote configuration.
  */
-{ config, pkgs, lib, ... }:
+{ ... }:
 
 {
-  # 启用 Flatpak 并声明要安装的包
+  # nix-flatpak provides the services.flatpak options used here.
   services.flatpak = {
     enable = true;
 
-    # 要安装的 Flatpak 应用（默认从 flathub 安装最新版）
+    # Add application IDs here when system-wide Flatpak apps are needed.
     packages = [
       # "org.blender.Blender"
       # "com.spotify.Client"
       # "org.mozilla.firefox"
-      # 按需添加更多
     ];
 
-    # 可选：添加远程仓库（默认已添加 flathub，但可显式声明）
+    # This replaces the default remote, so keep the name flathub explicit.
     remotes = [
       {
         name = "flathub";
-        # location = "https://mirrors.ustc.edu.cn/flathub";
-        location = "https://mirror.sjtu.edu.cn/flathub";
+        location = "https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo";
       }
     ];
 
-    # 可选：系统更新时不自动更新 Flatpak（保持复现性）
-    update.onActivation = false;   # 默认 true
+    # Do not update existing Flatpak apps during every system activation.
+    update.onActivation = false;
   };
-
-
-# systemd.services.flatpak-managed-install = {
-#   serviceConfig = {
-#     TimeoutStartSec = lib.mkForce "300";
-#     Restart = lib.mkForce "no";
-#     RestartSec = lib.mkForce "0";
-#   };
-#   after = [ "network-online.target" ];
-#   wants = [ "network-online.target" ];
-# };
-
-
-  # 可选：允许非 root 用户安装 Flatpak（默认已允许）
-  # services.flatpak.user = true;
 }

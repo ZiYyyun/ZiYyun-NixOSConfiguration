@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, libs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports =
@@ -12,7 +12,11 @@
     ];
 
 
-  nix.settings.substituters = [ "https://mirrors.ustc.edu.cn/nix-channels/store" ];
+  # Use the USTC mirror first and keep the official cache as a fallback.
+  nix.settings.substituters = [
+    "https://mirrors.ustc.edu.cn/nix-channels/store"
+    "https://cache.nixos.org/"
+  ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 
@@ -55,9 +59,6 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-
-  # Enable FlatPak 
-  services.flatpak.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
