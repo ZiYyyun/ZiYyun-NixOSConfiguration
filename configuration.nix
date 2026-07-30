@@ -6,11 +6,10 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      ./hardware/hardware-configuration.nix
-	#./kdePackages.nix
-    ];
-
+  [ # Include the results of the hardware scan.
+    ./hardware/hardware-configuration.nix
+    #./kdePackages.nix
+  ];
 
   # Use the USTC mirror first and keep the official cache as a fallback.
   nix.settings.substituters = [
@@ -18,7 +17,6 @@
     "https://cache.nixos.org/"
   ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
 
   # Bootloader.
   boot.loader.grub.enable = true;
@@ -94,9 +92,9 @@
     description = "ziyun";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    #  thunderbird
-	honeyfetch    
-];
+      #  thunderbird
+      honeyfetch
+    ];
   };
 
   # Install firefox.
@@ -112,7 +110,6 @@
     wget
     git
   ];
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
