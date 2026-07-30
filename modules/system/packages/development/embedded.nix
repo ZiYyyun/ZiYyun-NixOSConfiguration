@@ -1,9 +1,9 @@
 /**
- * File: embedded.nix
- * Author: ziyun
- * Date: 2026-07-29
- * Description: Common embedded development packages and vendor-specific imports.
- */
+* File: embedded.nix
+* Author: ziyun
+* Date: 2026-07-29
+* Description: Common embedded development packages and vendor-specific imports.
+*/
 { config, pkgs, ... }:
 {
   imports = [

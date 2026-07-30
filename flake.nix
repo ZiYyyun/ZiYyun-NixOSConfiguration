@@ -35,6 +35,7 @@
         ./modules/system/packages/hardware/thinkpad.nix
         ./modules/system/packages/development/general.nix
         ./modules/system/packages/development/embedded.nix
+        ./modules/system/services/input-method.nix
         ./modules/system/services/flatpak.nix
 
         home-manager.nixosModules.home-manager
