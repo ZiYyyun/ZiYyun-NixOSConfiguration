@@ -48,11 +48,12 @@ The table below lists what this repository currently enables or installs. Future
 | Networking | NetworkManager enabled |
 | Audio | PipeWire with ALSA, 32-bit ALSA, PulseAudio compatibility, and RTKit |
 | System Services | OpenSSH, CUPS printing, Flatpak via `nix-flatpak`, VS Code Server flake module imported |
+| Input Method | Fcitx5 with Rime, Chinese addons, and `fcitx5-configtool` |
 | Browser | Firefox enabled by `programs.firefox.enable` |
 | Base CLI Tools | `vim`, `wget`, `git`, user package `honeyfetch` |
 | Desktop Applications | `bottles`, `kdePackages.discover`, `kdePackages.marble`, `kdePackages.okular` |
 | Home Manager Apps | `spotify`, `winboat`, `clash-verge-rev`, `obsidian`, `koodo-reader`, `qq`, `microsoft-edge`, `eudic`, `libreoffice`, `wine` |
-| Editors / IDE | `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
+| Editors / IDE | `trae`, `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
 | General Development | `docker`, `clang`, `kicad` |
 | Embedded Common Tools | `cmake`, `gcc`, `gdb`, `gnumake`, `ninja`, `pkg-config`, `openocd`, `probe-rs-tools`, `dfu-util`, `libusb1`, `minicom`, `picocom`, `screen`, `usbutils` |
 | Espressif Tools | `esphome`, `esptool`, `espflash` |
@@ -83,6 +84,9 @@ The table below lists what this repository currently enables or installs. Future
 ├── configuration.nix.d               # 旧配置备份/迁移参考
 ├── hardware/
 │   └── hardware-configuration.nix    # 安装时生成的硬件配置
+├── pkgs/
+│   └── trae/
+│       └── default.nix               # Trae 本地打包定义
 ├── modules/
 │   ├── home-manager/
 │   │   └── home.nix                  # ziyun 的 Home Manager 用户配置
@@ -103,6 +107,7 @@ The table below lists what this repository currently enables or installs. Future
 │       │       └── thinkpad.nix      # ThinkPad 相关工具
 │       └── services/
 │           ├── flatpak.nix           # nix-flatpak 服务配置
+│           ├── input-method.nix      # Fcitx5 + Rime 中文输入法
 │           └── vscode-server.nix     # VS Code Server 模块配置
 ├── shells/
 │   └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
