@@ -33,21 +33,27 @@
   };
 
   commonModules = [
+    /* Modules */
+    home-manager.nixosModules.home-manager
+    homeManagerModule
     vscode-server.nixosModules.default
+    # nixpkgs.crossSystem.system = "riscv64-linux"
+    # nixpkgs.crossSystem.system = "riscv64-linux";
+
     # inputs.noctalia.nixosModules.default
 
     ./configuration.nix
+
     ./modules/system/packages/hosts/installation-boot.nix
+        # ./modules/system/packages/hosts/thinkpad.nix
     ./modules/system/packages/desktop/kde.nix
     ./modules/system/packages/desktop/gnome.nix
     # ./modules/system/packages/desktop/noctalia.nix
-    ./modules/system/packages/hosts/thinkpad.nix
+    ./modules/system/packages/development/default.nix
     ./modules/system/packages/development/general.nix
     ./modules/system/packages/development/embedded.nix
     ./modules/system/services/input-method.nix
 
-    home-manager.nixosModules.home-manager
-    homeManagerModule
   ];
 
   mkSystem = extraModules: nixpkgs.lib.nixosSystem {

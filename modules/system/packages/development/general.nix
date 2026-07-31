@@ -15,8 +15,9 @@
     docker
     jetbrains.clion
     eclipses.eclipse-embedcpp
+    
     kicad
-    clang
+
     codeblocks
     filezilla
     # dotnet-runtime_7

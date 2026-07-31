@@ -12,30 +12,30 @@
   # Noctalia upstream v5 NixOS usage notes:
   # 1. Add the flake input:
   #
-  #    noctalia.url = "github:noctalia-dev/noctalia";
-  #    noctalia.inputs.nixpkgs.follows = "nixpkgs";
+     noctalia.url = "github:noctalia-dev/noctalia";
+     noctalia.inputs.nixpkgs.follows = "nixpkgs";
   #
   # 2. Import the upstream NixOS module before this file:
   #
-  #    inputs.noctalia.nixosModules.default
-  #    ./modules/system/packages/desktop/noctalia.nix
-  #
+     inputs.noctalia.nixosModules.default
+     ./modules/system/packages/desktop/noctalia.nix
+  
   # 3. Enable the required system services and Home Manager program:
   #
-  #    services.upower.enable = true;
-  #    services.power-profiles-daemon.enable = true;
-  #    services.blueman.enable = true;
-  #    networking.networkmanager.enable = true;
+     services.upower.enable = true;
+     services.power-profiles-daemon.enable = true;
+     services.blueman.enable = true;
+     networking.networkmanager.enable = true;
   #
-  #    home-manager.users.ziyun = { ... }: {
-  #      programs.noctalia = {
-  #        enable = true;
-  #        settings = {
-  #          # Add Noctalia shell settings here after confirming the final UI.
-  #        };
-  #      };
-  #    };
-  #
+     home-manager.users.ziyun = { ... }: {
+       programs.noctalia = {
+         enable = true;
+         settings = {
+           # Add Noctalia shell settings here after confirming the final UI.
+         };
+       };
+     };
+  
   # 4. Optional Cachix cache:
   #
   #    If upstream still recommends Cachix when this module is enabled, copy the
