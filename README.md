@@ -60,7 +60,7 @@ The table below lists what this repository currently enables or installs. Future
 | Nordic Tools | `nrf-command-line-tools`, `nrfconnect`, `nrf5-sdk`, `nrf-udev`, `nrfutil` |
 | STM32 Tools | `stm32cubemx`, `stm32flash`, `stlink` |
 | ThinkPad Tools | `tpacpi-bat`, `hdapsd` |
-| Flatpak Remote | Flathub via SJTU mirror; Flatpak app list is currently empty/commented |
+| Flatpak Remote | Flathub via SJTU mirror; installs `org.torproject.torbrowser-launcher` |
 | Commented / Reserved | `steam`, `wechat`, `claude-code`, `.NET runtimes`, Noctalia template module |
 
 ✨ **核心特点**：
@@ -82,8 +82,6 @@ The table below lists what this repository currently enables or installs. Future
 ├── flake.lock                        # 锁定的输入版本和哈希
 ├── configuration.nix                 # 当前主机的基础系统配置
 ├── configuration.nix.d               # 旧配置备份/迁移参考
-├── hardware/
-│   └── hardware-configuration.nix    # 安装时生成的硬件配置
 ├── pkgs/
 │   └── trae/
 │       └── default.nix               # Trae 本地打包定义
@@ -103,7 +101,13 @@ The table below lists what this repository currently enables or installs. Future
 │       │   │       ├── espressif.nix # Espressif ESP 工具
 │       │   │       ├── nordic.nix    # Nordic nRF 工具
 │       │   │       └── stm.nix       # STM32 工具
-│       │   └── hardware/
+│       │   └── hosts/
+│       │       ├── docker.nix        # Docker/container-like 测试覆盖
+│       │       ├── hardware-configuration.nix
+│       │       ├── installation-boot.nix
+│       │       ├── ThinkPadX270.nix
+│       │       ├── ThinkPad-x230i.nix
+│       │       ├── ThinkPad-P14s.nix
 │       │       └── thinkpad.nix      # ThinkPad 相关工具
 │       └── services/
 │           ├── flatpak.nix           # nix-flatpak 服务配置
@@ -111,9 +115,11 @@ The table below lists what this repository currently enables or installs. Future
 │           └── vscode-server.nix     # VS Code Server 模块配置
 ├── shells/
 │   └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
-└── scripts/
-    ├── bootstrap.sh                  # Live ISO 一键拉取仓库入口
-    └── install.sh                    # NixOS 安装脚本
+├── scripts/
+│   ├── bootstrap.sh                  # Live ISO 一键拉取仓库入口
+│   └── install.sh                    # NixOS 安装脚本
+└── wiki/
+    └── Host-Switching.md             # 主机配置切换说明
 ```
 
 > ℹ️ `modules/system` 只表示“系统级 NixOS 模块集合”，非真实系统目录 `/etc/nixos`。
@@ -172,6 +178,39 @@ sudo nixos-rebuild switch --flake .#nixos
 nix flake check
 sudo nixos-rebuild test --flake .#nixos
 ```
+
+当 `nix-flatpak` 暂时阻塞求值时，可以先测试不导入 Flatpak 的配置入口：
+
+```bash
+nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
+```
+
+主机配置入口：
+
+```bash
+sudo nixos-rebuild test --flake .#nixos
+sudo nixos-rebuild test --flake .#docker-test
+sudo nixos-rebuild test --flake .#ThinkPadX270
+sudo nixos-rebuild test --flake .#ThinkPad-x230i
+sudo nixos-rebuild test --flake .#ThinkPad-P14s
+```
+
+切换到目标主机配置时，把 `test` 换成 `switch`：
+
+```bash
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+```
+
+当前机型映射：
+
+| Flake Host | Host File | nixos-hardware Profile |
+|---|---|---|
+| `docker-test` | `modules/system/packages/hosts/docker.nix` | none, test-only tmpfs/root override |
+| `ThinkPadX270` | `modules/system/packages/hosts/ThinkPadX270.nix` | `lenovo-thinkpad-x270` |
+| `ThinkPad-x230i` | `modules/system/packages/hosts/ThinkPad-x230i.nix` | `lenovo-thinkpad-x230` |
+| `ThinkPad-P14s` | `modules/system/packages/hosts/ThinkPad-P14s.nix` | `lenovo-thinkpad-p14s-intel-gen5` |
+
+更完整的主机切换说明见 [Host Switching](wiki/Host-Switching.md)。
 
 ---
 

@@ -1,9 +1,9 @@
 /**
- * File: default.nix
- * Author: ziyun
- * Date: 2026-07-30
- * Description: Local package definition for the Trae AI IDE.
- */
+* File: default.nix
+* Author: ziyun
+* Date: 2026-07-30
+* Description: Local package definition for the Trae AI IDE.
+*/
 {
   lib,
   stdenv,
@@ -109,50 +109,50 @@ stdenv.mkDerivation rec {
   autoPatchelfIgnoreMissingDeps = [ "libc.musl-x86_64.so.1" ];
 
   unpackPhase = ''
-    runHook preUnpack
-    dpkg-deb --extract $src .
-    runHook postUnpack
+  runHook preUnpack
+  dpkg-deb --extract $src .
+  runHook postUnpack
   '';
 
   installPhase = ''
-    runHook preInstall
+  runHook preInstall
 
-    mkdir -p $out/bin
-    mkdir -p $out/share/applications
-    mkdir -p $out/share/pixmaps
-    mkdir -p $out/share/trae
-    mkdir -p $out/lib
+  mkdir -p $out/bin
+  mkdir -p $out/share/applications
+  mkdir -p $out/share/pixmaps
+  mkdir -p $out/share/trae
+  mkdir -p $out/lib
 
-    cp -r usr/bin/* $out/bin/ 2>/dev/null || true
-    cp -r usr/share/applications/* $out/share/applications/ 2>/dev/null || true
-    cp -r usr/share/pixmaps/* $out/share/pixmaps/ 2>/dev/null || true
-    cp -r usr/share/icons/* $out/share/pixmaps/ 2>/dev/null || true
-    cp -r usr/share/trae-cn/* $out/share/trae/ 2>/dev/null || true
-    cp -r usr/lib/* $out/lib/ 2>/dev/null || true
-    cp -r opt $out/ 2>/dev/null || true
+  cp -r usr/bin/* $out/bin/ 2>/dev/null || true
+  cp -r usr/share/applications/* $out/share/applications/ 2>/dev/null || true
+  cp -r usr/share/pixmaps/* $out/share/pixmaps/ 2>/dev/null || true
+  cp -r usr/share/icons/* $out/share/pixmaps/ 2>/dev/null || true
+  cp -r usr/share/trae-cn/* $out/share/trae/ 2>/dev/null || true
+  cp -r usr/lib/* $out/lib/ 2>/dev/null || true
+  cp -r opt $out/ 2>/dev/null || true
 
-    find $out -name "chrome-sandbox" -exec chmod 0755 {} \; 2>/dev/null || true
-    find $out -name "trae-cn" -type f -exec chmod 0755 {} \; 2>/dev/null || true
+  find $out -name "chrome-sandbox" -exec chmod 0755 {} \; 2>/dev/null || true
+  find $out -name "trae-cn" -type f -exec chmod 0755 {} \; 2>/dev/null || true
 
-    autoPatchelf $out
+  autoPatchelf $out
 
-    if [ -f "$out/share/trae/trae-cn" ]; then
-      cat > $out/bin/trae <<EOF
-#!/usr/bin/env bash
-export ELECTRON_FORCE_IS_PACKAGED=1
-export ELECTRON_DISABLE_SANDBOX=1
-export DISABLE_GPU_SANDBOX=1
-exec $out/share/trae/trae-cn --no-sandbox "\$@"
-EOF
-      chmod +x $out/bin/trae
-    fi
+  if [ -f "$out/share/trae/trae-cn" ]; then
+  cat > $out/bin/trae <<EOF
+  #!/usr/bin/env bash
+  export ELECTRON_FORCE_IS_PACKAGED=1
+  export ELECTRON_DISABLE_SANDBOX=1
+  export DISABLE_GPU_SANDBOX=1
+  exec $out/share/trae/trae-cn --no-sandbox "\$@"
+  EOF
+  chmod +x $out/bin/trae
+  fi
 
-    if [ -f "$out/share/applications/trae-cn.desktop" ]; then
-      sed -i "s|Exec=.*|Exec=$out/bin/trae|g" $out/share/applications/trae-cn.desktop
-      mv $out/share/applications/trae-cn.desktop $out/share/applications/trae.desktop
-    fi
+  if [ -f "$out/share/applications/trae-cn.desktop" ]; then
+  sed -i "s|Exec=.*|Exec=$out/bin/trae|g" $out/share/applications/trae-cn.desktop
+  mv $out/share/applications/trae-cn.desktop $out/share/applications/trae.desktop
+  fi
 
-    runHook postInstall
+  runHook postInstall
   '';
 
   meta = {

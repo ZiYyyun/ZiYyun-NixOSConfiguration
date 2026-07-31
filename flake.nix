@@ -8,6 +8,7 @@
     # System integration modules.
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Home Manager.
     home-manager.url = "github:nix-community/home-manager";
@@ -18,35 +19,72 @@
     # noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, nix-flatpak, vscode-server, ... }@inputs: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+  outputs =
+    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
+    let
+      system = "x86_64-linux";
 
-      modules = [
-        nix-flatpak.nixosModules.nix-flatpak
+      homeManagerModule = {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.ziyun = { ... }: {
+          imports = [ ./modules/home-manager/home.nix ];
+        };
+      };
+
+      commonModules = [
         vscode-server.nixosModules.default
         # inputs.noctalia.nixosModules.default
 
         ./configuration.nix
-        ./hardware/installation-boot.nix
+        ./modules/system/packages/hosts/installation-boot.nix
         ./modules/system/packages/desktop/kde.nix
         ./modules/system/packages/desktop/gnome.nix
         # ./modules/system/packages/desktop/noctalia.nix
-        ./modules/system/packages/hardware/thinkpad.nix
+        ./modules/system/packages/hosts/thinkpad.nix
         ./modules/system/packages/development/general.nix
         ./modules/system/packages/development/embedded.nix
         ./modules/system/services/input-method.nix
-        ./modules/system/services/flatpak.nix
 
         home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.ziyun = { ... }: {
-            imports = [ ./modules/home-manager/home.nix ];
-          };
-        }
+        homeManagerModule
+      ];
+
+      mkSystem = extraModules: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = commonModules ++ extraModules;
+      };
+    in
+    {
+      nixosConfigurations.nixos = mkSystem [
+        ./modules/system/packages/hosts/hardware-configuration.nix
+        nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/services/flatpak.nix
+      ];
+
+      # Use this when nix-flatpak blocks evaluation and you want to test the
+      # rest of the configuration in a container-like build environment.
+      nixosConfigurations.docker-test = mkSystem [
+        ./modules/system/packages/hosts/docker.nix
+      ];
+
+      nixosConfigurations.ThinkPadX270 = mkSystem [
+        nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/hosts/ThinkPadX270.nix
+        ./modules/system/services/flatpak.nix
+      ];
+
+      nixosConfigurations.ThinkPad-x230i = mkSystem [
+        nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/hosts/ThinkPad-x230i.nix
+        ./modules/system/services/flatpak.nix
+      ];
+
+      nixosConfigurations.ThinkPad-P14s = mkSystem [
+        nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/hosts/ThinkPad-P14s.nix
+        ./modules/system/services/flatpak.nix
       ];
     };
-  };
 }

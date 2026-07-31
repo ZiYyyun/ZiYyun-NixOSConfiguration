@@ -5,12 +5,6 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-  [ # Include the results of the hardware scan.
-    ./hardware/hardware-configuration.nix
-    #./kdePackages.nix
-  ];
-
   # Use the USTC mirror first and keep the official cache as a fallback.
   nix.settings.substituters = [
     "https://mirrors.ustc.edu.cn/nix-channels/store"

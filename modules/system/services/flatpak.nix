@@ -17,7 +17,7 @@
       # "org.blender.Blender"
       # "com.spotify.Client"
       # "org.mozilla.firefox"
-      "org.torproject.torbrowser-laucher"
+      "org.torproject.torbrowser-launcher"
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.
