@@ -18,6 +18,7 @@
     kicad
     clang
     codeblocks
+    filezilla
     # dotnet-runtime_7
     # dotnet-runtime_6
   ];
