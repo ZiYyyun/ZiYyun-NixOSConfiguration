@@ -197,11 +197,30 @@ sudo nixos-rebuild test --flake .#ThinkPad-x230i
 sudo nixos-rebuild test --flake .#ThinkPad-P14s
 ```
 
+
+
+
 切换到目标主机配置时，把 `test` 换成 `switch`：
 
 ```bash
 sudo nixos-rebuild switch --flake .#ThinkPad-P14s
 ```
+
+> 也可以使用大陆镜像源，只需在后面加上`--option`参数，如：
+```bash
+# 使用上海交通大学的镜像源
+# 官方文档: https://mirror.sjtu.edu.cn/docs/nix-channels/store
+nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirror.sjtu.edu.cn/nix-channels/store"
+
+# 使用中国科学技术大学的镜像源
+# 官方文档: https://mirrors.ustc.edu.cn/help/nix-channels.html
+nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store"
+
+# 使用清华大学的镜像源
+# 官方文档: https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
+nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+```
+
 
 当前机型映射：
 
