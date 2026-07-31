@@ -7,12 +7,12 @@
 
     python3
 
-        clang
+    clang
     gcc
     gdb
     cmake
 
-    
+    perl
   ];
 }
 

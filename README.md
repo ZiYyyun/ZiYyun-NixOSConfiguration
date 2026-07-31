@@ -105,7 +105,7 @@ The table below lists what this repository currently enables or installs. Future
 │       │       ├── docker.nix        # Docker/container-like 测试覆盖
 │       │       ├── hardware-configuration.nix
 │       │       ├── installation-boot.nix
-│       │       ├── ThinkPadX270.nix
+│       │       ├── ThinkPad-x270.nix
 │       │       ├── ThinkPad-x230i.nix
 │       │       ├── ThinkPad-P14s.nix
 │       │       └── thinkpad.nix      # ThinkPad 相关工具
@@ -114,11 +114,13 @@ The table below lists what this repository currently enables or installs. Future
 │           ├── input-method.nix      # Fcitx5 + Rime 中文输入法
 │           └── vscode-server.nix     # VS Code Server 模块配置
 ├── shells/
-│   └── imx6ull-cross.nix             # IMX6ULL 交叉编译 shell
+│   ├── lib/                          # devShell 通用包组和 helper
+│   └── targets/                      # MCU / SoC 目标开发环境
 ├── scripts/
 │   ├── bootstrap.sh                  # Live ISO 一键拉取仓库入口
 │   └── install.sh                    # NixOS 安装脚本
 └── wiki/
+    ├── Embedded-DevShells.md         # 嵌入式 devShell 说明
     └── Host-Switching.md             # 主机配置切换说明
 ```
 
@@ -190,7 +192,7 @@ nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
 ```bash
 sudo nixos-rebuild test --flake .#nixos
 sudo nixos-rebuild test --flake .#docker-test
-sudo nixos-rebuild test --flake .#ThinkPadX270
+sudo nixos-rebuild test --flake .#ThinkPad-x270
 sudo nixos-rebuild test --flake .#ThinkPad-x230i
 sudo nixos-rebuild test --flake .#ThinkPad-P14s
 ```
@@ -206,7 +208,7 @@ sudo nixos-rebuild switch --flake .#ThinkPad-P14s
 | Flake Host | Host File | nixos-hardware Profile |
 |---|---|---|
 | `docker-test` | `modules/system/packages/hosts/docker.nix` | none, test-only tmpfs/root override |
-| `ThinkPadX270` | `modules/system/packages/hosts/ThinkPadX270.nix` | `lenovo-thinkpad-x270` |
+| `ThinkPad-x270` | `modules/system/packages/hosts/ThinkPad-x270.nix` | `lenovo-thinkpad-x270` |
 | `ThinkPad-x230i` | `modules/system/packages/hosts/ThinkPad-x230i.nix` | `lenovo-thinkpad-x230` |
 | `ThinkPad-P14s` | `modules/system/packages/hosts/ThinkPad-P14s.nix` | `lenovo-thinkpad-p14s-intel-gen5` |
 
@@ -279,13 +281,19 @@ https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo
 
 ### 🐚 开发 Shell 环境
 
-`shells/imx6ull-cross.nix` 是一个独立的 `mkShell`，可通过以下方式进入：
+嵌入式开发环境统一使用 Flake `devShells`：
 
 ```bash
-nix-shell shells/imx6ull-cross.nix
+nix develop .#stm
+nix develop .#esp
+nix develop .#nordic
+nix develop .#arm32
+nix develop .#arm64
+nix develop .#allwinner
+nix develop .#rockchip
 ```
 
-目前它使用 `<nixpkgs>` 通道。长期维护时建议迁移到 flake 的 `devShells`，使交叉编译环境与系统配置共享锁定版本的 nixpkgs。
+devShell 采用 `shells/lib/` 通用包组和 `shells/targets/` 目标文件组合。完整说明见 [Embedded DevShells](wiki/Embedded-DevShells.md)。
 
 ---
 
@@ -314,7 +322,7 @@ nix flake check
 - [ ] **阶段四**：原子化语言开发环境（Python、Rust、Node.js、Java、.NET 等）。
 - [ ] **阶段五**：细分 IDE 和编辑器模块（VS Code、JetBrains、Neovim）。
 - [ ] **阶段六**：评估 Noctalia 的上游地址与模块接入方式，纳入 flake 输入。
-- [ ] **阶段七**：将 `shells/imx6ull-cross.nix` 迁移为 flake 的 `devShell`。
+- [ ] **阶段七**：按项目需要继续补 ESP-IDF、Zephyr SDK、Buildroot、Yocto 等重量级 SDK shell。
 
 ---
 

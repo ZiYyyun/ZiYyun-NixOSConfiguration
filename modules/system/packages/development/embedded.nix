@@ -29,5 +29,8 @@
     picocom
     screen
     usbutils
+
+    platformio
+    openocd
   ];
 }
