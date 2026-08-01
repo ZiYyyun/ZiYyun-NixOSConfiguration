@@ -259,6 +259,7 @@ Desktop selection is part of each host output rather than the shared system modu
 ### 🧑‍💻 添加 Home Manager 软件包
 
 用户级配置入口是 `modules/home-manager/home.nix`。  
+KDE dotfiles 模板位于 `dotfiles/kde/`，对应的 Home Manager 模块是 `modules/home-manager/dotfiles/kde.nix`，目前在 `home.nix` 中保持注释状态，避免尚未导出的配置影响构建。
 仅服务于 `ziyun` 用户会话的软件、Git 用户信息、Shell 配置、编辑器用户偏好等，**优先放在这里**，而不是 `environment.systemPackages`。
 
 ---
