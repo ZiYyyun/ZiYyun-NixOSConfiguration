@@ -1,9 +1,9 @@
 /**
- * File: general.nix
- * Author: ziyun
- * Date: 2026-07-29
- * Description: General development tools and IDE packages.
- */
+* File: general.nix
+* Author: ziyun
+* Date: 2026-07-29
+* Description: General development tools and IDE packages.
+*/
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
@@ -15,7 +15,8 @@
     docker
     jetbrains.clion
     eclipses.eclipse-embedcpp
-    
+    stm32cubemx
+
     kicad
 
     codeblocks

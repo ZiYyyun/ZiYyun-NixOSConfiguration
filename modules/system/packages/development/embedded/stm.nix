@@ -7,7 +7,6 @@
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    stm32cubemx
     stm32flash
     stlink
   ];

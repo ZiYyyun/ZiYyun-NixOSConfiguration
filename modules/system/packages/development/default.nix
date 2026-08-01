@@ -11,8 +11,10 @@
     gcc
     gdb
     cmake
+    gnumake
+    ninja
+    pkg-config
 
     perl
   ];
 }
-

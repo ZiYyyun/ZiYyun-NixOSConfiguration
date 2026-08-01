@@ -13,13 +13,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    cmake
-    gcc
-    gdb
-    gnumake
-    ninja
-    pkg-config
-
     openocd
     probe-rs-tools
     dfu-util
