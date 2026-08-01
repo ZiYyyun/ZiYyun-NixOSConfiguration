@@ -7,7 +7,7 @@
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    (callPackage ../../../../pkgs/trae { })
+    #(callPackage ../../../../pkgs/trae { })
     neovim
     vscode
     lmstudio
