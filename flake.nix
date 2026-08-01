@@ -48,8 +48,6 @@
 
         ./modules/system/packages/hosts/installation-boot.nix
         # ./modules/system/packages/hosts/thinkpad.nix
-        ./modules/system/packages/desktop/kde.nix
-        ./modules/system/packages/desktop/gnome.nix
         # ./modules/system/packages/desktop/noctalia.nix
         ./modules/system/packages/development/default.nix
         ./modules/system/packages/development/general.nix
@@ -69,6 +67,7 @@
     {
       nixosConfigurations.nixos = mkSystem [
         ./modules/system/packages/hosts/hardware-configuration.nix
+        ./modules/system/packages/desktop/kde.nix
         nix-flatpak.nixosModules.nix-flatpak
         ./modules/system/services/flatpak.nix
       ];
@@ -81,18 +80,21 @@
 
       nixosConfigurations.ThinkPad-x270 = mkSystem [
         nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/desktop/gnome.nix
         ./modules/system/packages/hosts/ThinkPad-x270.nix
         ./modules/system/services/flatpak.nix
       ];
 
       nixosConfigurations.ThinkPad-x230i = mkSystem [
         nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/desktop/gnome.nix
         ./modules/system/packages/hosts/ThinkPad-x230i.nix
         ./modules/system/services/flatpak.nix
       ];
 
       nixosConfigurations.ThinkPad-P14s = mkSystem [
         nix-flatpak.nixosModules.nix-flatpak
+        ./modules/system/packages/desktop/kde.nix
         ./modules/system/packages/hosts/ThinkPad-P14s.nix
         ./modules/system/services/flatpak.nix
       ];
