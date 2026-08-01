@@ -136,15 +136,18 @@ stdenv.mkDerivation rec {
 
   autoPatchelf $out
 
-  if [ -f "$out/share/trae/trae-cn" ]; then
+  if [ -f "$out/share/trae/bin/trae-cn" ]; then
   cat > $out/bin/trae <<EOF
   #!/usr/bin/env bash
   export ELECTRON_FORCE_IS_PACKAGED=1
   export ELECTRON_DISABLE_SANDBOX=1
   export DISABLE_GPU_SANDBOX=1
-  exec $out/share/trae/trae-cn --no-sandbox "\$@"
+  exec $out/share/trae/bin/trae-cn --no-sandbox "\$@"
   EOF
   chmod +x $out/bin/trae
+  else
+  echo "Trae executable was not found under usr/share/trae-cn/bin/trae-cn" >&2
+  exit 1
   fi
 
   if [ -f "$out/share/applications/trae-cn.desktop" ]; then

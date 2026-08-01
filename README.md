@@ -47,13 +47,13 @@ The table below lists what this repository currently enables or installs. Future
 | Display Server / Desktop | Host-specific: `.#nixos` uses KDE Plasma + SDDM; X270/X230i use GNOME + GDM; P14s uses KDE Plasma + SDDM |
 | Networking | NetworkManager enabled |
 | Audio | PipeWire with ALSA, 32-bit ALSA, PulseAudio compatibility, and RTKit |
-| System Services | OpenSSH, CUPS printing, Flatpak via `nix-flatpak`, VS Code Server flake module imported |
+| System Services | OpenSSH, CUPS printing, Flatpak via `nix-flatpak`, VS Code Server Home Manager module |
 | Input Method | Fcitx5 with Rime, Chinese addons, and `fcitx5-configtool` |
 | Browser | Firefox enabled by `programs.firefox.enable` |
 | Base CLI Tools | `vim`, `wget`, `git`, user package `honeyfetch` |
 | Desktop Applications | `bottles`, `kdePackages.discover`, `kdePackages.marble`, `kdePackages.okular` |
 | Home Manager Apps | `spotify`, `winboat`, `clash-verge-rev`, `obsidian`, `koodo-reader`, `qq`, `microsoft-edge`, `eudic`, `libreoffice`, `wine` |
-| Editors / IDE | `trae`, `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
+| Editors / IDE | `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
 | General Development | `docker`, `clang`, `kicad` |
 | Embedded Common Tools | `cmake`, `gcc`, `gdb`, `gnumake`, `ninja`, `pkg-config`, `openocd`, `probe-rs-tools`, `dfu-util`, `libusb1`, `minicom`, `picocom`, `screen`, `usbutils` |
 | Espressif Tools | `esphome`, `esptool`, `espflash` |
@@ -61,7 +61,7 @@ The table below lists what this repository currently enables or installs. Future
 | STM32 Tools | `stm32cubemx`, `stm32flash`, `stlink` |
 | ThinkPad Tools | `tpacpi-bat`, `hdapsd` |
 | Flatpak Remote | Flathub via SJTU mirror; installs `org.torproject.torbrowser-launcher` |
-| Commented / Reserved | `steam`, `wechat`, `claude-code`, `.NET runtimes`, Noctalia template module |
+| Commented / Reserved | `steam`, `wechat`, `claude-code`, `.NET runtimes`, `trae`, Noctalia template module |
 
 ✨ **核心特点**：
 
@@ -87,7 +87,9 @@ The table below lists what this repository currently enables or installs. Future
 │       └── default.nix               # Trae 本地打包定义
 ├── modules/
 │   ├── home-manager/
-│   │   └── home.nix                  # ziyun 的 Home Manager 用户配置
+│   │   ├── home.nix                  # ziyun 的 Home Manager 用户配置
+│   │   └── dotfiles/
+│   │       └── kde.nix               # KDE dotfiles Home Manager 模块
 │   └── system/                       # 系统级 NixOS 模块集合
 │       ├── packages/
 │       │   ├── desktop/
@@ -112,7 +114,6 @@ The table below lists what this repository currently enables or installs. Future
 │       └── services/
 │           ├── flatpak.nix           # nix-flatpak 服务配置
 │           ├── input-method.nix      # Fcitx5 + Rime 中文输入法
-│           └── vscode-server.nix     # VS Code Server 模块配置
 ├── shells/
 │   ├── lib/                          # devShell 通用包组和 helper
 │   └── targets/                      # MCU / SoC 目标开发环境
@@ -260,6 +261,15 @@ Desktop selection is part of each host output rather than the shared system modu
 
 用户级配置入口是 `modules/home-manager/home.nix`。  
 KDE dotfiles 模板位于 `dotfiles/kde/`，对应的 Home Manager 模块是 `modules/home-manager/dotfiles/kde.nix`，目前在 `home.nix` 中保持注释状态，避免尚未导出的配置影响构建。
+
+启用 KDE dotfiles 的顺序：
+
+1. 把 KDE 导出的配置文件放进 `dotfiles/kde/config/`。
+2. 把壁纸放进 `dotfiles/kde/wallpapers/`。
+3. 取消 `modules/home-manager/home.nix` 里的 `# imports = [ ./dotfiles/kde.nix ];` 注释。
+4. 执行 `sudo nixos-rebuild switch --flake .#nixos` 或对应主机配置。
+
+VS Code Remote 的服务端通过 `nix-community/nixos-vscode-server` 的 Home Manager 模块接入，配置位于 `flake.nix` 的 `home-manager.users.ziyun` 中。当前启用了 FHS 兼容环境并指定 `pkgs.nodejs_20`，用于适配 VS Code Server 下载的 Linux 二进制运行环境。
 仅服务于 `ziyun` 用户会话的软件、Git 用户信息、Shell 配置、编辑器用户偏好等，**优先放在这里**，而不是 `environment.systemPackages`。
 
 ---

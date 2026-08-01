@@ -8,6 +8,7 @@
     # System integration modules.
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Home Manager.
@@ -31,8 +32,17 @@
       homeManagerModule = {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.users.ziyun = { ... }: {
-          imports = [ ./modules/home-manager/home.nix ];
+        home-manager.users.ziyun = { pkgs, ... }: {
+          imports = [
+            ./modules/home-manager/home.nix
+            vscode-server.homeModules.default
+          ];
+
+          services.vscode-server = {
+            enable = true;
+            enableFHS = true;
+            nodejsPackage = pkgs.nodejs_20;
+          };
         };
       };
 
@@ -40,7 +50,6 @@
         /* Modules */
         home-manager.nixosModules.home-manager
         homeManagerModule
-        vscode-server.nixosModules.default
 
         # inputs.noctalia.nixosModules.default
 
