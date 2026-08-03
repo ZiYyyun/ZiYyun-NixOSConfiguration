@@ -10,14 +10,12 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
+    noctalia.url = "github:noctalia-dev/noctalia";
 
     # Home Manager.
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     # home-manager.url = "git+https://mirror.ghproxy.com/https://github.com/nix-community/home-manager.git";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    # Noctalia can be enabled later after the final source is selected.
-    # noctalia.url = "github:noctalia-dev/noctalia";
-    # noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -51,7 +49,7 @@
         home-manager.nixosModules.home-manager
         homeManagerModule
 
-        # inputs.noctalia.nixosModules.default
+        inputs.noctalia.nixosModules.default
 
         ./configuration.nix
 
