@@ -10,7 +10,7 @@
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x270
 
-    ../nixos/hardware-configuration.nix
+    ../common/hardware-configuration.nix
     ../../modules/system/packages/desktop/gnome
     ../../modules/system/packages/hardware/thinkpad
     ../../modules/system/services/flatpak.nix

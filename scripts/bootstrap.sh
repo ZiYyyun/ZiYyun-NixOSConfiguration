@@ -20,8 +20,8 @@ Options:
 Examples:
   curl -L https://raw.githubusercontent.com/ZiYyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
 
-  sudo bash bootstrap.sh -- --mountpoint /mnt --flake nixos
-  sudo bash bootstrap.sh -- --disk /dev/sda --erase --flake nixos
+  sudo bash bootstrap.sh -- --mountpoint /mnt --flake kde-default
+  sudo bash bootstrap.sh -- --disk /dev/sda --erase --flake kde-default
 EOF
 }
 

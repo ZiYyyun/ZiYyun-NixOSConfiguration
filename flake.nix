@@ -11,7 +11,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Home Manager.
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
     # home-manager.url = "git+https://mirror.ghproxy.com/https://github.com/nix-community/home-manager.git";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     # Noctalia can be enabled later after the final source is selected.
@@ -68,8 +68,12 @@
       mkDevShell = path: import path { inherit pkgs; };
     in
     {
-      nixosConfigurations.nixos = mkSystem [
-        ./hosts/nixos
+      nixosConfigurations.kde-default = mkSystem [
+        ./hosts/kde-default
+      ];
+
+      nixosConfigurations.gnome-default = mkSystem [
+        ./hosts/gnome-default
       ];
 
       # Use this when nix-flatpak blocks evaluation and you want to test the

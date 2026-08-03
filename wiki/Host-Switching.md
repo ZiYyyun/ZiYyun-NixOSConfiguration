@@ -6,7 +6,8 @@ This repository exposes multiple NixOS host entries from `flake.nix`.
 
 | Host | Host File | Purpose |
 |---|---|---|
-| `nixos` | `hosts/nixos/default.nix` | Default current machine configuration |
+| `kde-default` | `hosts/kde-default/default.nix` | Default KDE profile for a new/current machine |
+| `gnome-default` | `hosts/gnome-default/default.nix` | Default GNOME profile for a new/current machine |
 | `docker-test` | `hosts/docker-test/default.nix` | Build/evaluation test profile without Flatpak or real bootloader/disk assumptions |
 | `ThinkPad-x270` | `hosts/ThinkPad-x270/default.nix` | Lenovo ThinkPad X270 |
 | `ThinkPad-x230i` | `hosts/ThinkPad-x230i/default.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
@@ -17,7 +18,7 @@ This repository exposes multiple NixOS host entries from `flake.nix`.
 Use `test` before switching the real system:
 
 ```bash
-sudo nixos-rebuild test --flake .#ThinkPad-P14s
+sudo nixos-rebuild test --flake .#kde-default
 ```
 
 ## Switch A Host
@@ -25,7 +26,7 @@ sudo nixos-rebuild test --flake .#ThinkPad-P14s
 After the test build succeeds:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+sudo nixos-rebuild switch --flake .#kde-default
 ```
 
 ## Build The Docker Test Profile

@@ -12,7 +12,7 @@
     # closest official ThinkPad profile for this generation.
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x230
 
-    ../nixos/hardware-configuration.nix
+    ../common/hardware-configuration.nix
     ../../modules/system/packages/desktop/gnome
     ../../modules/system/packages/hardware/thinkpad
     ../../modules/system/services/flatpak.nix

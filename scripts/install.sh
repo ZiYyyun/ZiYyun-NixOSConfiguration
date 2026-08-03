@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-flake="nixos"
+flake="kde-default"
 mountpoint="/mnt"
 disk=""
 erase="false"
@@ -14,7 +14,7 @@ Usage:
   sudo bash scripts/install.sh [options]
 
 Options:
-  --flake NAME          Flake output name. Default: nixos.
+  --flake NAME          Flake output name. Default: kde-default.
   --mountpoint PATH     Installation root. Default: /mnt.
   --disk DEVICE         Target disk, for example /dev/sda or /dev/nvme0n1.
   --erase               Partition and format --disk, then mount it.
@@ -211,7 +211,7 @@ generate_hardware_config() {
   nixos-generate-config --root "${mountpoint}"
 
   local generated="${mountpoint}/etc/nixos/hardware-configuration.nix"
-  local target="${mountpoint}/etc/nixos/hosts/nixos/hardware-configuration.nix"
+  local target="${mountpoint}/etc/nixos/hosts/common/hardware-configuration.nix"
   [[ -f "${generated}" ]] || die "nixos-generate-config did not create ${generated}"
   mkdir -p "$(dirname "${target}")"
   cp "${generated}" "${target}"
