@@ -102,7 +102,7 @@ partition_suffix() {
 
 write_boot_override() {
   local target_disk="$1"
-  local boot_file="${repo_root}/modules/system/packages/hosts/installation-boot.nix"
+  local boot_file="${repo_root}/hosts/common/installation-boot.nix"
 
   if [[ -d /sys/firmware/efi ]]; then
     cat >"${boot_file}" <<EOF
@@ -211,7 +211,7 @@ generate_hardware_config() {
   nixos-generate-config --root "${mountpoint}"
 
   local generated="${mountpoint}/etc/nixos/hardware-configuration.nix"
-  local target="${mountpoint}/etc/nixos/modules/system/packages/hosts/hardware-configuration.nix"
+  local target="${mountpoint}/etc/nixos/hosts/nixos/hardware-configuration.nix"
   [[ -f "${generated}" ]] || die "nixos-generate-config did not create ${generated}"
   mkdir -p "$(dirname "${target}")"
   cp "${generated}" "${target}"

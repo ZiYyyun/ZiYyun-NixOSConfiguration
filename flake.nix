@@ -8,7 +8,6 @@
     # System integration modules.
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
-    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Home Manager.
@@ -41,7 +40,7 @@
           services.vscode-server = {
             enable = true;
             enableFHS = true;
-            nodejsPackage = pkgs.nodejs_20;
+            nodejsPackage = pkgs.nodejs;
           };
         };
       };
@@ -55,13 +54,8 @@
 
         ./configuration.nix
 
-        ./modules/system/packages/hosts/installation-boot.nix
-        # ./modules/system/packages/hosts/thinkpad.nix
-        # ./modules/system/packages/desktop/noctalia.nix
-        ./modules/system/packages/development/default.nix
-        ./modules/system/packages/development/general.nix
-        ./modules/system/packages/development/embedded.nix
-        ./modules/system/services/input-method.nix
+        ./hosts/common/installation-boot.nix
+        ./modules/system
 
       ];
 
@@ -75,37 +69,25 @@
     in
     {
       nixosConfigurations.nixos = mkSystem [
-        ./modules/system/packages/hosts/hardware-configuration.nix
-        ./modules/system/packages/desktop/kde.nix
-        nix-flatpak.nixosModules.nix-flatpak
-        ./modules/system/services/flatpak.nix
+        ./hosts/nixos
       ];
 
       # Use this when nix-flatpak blocks evaluation and you want to test the
       # rest of the configuration in a container-like build environment.
       nixosConfigurations.docker-test = mkSystem [
-        ./modules/system/packages/hosts/docker.nix
+        ./hosts/docker-test
       ];
 
       nixosConfigurations.ThinkPad-x270 = mkSystem [
-        nix-flatpak.nixosModules.nix-flatpak
-        ./modules/system/packages/desktop/gnome.nix
-        ./modules/system/packages/hosts/ThinkPad-x270.nix
-        ./modules/system/services/flatpak.nix
+        ./hosts/ThinkPad-x270
       ];
 
       nixosConfigurations.ThinkPad-x230i = mkSystem [
-        nix-flatpak.nixosModules.nix-flatpak
-        ./modules/system/packages/desktop/gnome.nix
-        ./modules/system/packages/hosts/ThinkPad-x230i.nix
-        ./modules/system/services/flatpak.nix
+        ./hosts/ThinkPad-x230i
       ];
 
       nixosConfigurations.ThinkPad-P14s = mkSystem [
-        nix-flatpak.nixosModules.nix-flatpak
-        ./modules/system/packages/desktop/kde.nix
-        ./modules/system/packages/hosts/ThinkPad-P14s.nix
-        ./modules/system/services/flatpak.nix
+        ./hosts/ThinkPad-P14s
       ];
 
       devShells.${system} = {

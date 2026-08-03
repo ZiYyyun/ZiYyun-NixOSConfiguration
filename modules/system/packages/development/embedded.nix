@@ -7,9 +7,7 @@
 { config, pkgs, ... }:
 {
   imports = [
-    ./embedded/espressif.nix
-    #./embedded/nordic.nix
-    ./embedded/stm.nix
+    ./embedded
   ];
 
   environment.systemPackages = with pkgs; [

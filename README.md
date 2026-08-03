@@ -57,7 +57,7 @@ The table below lists what this repository currently enables or installs. Future
 | General Development | `docker`, `clang`, `kicad` |
 | Embedded Common Tools | `cmake`, `gcc`, `gdb`, `gnumake`, `ninja`, `pkg-config`, `openocd`, `probe-rs-tools`, `dfu-util`, `libusb1`, `minicom`, `picocom`, `screen`, `usbutils` |
 | Espressif Tools | `esphome`, `esptool`, `espflash` |
-| Nordic Tools | `nrf-command-line-tools`, `nrfconnect`, `nrf5-sdk`, `nrf-udev`, `nrfutil` |
+| Nordic Tools | Reserved in `modules/system/packages/development/embedded/nordic.nix`; not imported into the shared system profile while the Qt4 issue is unresolved |
 | STM32 Tools | `stm32cubemx`, `stm32flash`, `stlink` |
 | ThinkPad Tools | `tpacpi-bat`, `hdapsd` |
 | Flatpak Remote | Flathub via SJTU mirror; installs `org.torproject.torbrowser-launcher` |
@@ -89,31 +89,38 @@ The table below lists what this repository currently enables or installs. Future
 │   ├── home-manager/
 │   │   ├── home.nix                  # ziyun 的 Home Manager 用户配置
 │   │   └── dotfiles/
+│   │       ├── default.nix           # dotfiles 用户模块入口
 │   │       └── kde.nix               # KDE dotfiles Home Manager 模块
 │   └── system/                       # 系统级 NixOS 模块集合
+│       ├── default.nix               # 公共系统模块入口
 │       ├── packages/
+│       │   ├── default.nix           # 公共软件包入口
 │       │   ├── desktop/
-│       │   │   ├── gnome.nix         # GNOME 相关包
-│       │   │   ├── kde.nix           # KDE 相关包
-│       │   │   └── noctalia.nix      # Noctalia 预留配置模板
+│       │   │   ├── gnome/default.nix # GNOME 桌面 profile
+│       │   │   ├── kde/default.nix   # KDE 桌面 profile
+│       │   │   └── noctalia/default.nix
 │       │   ├── development/
+│       │   │   ├── default.nix       # 通用开发入口
 │       │   │   ├── general.nix       # 通用开发工具和 IDE
 │       │   │   ├── embedded.nix      # 嵌入式通用包和厂商模块入口
 │       │   │   └── embedded/
-│       │   │       ├── espressif.nix # Espressif ESP 工具
-│       │   │       ├── nordic.nix    # Nordic nRF 工具
-│       │   │       └── stm.nix       # STM32 工具
-│       │   └── hosts/
-│       │       ├── docker.nix        # Docker/container-like 测试覆盖
-│       │       ├── hardware-configuration.nix
-│       │       ├── installation-boot.nix
-│       │       ├── ThinkPad-x270.nix
-│       │       ├── ThinkPad-x230i.nix
-│       │       ├── ThinkPad-P14s.nix
-│       │       └── thinkpad.nix      # ThinkPad 相关工具
+│       │   │       ├── default.nix   # 厂商嵌入式模块入口
+│       │   │       ├── espressif.nix
+│       │   │       ├── nordic.nix
+│       │   │       └── stm.nix
+│       │   └── hardware/
+│       │       └── thinkpad/default.nix
 │       └── services/
+│           ├── default.nix           # 公共服务入口
 │           ├── flatpak.nix           # nix-flatpak 服务配置
 │           ├── input-method.nix      # Fcitx5 + Rime 中文输入法
+├── hosts/
+│   ├── common/installation-boot.nix   # 安装脚本生成的 bootloader 覆盖
+│   ├── nixos/default.nix              # 默认 KDE 主机
+│   ├── docker-test/default.nix        # 无桌面测试 profile
+│   ├── ThinkPad-x270/default.nix      # GNOME ThinkPad profile
+│   ├── ThinkPad-x230i/default.nix     # GNOME ThinkPad profile
+│   └── ThinkPad-P14s/default.nix      # KDE ThinkPad profile
 ├── shells/
 │   ├── lib/                          # devShell 通用包组和 helper
 │   └── targets/                      # MCU / SoC 目标开发环境
@@ -227,10 +234,11 @@ nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirr
 
 | Flake Host | Host File | nixos-hardware Profile |
 |---|---|---|
-| `docker-test` | `modules/system/packages/hosts/docker.nix` | none, test-only tmpfs/root override |
-| `ThinkPad-x270` | `modules/system/packages/hosts/ThinkPad-x270.nix` | `lenovo-thinkpad-x270` |
-| `ThinkPad-x230i` | `modules/system/packages/hosts/ThinkPad-x230i.nix` | `lenovo-thinkpad-x230` |
-| `ThinkPad-P14s` | `modules/system/packages/hosts/ThinkPad-P14s.nix` | `lenovo-thinkpad-p14s-intel-gen5` |
+| `nixos` | `hosts/nixos/default.nix` | none, current-machine hardware config |
+| `docker-test` | `hosts/docker-test/default.nix` | none, test-only tmpfs/root override |
+| `ThinkPad-x270` | `hosts/ThinkPad-x270/default.nix` | `lenovo-thinkpad-x270` |
+| `ThinkPad-x230i` | `hosts/ThinkPad-x230i/default.nix` | `lenovo-thinkpad-x230` |
+| `ThinkPad-P14s` | `hosts/ThinkPad-P14s/default.nix` | `lenovo-thinkpad-p14s-intel-gen5` |
 
 Desktop selection is part of each host output rather than the shared system module list:
 
@@ -266,10 +274,10 @@ KDE dotfiles 模板位于 `dotfiles/kde/`，对应的 Home Manager 模块是 `mo
 
 1. 把 KDE 导出的配置文件放进 `dotfiles/kde/config/`。
 2. 把壁纸放进 `dotfiles/kde/wallpapers/`。
-3. 取消 `modules/home-manager/home.nix` 里的 `# imports = [ ./dotfiles/kde.nix ];` 注释。
+3. 取消 `modules/home-manager/home.nix` 里的 `# imports = [ ./dotfiles ];` 注释。
 4. 执行 `sudo nixos-rebuild switch --flake .#nixos` 或对应主机配置。
 
-VS Code Remote 的服务端通过 `nix-community/nixos-vscode-server` 的 Home Manager 模块接入，配置位于 `flake.nix` 的 `home-manager.users.ziyun` 中。当前启用了 FHS 兼容环境并指定 `pkgs.nodejs_20`，用于适配 VS Code Server 下载的 Linux 二进制运行环境。
+VS Code Remote 的服务端通过 `nix-community/nixos-vscode-server` 的 Home Manager 模块接入，配置位于 `flake.nix` 的 `home-manager.users.ziyun` 中。当前启用了 FHS 兼容环境并指定 `pkgs.nodejs`，用于适配 VS Code Server 下载的 Linux 二进制运行环境，同时避免固定到已经 EOL 的 Node.js 20。
 仅服务于 `ziyun` 用户会话的软件、Git 用户信息、Shell 配置、编辑器用户偏好等，**优先放在这里**，而不是 `environment.systemPackages`。
 
 ---

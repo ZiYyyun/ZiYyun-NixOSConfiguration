@@ -1,5 +1,5 @@
 /**
- * File: docker.nix
+ * File: default.nix
  * Author: ziyun
  * Date: 2026-07-31
  * Description: Build/test hardware overrides for evaluating this NixOS config in container-like environments.

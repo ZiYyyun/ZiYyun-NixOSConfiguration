@@ -6,11 +6,11 @@ This repository exposes multiple NixOS host entries from `flake.nix`.
 
 | Host | Host File | Purpose |
 |---|---|---|
-| `nixos` | `modules/system/packages/hosts/hardware-configuration.nix` | Default current machine configuration |
-| `docker-test` | `modules/system/packages/hosts/docker.nix` | Build/evaluation test profile without Flatpak or real bootloader/disk assumptions |
-| `ThinkPad-x270` | `modules/system/packages/hosts/ThinkPad-x270.nix` | Lenovo ThinkPad X270 |
-| `ThinkPad-x230i` | `modules/system/packages/hosts/ThinkPad-x230i.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
-| `ThinkPad-P14s` | `modules/system/packages/hosts/ThinkPad-P14s.nix` | Lenovo ThinkPad P14s Gen 5 Intel |
+| `nixos` | `hosts/nixos/default.nix` | Default current machine configuration |
+| `docker-test` | `hosts/docker-test/default.nix` | Build/evaluation test profile without Flatpak or real bootloader/disk assumptions |
+| `ThinkPad-x270` | `hosts/ThinkPad-x270/default.nix` | Lenovo ThinkPad X270 |
+| `ThinkPad-x230i` | `hosts/ThinkPad-x230i/default.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
+| `ThinkPad-P14s` | `hosts/ThinkPad-P14s/default.nix` | Lenovo ThinkPad P14s Gen 5 Intel |
 
 ## Test A Host
 

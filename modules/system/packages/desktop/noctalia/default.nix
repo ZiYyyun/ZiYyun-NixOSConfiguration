@@ -18,7 +18,7 @@
   # 2. Import the upstream NixOS module before this file:
   #
      inputs.noctalia.nixosModules.default
-     ./modules/system/packages/desktop/noctalia.nix
+     ./modules/system/packages/desktop/noctalia
   
   # 3. Enable the required system services and Home Manager program:
   #
