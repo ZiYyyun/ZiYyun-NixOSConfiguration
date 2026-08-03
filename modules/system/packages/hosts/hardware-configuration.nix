@@ -22,6 +22,10 @@
     [ { device = "/dev/disk/by-uuid/41daad12-90ac-404f-b921-ebf93e6e2b8d"; }
     ];
 
+# 用 systemd-boot
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
