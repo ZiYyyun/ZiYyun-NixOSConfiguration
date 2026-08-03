@@ -1,11 +1,6 @@
 {
   description = "ZiYyun NixOS configuration";
 
-  nixConfig.extra-experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
   inputs = {
     # Nixpkgs mirror.
     nixpkgs.url = "git+https://mirrors.nju.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";

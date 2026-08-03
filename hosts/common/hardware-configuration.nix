@@ -18,9 +18,9 @@
       fsType = "ext4";
     };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/41daad12-90ac-404f-b921-ebf93e6e2b8d"; }
-    ];
+  # Keep the default profiles portable across VMs and new machines. Add a
+  # host-specific swap device only after confirming the generated UUID exists.
+  swapDevices = [ ];
 
 # 用 systemd-boot
   boot.loader.systemd-boot.enable = true;
