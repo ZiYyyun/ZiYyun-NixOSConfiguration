@@ -10,7 +10,7 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
-    noctalia.url = "github:noctalia-dev/noctalia";
+    noctalia.url = "git+https://github.com/noctalia-dev/noctalia.git";
 
     # Home Manager.
     home-manager.url = "github:nix-community/home-manager/release-26.05";
