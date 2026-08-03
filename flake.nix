@@ -9,6 +9,7 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
 
     # Home Manager.
     home-manager.url = "github:nix-community/home-manager/release-26.05";
