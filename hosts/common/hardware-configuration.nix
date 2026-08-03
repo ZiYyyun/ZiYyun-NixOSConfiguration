@@ -14,8 +14,14 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/122644b7-94dc-4bdc-a727-a6b967928aab";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "ext4";
+    };
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-label/NIXBOOT";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" "nofail" "x-systemd.device-timeout=1s" ];
     };
 
   # Keep the default profiles portable across VMs and new machines. Add a
