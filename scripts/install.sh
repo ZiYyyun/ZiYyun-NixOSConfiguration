@@ -223,7 +223,7 @@ run_checks_and_install() {
 
   if [[ "${skip_flake_check}" != "true" ]]; then
     log "running nix flake check"
-    nix flake check
+    nix --extra-experimental-features "nix-command flakes" flake check
   fi
 
   if [[ "${skip_install}" == "true" ]]; then

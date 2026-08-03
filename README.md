@@ -358,9 +358,9 @@ devShell 采用 `shells/lib/` 通用包组和 `shells/targets/` 目标文件组�
 更新 flake 输入后建议执行：
 
 ```bash
-nix flake lock --update-input home-manager
-nix flake lock
-nix flake check
+nix --extra-experimental-features "nix-command flakes" flake lock --update-input home-manager
+nix --extra-experimental-features "nix-command flakes" flake lock
+nix --extra-experimental-features "nix-command flakes" flake check
 ```
 
 ---
@@ -390,7 +390,7 @@ nix search nixpkgs <package-name>
 新增或移动模块后，**务必**执行：
 
 ```bash
-nix flake check
+nix --extra-experimental-features "nix-command flakes" flake check
 sudo nixos-rebuild test --flake .#kde-default
 ```
 
