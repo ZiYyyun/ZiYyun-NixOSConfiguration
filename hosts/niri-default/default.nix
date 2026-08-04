@@ -15,4 +15,6 @@
     ../../modules/system/packages/desktop/noctalia
     ../../modules/system/services/flatpak.nix
   ];
+
+  services.displayManager.defaultSession = "niri";
 }

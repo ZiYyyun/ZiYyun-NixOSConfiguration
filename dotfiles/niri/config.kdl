@@ -1,0 +1,64 @@
+// Niri + Noctalia sidecar session.
+//
+// Start from a TTY with:
+//   niri-session
+
+spawn-at-startup "noctalia"
+spawn-at-startup "mako"
+spawn-at-startup "xwayland-satellite"
+
+window-rule {
+    geometry-corner-radius 20
+    clip-to-geometry true
+}
+
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+binds {
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    Mod+T { spawn "alacritty"; }
+    Mod+D { spawn "fuzzel"; }
+    Mod+Q { close-window; }
+
+    Mod+Left { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up { focus-window-up; }
+    Mod+Down { focus-window-down; }
+    Mod+Ctrl+Left { move-column-left; }
+    Mod+Ctrl+Right { move-column-right; }
+    Mod+Ctrl+Up { move-window-up; }
+    Mod+Ctrl+Down { move-window-down; }
+
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Page_Up { focus-workspace-up; }
+    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Mod+Ctrl+Page_Up { move-column-to-workspace-up; }
+
+    Mod+F { fullscreen-window; }
+    Mod+Shift+F { toggle-window-floating; }
+    Mod+R { switch-preset-column-width; }
+    Mod+C { center-column; }
+
+    Mod+Space { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+S { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Comma { spawn-sh "noctalia msg settings-toggle"; }
+    Alt+Tab { spawn-sh "noctalia msg window-switcher"; }
+
+    XF86AudioRaiseVolume { spawn-sh "noctalia msg volume-up"; }
+    XF86AudioLowerVolume { spawn-sh "noctalia msg volume-down"; }
+    XF86AudioMute { spawn-sh "noctalia msg volume-mute"; }
+    XF86MonBrightnessUp { spawn-sh "noctalia msg brightness-up"; }
+    XF86MonBrightnessDown { spawn-sh "noctalia msg brightness-down"; }
+
+    Mod+Shift+E { quit; }
+}

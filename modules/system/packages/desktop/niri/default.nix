@@ -2,17 +2,11 @@
  * File: default.nix
  * Author: ziyun
  * Date: 2026-08-04
- * Description: Niri Wayland compositor profile.
+ * Description: Niri Wayland compositor packages for TTY/manual sessions.
  */
 { pkgs, ... }:
 {
   programs.niri.enable = true;
-
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-  };
-  services.displayManager.defaultSession = "niri";
 
   xdg.portal = {
     enable = true;
@@ -32,6 +26,7 @@
     networkmanagerapplet
     pavucontrol
     playerctl
+    swaylock
     slurp
     swaybg
     swappy

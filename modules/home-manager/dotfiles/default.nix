@@ -8,5 +8,6 @@
 {
   imports = [
     ./kde.nix
+    ./niri.nix
   ];
 }
