@@ -10,6 +10,7 @@
     #(callPackage ../../../../pkgs/trae { })
     ghostty
     gnome-software
+    kdePackages.flatpak-kcm
     nix-search-tv
     neovim
     vscode

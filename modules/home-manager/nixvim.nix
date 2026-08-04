@@ -4,10 +4,11 @@
  * Date: 2026-08-04
  * Description: Declarative Neovim configuration powered by nixvim.
  */
-{ ... }:
+{ pkgs, ... }:
 {
   programs.nixvim = {
     enable = true;
+    nixpkgs.source = pkgs.path;
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
