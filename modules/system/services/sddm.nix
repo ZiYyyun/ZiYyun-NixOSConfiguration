@@ -6,6 +6,8 @@
  */
 { pkgs, ... }:
 {
+  environment.systemPackages = [ pkgs.catppuccin-sddm ];
+
   services.displayManager.sddm = {
     theme = "catppuccin-mocha-mauve";
     extraPackages = [ pkgs.catppuccin-sddm ];

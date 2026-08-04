@@ -26,7 +26,7 @@ debug {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+T { spawn "alacritty"; }
+    Mod+T { spawn "ghostty"; }
     Mod+D { spawn "fuzzel"; }
     Mod+Q { close-window; }
 
