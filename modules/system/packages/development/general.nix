@@ -8,6 +8,7 @@
 {
   environment.systemPackages = with pkgs; [
     #(callPackage ../../../../pkgs/trae { })
+    ghostty
     neovim
     vscode
     lmstudio
