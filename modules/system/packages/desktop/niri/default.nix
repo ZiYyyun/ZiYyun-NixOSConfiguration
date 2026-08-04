@@ -8,12 +8,12 @@
 {
   hardware.graphics = {
     enable = true;
-    package = pkgs.mesa.drivers;
-    package32 = pkgs.pkgsi686Linux.mesa.drivers;
+    package = pkgs.mesa;
+    package32 = pkgs.pkgsi686Linux.mesa;
   };
 
   programs.niri.enable = true;
-  programs.niri.package = pkgs.niri-stable;
+  programs.niri.package = pkgs.niri;
 
   xdg.portal = {
     enable = true;

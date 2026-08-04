@@ -10,8 +10,6 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
-    niri.url = "github:sodiboo/niri-flake";
-    niri.inputs.nixpkgs.follows = "nixpkgs";
     noctalia.url = "git+https://github.com/noctalia-dev/noctalia.git";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
