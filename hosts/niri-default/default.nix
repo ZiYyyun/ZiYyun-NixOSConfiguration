@@ -6,8 +6,13 @@
  */
 { inputs, ... }:
 {
+  nixpkgs.overlays = [
+    inputs.niri.overlays.niri
+  ];
+
   imports = [
     inputs.nix-flatpak.nixosModules.nix-flatpak
+    inputs.niri.nixosModules.niri
 
     ../common/hardware-configuration.nix
     ./hardware-configuration.nix
@@ -17,4 +22,8 @@
   ];
 
   services.displayManager.defaultSession = "niri";
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
 }

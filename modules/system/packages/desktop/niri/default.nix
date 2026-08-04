@@ -6,7 +6,14 @@
  */
 { pkgs, ... }:
 {
+  hardware.graphics = {
+    enable = true;
+    package = pkgs.mesa.drivers;
+    package32 = pkgs.pkgsi686Linux.mesa.drivers;
+  };
+
   programs.niri.enable = true;
+  programs.niri.package = pkgs.niri-stable;
 
   xdg.portal = {
     enable = true;
