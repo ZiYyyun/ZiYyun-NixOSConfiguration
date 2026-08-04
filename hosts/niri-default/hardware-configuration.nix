@@ -10,4 +10,14 @@
     device = "/dev/sda2";
     fsType = "ext4";
   };
+
+  boot.initrd.kernelModules = [ "vmwgfx" ];
+
+  services.xserver.videoDrivers = [ "vmware" "modesetting" ];
+
+  virtualisation.virtualbox.guest = {
+    enable = true;
+    clipboard = true;
+    dragAndDrop = true;
+  };
 }
