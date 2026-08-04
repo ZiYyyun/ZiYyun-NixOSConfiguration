@@ -7,6 +7,7 @@
 { ... }:
 {
   imports = [
+    ./dbus.nix
     ./input-method.nix
   ];
 }
