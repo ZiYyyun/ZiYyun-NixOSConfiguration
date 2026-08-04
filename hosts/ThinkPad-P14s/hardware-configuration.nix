@@ -6,8 +6,10 @@
  */
 { ... }:
 {
+  boot.initrd.availableKernelModules = [ "uas" "usb_storage" "sd_mod" ];
+
   fileSystems."/" = {
-    device = "/dev/nvme0n1p2";
+    device = "/dev/sda2";
     fsType = "ext4";
   };
 }
