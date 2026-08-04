@@ -72,6 +72,10 @@
         ./hosts/kde-default
       ];
 
+      nixosConfigurations.niri-default = mkSystem [
+        ./hosts/niri-default
+      ];
+
       nixosConfigurations.gnome-default = mkSystem [
         ./hosts/gnome-default
       ];
