@@ -19,7 +19,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixvim.url = "git+https://github.com/nix-community/nixvim.git?ref=nixos-26.05";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
-    nixvim.inputs.home-manager.follows = "home-manager";
   };
 
   outputs =
