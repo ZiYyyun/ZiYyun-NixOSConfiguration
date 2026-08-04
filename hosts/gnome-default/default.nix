@@ -12,6 +12,8 @@
     ../common/hardware-configuration.nix
     ./hardware-configuration.nix
     ../../modules/system/packages/desktop/gnome
+    ../../modules/system/packages/desktop/niri
+    ../../modules/system/packages/desktop/noctalia
     ../../modules/system/services/flatpak.nix
   ];
 }

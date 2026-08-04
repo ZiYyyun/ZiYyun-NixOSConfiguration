@@ -9,5 +9,6 @@
   imports = [
     ./dbus.nix
     ./input-method.nix
+    ./sddm.nix
   ];
 }
