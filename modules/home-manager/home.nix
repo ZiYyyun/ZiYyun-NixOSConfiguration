@@ -6,7 +6,10 @@
  */
 { config, pkgs, ... }:
 {
-  imports = [ ./dotfiles ];
+  imports = [
+    ./dotfiles
+    ./nixvim.nix
+  ];
 
   home.stateVersion = "26.05";   # 与系统版本保持一致
   programs.git = { 

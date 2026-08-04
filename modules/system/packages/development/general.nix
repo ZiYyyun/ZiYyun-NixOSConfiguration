@@ -9,8 +9,11 @@
   environment.systemPackages = with pkgs; [
     #(callPackage ../../../../pkgs/trae { })
     ghostty
+    gnome-software
+    nix-search-tv
     neovim
     vscode
+    warehouse
     lmstudio
     # claude-code
     docker

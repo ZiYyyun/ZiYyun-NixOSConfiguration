@@ -17,6 +17,9 @@
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     # home-manager.url = "git+https://mirror.ghproxy.com/https://github.com/nix-community/home-manager.git";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
+    nixvim.inputs.nixpkgs.follows = "nixpkgs";
+    nixvim.inputs.home-manager.follows = "home-manager";
   };
 
   outputs =
@@ -35,6 +38,7 @@
         home-manager.users.ziyun = { pkgs, ... }: {
           imports = [
             ./modules/home-manager/home.nix
+            inputs.nixvim.homeModules.nixvim
             vscode-server.homeModules.default
           ];
 

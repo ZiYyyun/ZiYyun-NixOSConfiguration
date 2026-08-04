@@ -1,4 +1,4 @@
 # TODO
 
-- [ ] Configure Neovim with nixvim.
-- [ ] Add yazi plugins.
+- [x] Configure Neovim with nixvim.
+- [x] Add yazi plugins.
