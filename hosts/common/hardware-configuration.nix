@@ -13,19 +13,8 @@
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-label/nixos";
-      fsType = "ext4";
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-label/NIXBOOT";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" "nofail" "x-systemd.device-timeout=1s" ];
-    };
-
-  # Keep the default profiles portable across VMs and new machines. Add a
-  # host-specific swap device only after confirming the generated UUID exists.
+  # Keep the default profiles portable across VMs and new machines. Add
+  # host-specific filesystem and swap devices only after confirming they exist.
   swapDevices = [ ];
 
 # 用 systemd-boot

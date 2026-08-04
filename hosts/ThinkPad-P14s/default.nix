@@ -11,6 +11,7 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 
     ../common/hardware-configuration.nix
+    ./hardware-configuration.nix
     ../../modules/system/packages/desktop/kde
     ../../modules/system/packages/hardware/thinkpad
     ../../modules/system/services/flatpak.nix

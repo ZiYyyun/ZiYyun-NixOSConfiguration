@@ -10,6 +10,7 @@
     inputs.nix-flatpak.nixosModules.nix-flatpak
 
     ../common/hardware-configuration.nix
+    ./hardware-configuration.nix
     ../../modules/system/packages/desktop/gnome
     ../../modules/system/services/flatpak.nix
   ];

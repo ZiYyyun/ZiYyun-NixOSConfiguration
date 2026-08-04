@@ -211,7 +211,7 @@ generate_hardware_config() {
   nixos-generate-config --root "${mountpoint}"
 
   local generated="${mountpoint}/etc/nixos/hardware-configuration.nix"
-  local target="${mountpoint}/etc/nixos/hosts/common/hardware-configuration.nix"
+  local target="${mountpoint}/etc/nixos/hosts/${flake}/hardware-configuration.nix"
   [[ -f "${generated}" ]] || die "nixos-generate-config did not create ${generated}"
   mkdir -p "$(dirname "${target}")"
   cp "${generated}" "${target}"
