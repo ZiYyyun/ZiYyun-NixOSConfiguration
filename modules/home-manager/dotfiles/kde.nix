@@ -17,11 +17,20 @@
 let
   dotfilesRoot = ../../../dotfiles/kde;
   configRoot = dotfilesRoot + "/config";
-  wallpapersRoot = dotfilesRoot + "/wallpapers";
+  localShareRoot = dotfilesRoot + "/local-share";
 
   configFile = name: target:
     let
       source = configRoot + "/${name}";
+    in
+    lib.optionalAttrs (builtins.pathExists source) {
+      "${target}" = {
+        inherit source;
+      };
+    };
+  dataDir = name: target:
+    let
+      source = localShareRoot + "/${name}";
     in
     lib.optionalAttrs (builtins.pathExists source) {
       "${target}" = {
@@ -38,10 +47,20 @@ in
     (configFile "kscreenlockerrc" "kscreenlockerrc")
     (configFile "plasma-org.kde.plasma.desktop-appletsrc" "plasma-org.kde.plasma.desktop-appletsrc")
     (configFile "plasmarc" "plasmarc")
+    (configFile "plasmashellrc" "plasmashellrc")
     (configFile "konsolerc" "konsolerc")
+    (configFile "gtkrc" "gtkrc")
+    (configFile "gtkrc-2.0" "gtkrc-2.0")
+    (configFile "kscreen" "kscreen")
   ];
 
-  home.file = lib.optionalAttrs (builtins.pathExists wallpapersRoot) {
-    ".local/share/wallpapers".source = wallpapersRoot;
-  };
+  xdg.dataFile = lib.mkMerge [
+    (dataDir "aurorae" "aurorae")
+    (dataDir "color-schemes" "color-schemes")
+    (dataDir "desktoptheme" "desktoptheme")
+    (dataDir "Kvantum" "Kvantum")
+    (dataDir "look-and-feel" "look-and-feel")
+    (dataDir "plasma" "plasma")
+    (dataDir "wallpapers" "wallpapers")
+  ];
 }

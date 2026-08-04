@@ -28,6 +28,7 @@
       };
 
       homeManagerModule = {
+        home-manager.backupFileExtension = "hm-backup";
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.users.ziyun = { pkgs, ... }: {
