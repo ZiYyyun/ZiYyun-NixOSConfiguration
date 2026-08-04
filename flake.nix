@@ -75,6 +75,10 @@
         ./hosts/gnome-default
       ];
 
+      nixosConfigurations.desktop-default = mkSystem [
+        ./hosts/desktop-default
+      ];
+
       # Use this when nix-flatpak blocks evaluation and you want to test the
       # rest of the configuration in a container-like build environment.
       nixosConfigurations.docker-test = mkSystem [
