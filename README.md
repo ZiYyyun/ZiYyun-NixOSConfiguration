@@ -1,337 +1,445 @@
-<h1 align="center">
-  <img src="https://raw.githubusercontent.com/NixOS/nixos-artwork/master/logo/nix-snowflake-colours.svg" alt="NixOS Logo" width="100px" />
-  <br>
-  ZiYyun's NixOS Configuration
-  <br>
-  <a href="https://github.com/catppuccin/catppuccin">
-    <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" alt="Catppuccin Macchiato Palette" width="600px" />
-  </a>
-  <br>
-</h1>
+# ZiYyun NixOS Configuration
 
-<p align="center">
-  My personal NixOS configuration, managed with Nix Flakes.
-</p>
+This repository is ziyun's personal NixOS flake. It keeps host profiles, desktop environments, hardware quirks, Home Manager user configuration, KDE/Niri dotfiles, Flatpak apps, development tools, and embedded dev shells in one reproducible place.
 
-<div align="center">
-  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration/stargazers">
-    <img src="https://img.shields.io/github/stars/0zhangchibang0/ZiYyun-NixOSConfiguration?color=F5BDE6&labelColor=303446&style=for-the-badge&logo=starship&logoColor=F5BDE6" alt="GitHub Stars">
-  </a>
-  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration">
-    <img src="https://img.shields.io/github/repo-size/0zhangchibang0/ZiYyun-NixOSConfiguration?color=C6A0F6&labelColor=303446&style=for-the-badge&logo=github&logoColor=C6A0F6" alt="Repo Size">
-  </a>
-  <a href="https://nixos.org">
-    <img src="https://img.shields.io/badge/NixOS-26.05-blue?style=for-the-badge&logo=NixOS&logoColor=white&label=NixOS&labelColor=303446&color=91D7E3" alt="NixOS 26.05">
-  </a>
-  <a href="https://github.com/0zhangchibang0/ZiYyun-NixOSConfiguration/blob/main/LICENSE">
-    <img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&colorA=313244&colorB=F5A97F&logo=unlicense&logoColor=F5A97F" alt="License MIT">
-  </a>
-</div>
+Current target release: **NixOS 26.05**.
 
-<p align="center">
-  <sub>Author: ziyun · Date: 2026-07-29 · Status: personal NixOS flake configuration</sub>
-</p>
+## What Is Managed
 
-## 📖 项目简介
+| Area | Current State |
+| --- | --- |
+| Nix | Flakes enabled, `nix-command` enabled, `nixpkgs` pinned to `nixos-26.05` through the NJU Git mirror |
+| Binary cache | USTC Nix binary cache first, official `cache.nixos.org` as fallback |
+| User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
+| Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
+| Network | NetworkManager, OpenSSH |
+| Audio | PipeWire with ALSA, 32-bit ALSA, PulseAudio compatibility, RTKit |
+| Printing | CUPS |
+| Browser | Firefox through `programs.firefox.enable`; Microsoft Edge in Home Manager packages |
+| Input method | Fcitx5 + Rime + Chinese addons, with GTK/Qt/X11 session variables |
+| D-Bus | Reference `dbus-daemon` implementation, chosen because `dbus-broker` was unreliable during live rebuilds |
+| Flatpak | `nix-flatpak`, Flathub via SJTU mirror, Tor Browser launcher installed |
+| Home Manager | Git identity, user apps, VS Code Server, Ghostty config, KDE dotfiles, Niri config, nixvim |
+| Editors | Nixvim/Neovim, VS Code, CLion, Eclipse Embedded CDT, Code::Blocks |
+| Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
+| Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
+| Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
+| Theme resources | Catppuccin SDDM, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
+| Embedded | STM32, Espressif, PlatformIO, OpenOCD, probe-rs, serial tools, USB tools |
 
-这是 **ziyun** 的个人 NixOS 配置仓库，旨在将系统配置、桌面环境、开发工具链、嵌入式工具、Home Manager 用户配置以及 Flatpak 应用管理拆分为**清晰、可复用**的 Nix 模块，让日常维护变得集中、可控且易于审查。
+## Flake Inputs
 
-## 🧩 Configured Software Stack
+| Input | Purpose |
+| --- | --- |
+| `nixpkgs` | Main package set, pinned to `nixos-26.05` through `git+https://mirrors.nju.edu.cn/git/nixpkgs.git` |
+| `home-manager` | Home Manager release `26.05` |
+| `nix-flatpak` | Declarative Flatpak remote and package management |
+| `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults |
+| `nixos-vscode-server` | VS Code Remote server support through Home Manager |
+| `noctalia` | Noctalia shell NixOS module |
+| `nixvim` | Flake-based Neovim configuration |
 
-The table below lists what this repository currently enables or installs. Future desktop ideas such as Niri, Noctalia, tuigreet, Catppuccin, Fcitx5/Rime, LUKS+Btrfs, and lanzaboote are tracked in the roadmap instead of being presented as active configuration.
+`nixvim` is fetched through `git+https` instead of the GitHub flake shorthand to avoid GitHub API rate-limit pain.
 
-| Layer | Current Configuration |
-|---|---|
-| System Base | NixOS `26.05`, Flakes enabled, unfree packages enabled, hostname `nixos`, timezone `Asia/Shanghai`, locale `zh_CN.UTF-8` |
-| Bootloader | Host-specific; current default hardware config uses systemd-boot, install-time overrides can be generated by `scripts/install.sh` |
-| Display Server / Desktop | Host-specific: `.#kde-default` uses KDE Plasma + SDDM; `.#gnome-default` uses GNOME + GDM; X270/X230i use GNOME + GDM; P14s uses KDE Plasma + SDDM |
-| Networking | NetworkManager enabled |
-| Audio | PipeWire with ALSA, 32-bit ALSA, PulseAudio compatibility, and RTKit |
-| System Services | OpenSSH, CUPS printing, Flatpak via `nix-flatpak`, VS Code Server Home Manager module |
-| Input Method | Fcitx5 with Rime, Chinese addons, and `fcitx5-configtool` |
-| Browser | Firefox enabled by `programs.firefox.enable` |
-| Base CLI Tools | `vim`, `wget`, `git`, user package `honeyfetch` |
-| Desktop Applications | `bottles`, `kdePackages.discover`, `kdePackages.marble`, `kdePackages.okular` |
-| Home Manager Apps | `spotify`, `winboat`, `clash-verge-rev`, `obsidian`, `koodo-reader`, `qq`, `microsoft-edge`, `eudic`, `libreoffice`, `wine` |
-| Editors / IDE | `neovim`, `vscode`, `jetbrains.clion`, `eclipses.eclipse-embedcpp`, `codeblocks`, `lmstudio` |
-| General Development | `docker`, `clang`, `kicad` |
-| Embedded Common Tools | `cmake`, `gcc`, `gdb`, `gnumake`, `ninja`, `pkg-config`, `openocd`, `probe-rs-tools`, `dfu-util`, `libusb1`, `minicom`, `picocom`, `screen`, `usbutils` |
-| Espressif Tools | `esphome`, `esptool`, `espflash` |
-| Nordic Tools | Reserved in `modules/system/packages/development/embedded/nordic.nix`; not imported into the shared system profile while the Qt4 issue is unresolved |
-| STM32 Tools | `stm32cubemx`, `stm32flash`, `stlink` |
-| ThinkPad Tools | `tpacpi-bat`, `hdapsd` |
-| Flatpak Remote | Flathub via SJTU mirror; installs `org.torproject.torbrowser-launcher` |
-| Commented / Reserved | `steam`, `wechat`, `claude-code`, `.NET runtimes`, `trae`, Noctalia template module |
+## Host Outputs
 
-✨ **核心特点**：
+| Flake output | Desktop/session | Hardware profile | Storage notes |
+| --- | --- | --- | --- |
+| `kde-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | none | VirtualBox/default KDE layout, root `/dev/sda2` |
+| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | VirtualBox/Niri layout, root `/dev/sda2`, VMware graphics workaround kept here |
+| `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | Default GNOME layout, root `/dev/sda2` |
+| `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
+| `ThinkPad-x270` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
+| `ThinkPad-x230i` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | root `/dev/sda2` |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | USB-SATA SSD layout: GRUB on `/dev/sda`, root `/dev/sda1`, swap `/dev/sda2` |
+| `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
-- 基于 **Flake** 锁定 `nixpkgs`、Home Manager、`nix-flatpak` 和 VS Code Server 的版本。
-- **系统级**与**用户级**配置分离：NixOS 模块管理系统能力，Home Manager 模块管理用户环境。
-- 桌面、硬件、通用开发、嵌入式开发和服务按主题模块化。
-- 嵌入式开发通过统一入口 `embedded.nix` 导入 Espressif、Nordic、STM32 等原子模块。
-- Flatpak 采用 `nix-flatpak.nixosModules.nix-flatpak` 声明式管理远程仓库和应用。
-- 预配置国内镜像加速：NJU nixpkgs Git 镜像、USTC Nix 二进制缓存、SJTU Flathub 镜像。
+Hardware-specific disk and bootloader choices stay inside each host directory. They are intentionally not moved into `hosts/common`.
 
----
-
-## 📁 仓库结构
+## Directory Map
 
 ```text
 .
-├── flake.nix                         # Flake 输入和 NixOS 构建入口
-├── flake.lock                        # 锁定的输入版本和哈希
-├── configuration.nix                 # 当前主机的基础系统配置
-├── configuration.nix.d               # 旧配置备份/迁移参考
-├── pkgs/
-│   └── trae/
-│       └── default.nix               # Trae 本地打包定义
-├── modules/
-│   ├── home-manager/
-│   │   ├── home.nix                  # ziyun 的 Home Manager 用户配置
-│   │   └── dotfiles/
-│   │       ├── default.nix           # dotfiles 用户模块入口
-│   │       └── kde.nix               # KDE dotfiles Home Manager 模块
-│   └── system/                       # 系统级 NixOS 模块集合
-│       ├── default.nix               # 公共系统模块入口
-│       ├── packages/
-│       │   ├── default.nix           # 公共软件包入口
-│       │   ├── desktop/
-│       │   │   ├── gnome/default.nix # GNOME 桌面 profile
-│       │   │   ├── kde/default.nix   # KDE 桌面 profile
-│       │   │   └── noctalia/default.nix
-│       │   ├── development/
-│       │   │   ├── default.nix       # 通用开发入口
-│       │   │   ├── general.nix       # 通用开发工具和 IDE
-│       │   │   ├── embedded.nix      # 嵌入式通用包和厂商模块入口
-│       │   │   └── embedded/
-│       │   │       ├── default.nix   # 厂商嵌入式模块入口
-│       │   │       ├── espressif.nix
-│       │   │       ├── nordic.nix
-│       │   │       └── stm.nix
-│       │   └── hardware/
-│       │       └── thinkpad/default.nix
-│       └── services/
-│           ├── default.nix           # 公共服务入口
-│           ├── flatpak.nix           # nix-flatpak 服务配置
-│           ├── input-method.nix      # Fcitx5 + Rime 中文输入法
-├── hosts/
-│   ├── common/installation-boot.nix   # 安装脚本生成的 bootloader 覆盖
-│   ├── kde-default/default.nix        # 默认 KDE 主机
-│   ├── gnome-default/default.nix      # 默认 GNOME 主机
-│   ├── docker-test/default.nix        # 无桌面测试 profile
-│   ├── ThinkPad-x270/default.nix      # GNOME ThinkPad profile
-│   ├── ThinkPad-x230i/default.nix     # GNOME ThinkPad profile
-│   └── ThinkPad-P14s/default.nix      # KDE ThinkPad profile
-├── shells/
-│   ├── lib/                          # devShell 通用包组和 helper
-│   └── targets/                      # MCU / SoC 目标开发环境
-├── scripts/
-│   ├── bootstrap.sh                  # Live ISO 一键拉取仓库入口
-│   └── install.sh                    # NixOS 安装脚本
-└── wiki/
-    ├── Embedded-DevShells.md         # 嵌入式 devShell 说明
-    └── Host-Switching.md             # 主机配置切换说明
+|-- flake.nix
+|-- flake.lock
+|-- configuration.nix
+|-- hosts/
+|   |-- common/
+|   |   |-- hardware-configuration.nix
+|   |   `-- installation-boot.nix
+|   |-- kde-default/
+|   |-- niri-default/
+|   |-- gnome-default/
+|   |-- desktop-default/
+|   |-- docker-test/
+|   |-- ThinkPad-x270/
+|   |-- ThinkPad-x230i/
+|   `-- ThinkPad-P14s/
+|-- modules/
+|   |-- system/
+|   |   |-- packages/
+|   |   |   |-- desktop/
+|   |   |   |   |-- kde/
+|   |   |   |   |-- gnome/
+|   |   |   |   |-- niri/
+|   |   |   |   `-- noctalia/
+|   |   |   |-- development/
+|   |   |   `-- hardware/
+|   |   `-- services/
+|   |       |-- dbus.nix
+|   |       |-- input-method.nix
+|   |       |-- sddm.nix
+|   |       `-- flatpak.nix
+|   `-- home-manager/
+|       |-- home.nix
+|       |-- nixvim.nix
+|       `-- dotfiles/
+|-- dotfiles/
+|   |-- ghostty/
+|   |-- kde/
+|   `-- niri/
+|-- shells/
+|   |-- lib/
+|   `-- targets/
+|-- scripts/
+|   |-- bootstrap.sh
+|   |-- install.sh
+|   `-- export-kde-dotfiles.sh
+|-- wiki/
+|   |-- Embedded-DevShells.md
+|   `-- Host-Switching.md
+`-- TODO.md
 ```
 
-> ℹ️ `modules/system` 只表示“系统级 NixOS 模块集合”，非真实系统目录 `/etc/nixos`。
+## System Modules
 
----
+### Base System
 
-### Install From Live ISO
+`configuration.nix` contains the shared base system:
 
-进入 NixOS 启动盘后，先确认网络可用，再执行：
+- Nix flakes and substituters
+- hostname `nixos`
+- NetworkManager
+- Chinese locale and Shanghai timezone
+- CUPS
+- PipeWire
+- user `ziyun`
+- Firefox
+- unfree packages
+- base packages: `vim`, `wget`, `git`
+- OpenSSH
+- `system.stateVersion = "26.05"`
 
-```bash
-curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
-```
+### Services
 
-默认模式要求你已经手动分区、格式化并把目标根分区挂载到 `/mnt`。脚本会 clone 仓库、复制配置到 `/mnt/etc/nixos`、生成硬件配置、执行 `nix flake check`，最后运行：
+`modules/system/services/default.nix` imports:
 
-```bash
-nixos-install --flake .#kde-default
-```
+- `dbus.nix`: sets `services.dbus.implementation = "dbus"`
+- `input-method.nix`: Fcitx5, Rime, Chinese addons, config tool, input method environment variables
+- `sddm.nix`: Catppuccin Mocha Mauve SDDM theme
 
-如果你手动挂载，但启动盘不是配置里默认的 `/dev/sda`，可以只传 `--disk` 生成安装机对应的 bootloader 覆盖，不会格式化磁盘：
+`flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
 
-```bash
-curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
-```
+### KDE
 
-如果要让脚本自动清空整块磁盘、分区、格式化并挂载，必须显式传入目标磁盘和 `--erase`：
+`modules/system/packages/desktop/kde/default.nix` enables:
 
-```bash
-curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
-```
+- `services.xserver.enable`
+- SDDM
+- Plasma 6
 
-脚本会显示目标磁盘信息，并要求输入 `ERASE /dev/sda` 才会继续。NVMe 设备示例：
+It installs:
 
-```bash
-curl -L https://raw.githubusercontent.com/0zhangchibang0/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1 --erase
-```
+- KDE Discover
+- Marble
+- Okular
+- Fluent icon theme, purple variant
+- Breeze icons
+- hicolor icon fallback
+- Oreo cursor theme
 
-只想准备文件但暂不安装时：
+### GNOME
 
-```bash
-sudo bash scripts/install.sh --mountpoint /mnt --skip-install
-```
+`modules/system/packages/desktop/gnome/default.nix` enables:
 
-### Rebuild System
+- X server
+- GDM
+- GNOME
 
-在仓库根目录执行：
+It currently installs `bottles`.
 
-```bash
-sudo nixos-rebuild switch --flake .#kde-default
-```
+### Niri
 
-若仅验证配置能否求值和构建，建议先使用：
+`modules/system/packages/desktop/niri/default.nix` enables official NixOS Niri support:
 
-```bash
-nix flake check
-sudo nixos-rebuild test --flake .#kde-default
-```
+- `programs.niri.enable = true`
+- `programs.niri.package = pkgs.niri`
+- graphics support
+- XDG portals
+- `xdg-desktop-portal-gtk`
+- `xdg-desktop-portal-gnome`
 
-当 `nix-flatpak` 暂时阻塞求值时，可以先测试不导入 Flatpak 的配置入口：
+Niri helper packages:
 
-```bash
-nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
-```
+- `alacritty`
+- `brightnessctl`
+- `fuzzel`
+- `grim`
+- `mako`
+- `networkmanagerapplet`
+- `pavucontrol`
+- `playerctl`
+- `swaylock`
+- `slurp`
+- `swaybg`
+- `swappy`
+- `wl-clipboard`
+- `xwayland-satellite`
 
-主机配置入口：
+### Noctalia
 
-```bash
-sudo nixos-rebuild test --flake .#kde-default
-sudo nixos-rebuild test --flake .#docker-test
-sudo nixos-rebuild test --flake .#ThinkPad-x270
-sudo nixos-rebuild test --flake .#ThinkPad-x230i
-sudo nixos-rebuild test --flake .#ThinkPad-P14s
-```
-
-
-
-
-切换到目标主机配置时，把 `test` 换成 `switch`：
-
-```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s
-```
-
-> 也可以使用大陆镜像源，只需在后面加上`--option`参数，如：
-```bash
-# 使用上海交通大学的镜像源
-# 官方文档: https://mirror.sjtu.edu.cn/docs/nix-channels/store
-nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
-
-# 使用中国科学技术大学的镜像源
-# 官方文档: https://mirrors.ustc.edu.cn/help/nix-channels.html
-nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
-
-# 使用清华大学的镜像源
-# 官方文档: https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
-nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/"
-```
-
-
-当前机型映射：
-
-| Flake Host | Host File | nixos-hardware Profile |
-|---|---|---|
-| `kde-default` | `hosts/kde-default/default.nix` | none, current-machine KDE profile |
-| `gnome-default` | `hosts/gnome-default/default.nix` | none, current-machine GNOME profile |
-| `docker-test` | `hosts/docker-test/default.nix` | none, test-only tmpfs/root override |
-| `ThinkPad-x270` | `hosts/ThinkPad-x270/default.nix` | `lenovo-thinkpad-x270` |
-| `ThinkPad-x230i` | `hosts/ThinkPad-x230i/default.nix` | `lenovo-thinkpad-x230` |
-| `ThinkPad-P14s` | `hosts/ThinkPad-P14s/default.nix` | `lenovo-thinkpad-p14s-intel-gen5` |
-
-Desktop selection is part of each host output rather than the shared system module list:
-
-| Flake Host | Desktop | Display Manager |
-|---|---|---|
-| `kde-default` | KDE Plasma 6 | SDDM |
-| `gnome-default` | GNOME | GDM |
-| `ThinkPad-x270` | GNOME | GDM |
-| `ThinkPad-x230i` | GNOME | GDM |
-| `ThinkPad-P14s` | KDE Plasma 6 | SDDM |
-
-更完整的主机切换说明见 [Host Switching](wiki/Host-Switching.md)。
-
----
-
-### ➕ 添加系统模块
-
-系统级模块放在 `modules/system/` 下，然后在 `flake.nix` 的 `nixosConfigurations.kde-default.modules` 列表中引用即可。例如新增一个服务模块：
+`modules/system/packages/desktop/noctalia/default.nix` enables Noctalia through the flake module:
 
 ```nix
-./modules/system/services/example.nix
+programs.noctalia = {
+  enable = true;
+  recommendedServices.enable = true;
+  systemd.enable = false;
+};
 ```
 
-**适合放在系统模块中的内容**包括：系统服务、驱动、桌面环境、系统级开发工具、udev 规则、Flatpak 远程、需要 root 权限的功能等。
+`systemd.enable = false` is intentional. Noctalia is available, but it is not auto-started as a user service. The session config decides when to run it.
 
----
+### ThinkPad Tools
 
-### 🧑‍💻 添加 Home Manager 软件包
+`modules/system/packages/hardware/thinkpad/default.nix` installs:
 
-用户级配置入口是 `modules/home-manager/home.nix`。  
-KDE dotfiles 模板位于 `dotfiles/kde/`，对应的 Home Manager 模块是 `modules/home-manager/dotfiles/kde.nix`，目前在 `home.nix` 中保持注释状态，避免尚未导出的配置影响构建。
+- `tpacpi-bat`
+- `hdapsd`
 
-启用 KDE dotfiles 的顺序：
+## Home Manager
 
-1. 把 KDE 导出的配置文件放进 `dotfiles/kde/config/`。
-2. 把壁纸放进 `dotfiles/kde/wallpapers/`。
-3. 取消 `modules/home-manager/home.nix` 里的 `# imports = [ ./dotfiles ];` 注释。
-4. 执行 `sudo nixos-rebuild switch --flake .#kde-default` 或对应主机配置。
+Home Manager is wired in `flake.nix` and imports `modules/home-manager/home.nix`, nixvim's Home Manager module, and VS Code Server.
 
-VS Code Remote 的服务端通过 `nix-community/nixos-vscode-server` 的 Home Manager 模块接入，配置位于 `flake.nix` 的 `home-manager.users.ziyun` 中。当前启用了 FHS 兼容环境并指定 `pkgs.nodejs`，用于适配 VS Code Server 下载的 Linux 二进制运行环境，同时避免固定到已经 EOL 的 Node.js 20。
-仅服务于 `ziyun` 用户会话的软件、Git 用户信息、Shell 配置、编辑器用户偏好等，**优先放在这里**，而不是 `environment.systemPackages`。
+Home Manager currently manages:
 
----
+- Git username/email
+- user apps
+- Ghostty config
+- KDE dotfiles
+- Niri config
+- nixvim
+- VS Code Server service
 
-### 🔧 嵌入式开发
+User applications in `home.packages`:
 
-嵌入式总入口为：
+- `spotify`
+- `winboat`
+- `clash-verge-rev`
+- `obsidian`
+- `koodo-reader`
+- `qq`
+- `microsoft-edge`
+- `eudic`
+- `libreoffice`
+- `wine`
 
-```nix
-./modules/system/packages/development/embedded.nix
-```
+## Dotfiles
 
-该模块提供通用嵌入式工具：`cmake`、`gcc`、`gdb`、`gnumake`、`ninja`、`pkg-config`、`openocd`、`probe-rs-tools`、`dfu-util`、`libusb1`、`minicom`、`picocom`、`screen`、`usbutils` 等。
+### KDE
 
-**厂商专用模块**（原子化）：
-
-- `embedded/espressif.nix`：`esphome`、`esptool`、`espflash`
-- `embedded/nordic.nix`：`nrf-command-line-tools`、`nrfconnect`、`nrf5-sdk`、`nrf-udev`、`nrfutil`
-- `embedded/stm.nix`：`stm32cubemx`、`stm32flash`、`stlink`
-
-默认只需在 `flake.nix` 导入 `embedded.nix`，无需单独导入厂商模块。
-
----
-
-### 📦 Flatpak 声明式管理
-
-Flatpak 通过 `nix-flatpak.nixosModules.nix-flatpak` 提供的 NixOS 模块实现，配置文件为：
-
-```nix
-./modules/system/services/flatpak.nix
-```
-
-在 `services.flatpak.packages` 中添加应用 ID，例如：
-
-```nix
-services.flatpak.packages = [
-  "org.mozilla.firefox"
-];
-```
-
-当前远程仓库使用 **SJTU Flathub 镜像**：
+KDE dotfiles live under:
 
 ```text
-https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo
+dotfiles/kde/
+|-- config/
+|-- local-share/
+`-- wallpapers/
 ```
 
----
+`modules/home-manager/dotfiles/kde.nix` links selected files and directories into the user's XDG config/data locations. It currently handles:
 
-### 🐚 开发 Shell 环境
+- `kdeglobals`
+- `kwinrc`
+- `kglobalshortcutsrc`
+- `kcminputrc`
+- `kscreenlockerrc` if present
+- `plasma-org.kde.plasma.desktop-appletsrc`
+- `plasmarc`
+- `plasmashellrc`
+- `konsolerc`
+- `gtkrc`
+- `gtkrc-2.0`
+- `kscreen` if present
+- `aurorae`
+- `color-schemes` if present
+- `desktoptheme` if present
+- `Kvantum` if present
+- `look-and-feel` if present
+- `plasma`
+- `wallpapers`
 
-嵌入式开发环境统一使用 Flake `devShells`：
+Current KDE theme resources include:
+
+- icon theme configured as `Fluent-purple`
+- cursor theme configured as `oreo_purple_cursors`, size `32`
+- Layan Aurorae window decoration under `dotfiles/kde/local-share/aurorae`
+- custom Plasma look-and-feel data under `dotfiles/kde/local-share/plasma`
+- custom plasmoids, including `KdeControlStation` and `plasmusic-toolbar`
+
+KDE does not provide a reliable built-in account sync for full desktop layout, icons, cursor, widgets, and local themes. KDE Store can install themes, but it does not reproduce the complete machine state. This repo uses the more reproducible route: Nix installs theme resources, Home Manager links the dotfiles.
+
+To refresh KDE dotfiles from a configured machine, use:
+
+```bash
+./scripts/export-kde-dotfiles.sh
+```
+
+Then review the diff before committing. KDE config files can contain machine-specific screen IDs, absolute paths, and stale generated update markers.
+
+### Niri
+
+Niri config lives at:
+
+```text
+dotfiles/niri/config.kdl
+```
+
+Home Manager links it to:
+
+```text
+~/.config/niri/config.kdl
+```
+
+The current Niri config binds `Mod+T` to `ghostty`.
+
+### Ghostty
+
+Ghostty config lives at:
+
+```text
+dotfiles/ghostty/config
+```
+
+Home Manager links it to:
+
+```text
+~/.config/ghostty/config.ghostty
+```
+
+On VirtualBox, Ghostty may fail if the virtual GPU only exposes an old OpenGL version. The known workaround is:
+
+```bash
+LIBGL_ALWAYS_SOFTWARE=1 ghostty
+```
+
+The repository does not force this workaround globally because real hardware is the priority.
+
+## Nixvim
+
+`modules/home-manager/nixvim.nix` enables flake-based nixvim.
+
+Current behavior:
+
+- `nvim` is the default editor
+- `vi` and `vim` aliases are enabled
+- Catppuccin Mocha colorscheme
+- line numbers and relative numbers
+- 2-space indentation
+- true color
+- sign column always visible
+- leader key is Space
+- wl-copy clipboard provider
+
+Plugins:
+
+- Treesitter
+- Telescope
+- Lualine
+- Which-key
+- Web devicons
+- Yazi
+
+Keymaps:
+
+| Key | Action |
+| --- | --- |
+| `<leader>ff` | Telescope find files |
+| `<leader>fg` | Telescope live grep |
+| `<leader>e` | Open Yazi |
+
+## System Packages
+
+Shared development packages include:
+
+- `rustc`
+- `rustup`
+- `cargo`
+- `python3`
+- `clang`
+- `gcc`
+- `gdb`
+- `cmake`
+- `gnumake`
+- `ninja`
+- `pkg-config`
+- `perl`
+
+General development and desktop tools include:
+
+- `ghostty`
+- `gnome-software`
+- `kdePackages.flatpak-kcm`
+- `nix-search-tv`
+- `neovim`
+- `vscode`
+- `warehouse`
+- `lmstudio`
+- `docker`
+- `jetbrains.clion`
+- `eclipses.eclipse-embedcpp`
+- `stm32cubemx`
+- `kicad`
+- `codeblocks`
+- `filezilla`
+
+Commented or reserved packages:
+
+- `trae`
+- `claude-code`
+- `.NET` runtimes
+- `steam`
+- `wechat`
+
+## Embedded Development
+
+Shared embedded packages:
+
+- `openocd`
+- `probe-rs-tools`
+- `dfu-util`
+- `libusb1`
+- `minicom`
+- `picocom`
+- `screen`
+- `usbutils`
+- `platformio`
+
+Vendor modules imported into the shared system profile:
+
+- Espressif: `esphome`, `esptool`, `espflash`
+- STM32: `stm32flash`, `stlink`
+
+Vendor modules kept available but not imported globally:
+
+- Nordic: `nrf-command-line-tools`, `nrfconnect`, `nrf5-sdk`, `nrf-udev`, `nrfutil`
+- Allwinner: `sunxi-tools`, `xfel`
+
+Nordic is kept out of the shared system profile because one dependency path still pulls obsolete Qt4. Allwinner tools are currently used through dev shells instead of the global profile.
+
+## Dev Shells
+
+Flake dev shells are defined under `shells/targets/`.
 
 ```bash
 nix develop .#stm
@@ -343,59 +451,171 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-devShell 采用 `shells/lib/` 通用包组和 `shells/targets/` 目标文件组合。完整说明见 [Embedded DevShells](wiki/Embedded-DevShells.md)。
+`devShells.default` points to the STM shell.
 
----
+Details are in [wiki/Embedded-DevShells.md](wiki/Embedded-DevShells.md).
 
-## 🌐 镜像源配置
+## Flatpak
 
-| 组件         | 镜像地址                                                                 |
-|--------------|--------------------------------------------------------------------------|
-| nixpkgs      | NJU Git 镜像，分支 `nixos-26.05`                                        |
-| Nix 二进制缓存 | USTC 镜像，`cache.nixos.org` 作为回退                                  |
-| Flatpak      | SJTU Flathub 镜像                                                       |
+Flatpak is configured in:
 
-更新 flake 输入后建议执行：
-
-```bash
-nix --extra-experimental-features "nix-command flakes" flake lock --update-input home-manager
-nix --extra-experimental-features "nix-command flakes" flake lock
-nix --extra-experimental-features "nix-command flakes" flake check
+```text
+modules/system/services/flatpak.nix
 ```
 
----
+Current remote:
 
-## 🗺️ 开发路线图
-
-- [ ] **阶段一**：稳定当前模块结构，确保 `nix flake check` 和 `nixos-rebuild test` 通过。
-- [ ] **阶段二**：继续原子化桌面模块，将 KDE、GNOME 和公共桌面工具拆分得更清晰。
-- [ ] **阶段三**：补全 ThinkPad 硬件模块，覆盖 T480、X230i、P14s 的常用驱动和电源管理。
-- [ ] **阶段四**：原子化语言开发环境（Python、Rust、Node.js、Java、.NET 等）。
-- [ ] **阶段五**：细分 IDE 和编辑器模块（VS Code、JetBrains、Neovim）。
-- [ ] **阶段六**：评估 Noctalia 的上游地址与模块接入方式，纳入 flake 输入。
-- [ ] **阶段七**：按项目需要继续补 ESP-IDF、Zephyr SDK、Buildroot、Yocto 等重量级 SDK shell。
-
----
-
-## 📝 维护注意事项
-
-添加 Nix 包前，请先确认包名：
-
-```bash
-nix search nixpkgs <package-name>
+```text
+https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo
 ```
 
-或访问 [NixOS Packages](https://search.nixos.org/packages)。
+Current packages:
 
-新增或移动模块后，**务必**执行：
+- `org.torproject.torbrowser-launcher`
 
-```bash
-nix --extra-experimental-features "nix-command flakes" flake check
-sudo nixos-rebuild test --flake .#kde-default
+Flatpak updates are not run automatically during every system activation:
+
+```nix
+services.flatpak.update.onActivation = false;
 ```
 
-确认无误后再执行 `switch`。
+GUI helpers installed by the system:
 
----
+- Warehouse
+- GNOME Software
+- KDE Discover
+- KDE Flatpak KCM
 
-*Happy NixOS hacking!* 🎉
+## Install From Live ISO
+
+Boot into a NixOS live ISO, connect to the network, then run:
+
+```bash
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
+```
+
+The default path assumes you already partitioned, formatted, and mounted the target system at `/mnt`. The installer prepares the repo under `/mnt/etc/nixos` and installs the default flake output.
+
+To specify a disk without erasing it:
+
+```bash
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
+```
+
+To erase, partition, format, and mount a disk, pass `--erase` explicitly:
+
+```bash
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
+```
+
+The script asks for an explicit confirmation such as:
+
+```text
+ERASE /dev/sda
+```
+
+To prepare files but skip installation:
+
+```bash
+sudo bash scripts/install.sh --mountpoint /mnt --skip-install
+```
+
+## Rebuild
+
+From the repository root:
+
+```bash
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+```
+
+Safer test command:
+
+```bash
+sudo nixos-rebuild test --flake .#ThinkPad-P14s
+```
+
+Build without switching:
+
+```bash
+nix build .#nixosConfigurations.ThinkPad-P14s.config.system.build.toplevel
+```
+
+Useful host commands:
+
+```bash
+sudo nixos-rebuild switch --flake .#kde-default
+sudo nixos-rebuild switch --flake .#niri-default
+sudo nixos-rebuild switch --flake .#gnome-default
+sudo nixos-rebuild switch --flake .#desktop-default
+sudo nixos-rebuild switch --flake .#ThinkPad-x270
+sudo nixos-rebuild switch --flake .#ThinkPad-x230i
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+```
+
+If you only want a lightweight evaluation target:
+
+```bash
+nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
+```
+
+## Mirrors
+
+| Component | Mirror |
+| --- | --- |
+| nixpkgs Git input | NJU, `https://mirrors.nju.edu.cn/git/nixpkgs.git` |
+| Nix binary cache | USTC, `https://mirrors.ustc.edu.cn/nix-channels/store` |
+| Nix official fallback | `https://cache.nixos.org/` |
+| Flatpak | SJTU Flathub mirror |
+
+Temporary rebuild with explicit substituters:
+
+```bash
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
+```
+
+## Updating Inputs
+
+Update one input:
+
+```bash
+nix flake lock --update-input home-manager
+```
+
+Update the lock file:
+
+```bash
+nix flake lock
+```
+
+Check evaluation:
+
+```bash
+nix flake check
+```
+
+If GitHub rate limits appear while updating GitHub-backed inputs, change proxy/IP and retry. The `nixvim` input already uses Git transport to reduce API pressure.
+
+## Maintenance Notes
+
+- Keep hardware files host-specific.
+- Do not move disk layout, bootloader selection, or GPU quirks into common unless the same fact is true for every host.
+- Prefer system packages for resources needed before login or by the display manager.
+- Prefer Home Manager for user preferences, dotfiles, editor config, and per-user app config.
+- KDE dotfiles may require logout/login after rebuild.
+- If KDE icons or cursors look wrong, verify both the config name and the package providing the resources.
+- If `dbus-broker` errors return during `nixos-rebuild switch`, keep using `services.dbus.implementation = "dbus"`.
+- `docker-test` is intentionally not a real desktop or installable machine profile.
+
+## TODO
+
+Tracked in [TODO.md](TODO.md):
+
+- Nixvim configuration: done
+- Yazi plugin integration: done
+
+Near-term ideas:
+
+- Continue refining KDE dotfile export/import coverage.
+- Add more nixvim language/tooling polish.
+- Expand yazi configuration beyond the basic nixvim plugin.
+- Add heavier SDK shells only where they do not poison the global system profile.
