@@ -13,7 +13,7 @@
  * This module only links files that exist, so it is safe to enable while the
  * dotfiles directory is still being populated.
  */
-{ lib, ... }:
+{ lib, pkgs, ... }:
 let
   dotfilesRoot = ../../../dotfiles/kde;
   configRoot = dotfilesRoot + "/config";
@@ -39,6 +39,14 @@ let
     };
 in
 {
+  home.pointerCursor = {
+    package = pkgs.oreo-cursors-plus;
+    name = "oreo_purple_cursors";
+    size = 32;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
   xdg.configFile = lib.mkMerge [
     (configFile "kdeglobals" "kdeglobals")
     (configFile "kwinrc" "kwinrc")
