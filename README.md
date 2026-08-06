@@ -175,7 +175,9 @@ Physical GNOME ThinkPad profiles override the display manager to SDDM at the
 host layer. GNOME remains installed as the main desktop, while SDDM exposes
 both GNOME and Niri as selectable login sessions. Noctalia is not a separate
 display-manager session; it starts inside the Niri session from
-`dotfiles/niri/config.kdl`.
+`dotfiles/niri/config.kdl`. On the X230i and X270, the SDDM greeter itself runs
+on X11 for more reliable keyboard, mouse, and touchpad handling on older
+hardware; launching the Niri session still starts a Wayland compositor.
 
 ### Niri
 

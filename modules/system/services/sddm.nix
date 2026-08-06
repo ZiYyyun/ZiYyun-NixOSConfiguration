@@ -25,12 +25,17 @@ in
   fonts.packages = [ astronautTheme ];
 
   services.displayManager.sddm = {
-    theme = "sddm-astronaut-theme";
+    package = pkgs.kdePackages.sddm;
+    theme = "${astronautTheme}/share/sddm/themes/sddm-astronaut-theme";
     extraPackages = [
       astronautTheme
       pkgs.kdePackages.qtmultimedia
       pkgs.kdePackages.qtsvg
       pkgs.kdePackages.qtvirtualkeyboard
     ];
+    settings.Users = {
+      RememberLastUser = true;
+      RememberLastSession = true;
+    };
   };
 }

@@ -27,6 +27,6 @@
   services.displayManager.gdm.enable = lib.mkForce false;
   services.displayManager.sddm = {
     enable = lib.mkForce true;
-    wayland.enable = true;
+    wayland.enable = lib.mkForce false;
   };
 }
