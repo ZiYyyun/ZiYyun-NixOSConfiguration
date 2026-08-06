@@ -24,7 +24,7 @@ Current target release: **NixOS 26.05**.
 | Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
-| Theme resources | Catppuccin SDDM, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
+| Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
 | Embedded | STM32, Espressif, PlatformIO, OpenOCD, probe-rs, serial tools, USB tools |
 
 ## Flake Inputs
@@ -139,7 +139,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 
 - `dbus.nix`: sets `services.dbus.implementation = "dbus"`
 - `input-method.nix`: Fcitx5, Rime, Chinese addons, config tool, input method environment variables
-- `sddm.nix`: Catppuccin Mocha Mauve SDDM theme
+- `sddm.nix`: SDDM Astronaut theme
 
 `flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
 
