@@ -50,11 +50,11 @@ Current target release: **NixOS 26.05**.
 | `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | Default GNOME layout, root `/dev/sda2` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
-| `ThinkPad-x230i` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | root `/dev/sda2` |
+| `ThinkPad-x230i` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | USB-SATA SSD layout: GRUB on `/dev/sda`, root `/dev/sda1`, swap `/dev/sda2` |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
-Hardware-specific disk and bootloader choices stay inside each host directory. They are intentionally not moved into `hosts/common`.
+Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
 ## Directory Map
 
@@ -65,6 +65,9 @@ Hardware-specific disk and bootloader choices stay inside each host directory. T
 |-- configuration.nix
 |-- hosts/
 |   |-- common/
+|   |   |-- boot/
+|   |   |   |-- legacy.nix
+|   |   |   `-- uefi.nix
 |   |   |-- hardware-configuration.nix
 |   |   `-- installation-boot.nix
 |   |-- kde-default/
@@ -598,7 +601,8 @@ If GitHub rate limits appear while updating GitHub-backed inputs, change proxy/I
 ## Maintenance Notes
 
 - Keep hardware files host-specific.
-- Do not move disk layout, bootloader selection, or GPU quirks into common unless the same fact is true for every host.
+- Do not move disk layout or GPU quirks into common unless the same fact is true for every host.
+- Do not hide boot mode inside common hardware config; choose `hosts/common/boot/legacy.nix` or `hosts/common/boot/uefi.nix` from each host.
 - Prefer system packages for resources needed before login or by the display manager.
 - Prefer Home Manager for user preferences, dotfiles, editor config, and per-user app config.
 - KDE dotfiles may require logout/login after rebuild.

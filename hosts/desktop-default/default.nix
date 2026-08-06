@@ -12,6 +12,7 @@
     inputs.nixos-hardware.nixosModules.common-pc-ssd
 
     ../common/hardware-configuration.nix
+    ../common/boot/uefi.nix
     ./hardware-configuration.nix
     ../../modules/system/packages/desktop/kde
     ../../modules/system/packages/desktop/niri

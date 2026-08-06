@@ -8,12 +8,7 @@
 {
   boot.initrd.availableKernelModules = [ "uas" "usb_storage" "sd_mod" ];
 
-  boot.loader.systemd-boot.enable = lib.mkForce false;
-  boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda";
-  };
+  boot.loader.grub.device = lib.mkForce "/dev/sda";
 
   fileSystems."/" = {
     device = "/dev/sda1";

@@ -13,6 +13,7 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x230
 
     ../common/hardware-configuration.nix
+    ../common/boot/legacy.nix
     ./hardware-configuration.nix
     ../../modules/system/packages/desktop/gnome
     ../../modules/system/packages/desktop/niri

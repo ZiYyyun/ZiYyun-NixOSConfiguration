@@ -10,6 +10,7 @@
     inputs.nix-flatpak.nixosModules.nix-flatpak
 
     ../common/hardware-configuration.nix
+    ../common/boot/legacy.nix
     ./hardware-configuration.nix
     ../../modules/system/packages/desktop/niri
     ../../modules/system/packages/desktop/noctalia

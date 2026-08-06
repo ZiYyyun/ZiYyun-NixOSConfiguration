@@ -48,3 +48,7 @@ inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 ```
 
 `ThinkPad-x230i` intentionally uses `lenovo-thinkpad-x230`, because `nixos-hardware` does not provide a separate X230i profile.
+
+For the current X230i disk layout, the NTFS disk labeled `系统` is not part of
+the NixOS installation. The `ThinkPad-x230i` profile mounts root and swap by
+UUID and installs legacy GRUB to `/dev/sdb`.
