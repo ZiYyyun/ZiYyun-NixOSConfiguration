@@ -49,8 +49,8 @@ Current target release: **NixOS 26.05**.
 | `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | VirtualBox/Niri layout, root `/dev/sda2`, VMware graphics workaround kept here |
 | `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | Default GNOME layout, root `/dev/sda2` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
-| `ThinkPad-x270` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
-| `ThinkPad-x230i` | GNOME + GDM, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
+| `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
+| `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | USB-SATA SSD layout: GRUB on `/dev/sda`, root `/dev/sda1`, swap `/dev/sda2` |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
@@ -170,6 +170,12 @@ It installs:
 - GNOME
 
 It currently installs `bottles`.
+
+Physical GNOME ThinkPad profiles override the display manager to SDDM at the
+host layer. GNOME remains installed as the main desktop, while SDDM exposes
+both GNOME and Niri as selectable login sessions. Noctalia is not a separate
+display-manager session; it starts inside the Niri session from
+`dotfiles/niri/config.kdl`.
 
 ### Niri
 
@@ -605,6 +611,7 @@ If GitHub rate limits appear while updating GitHub-backed inputs, change proxy/I
 - Do not hide boot mode inside common hardware config; choose `hosts/common/boot/legacy.nix` or `hosts/common/boot/uefi.nix` from each host.
 - Prefer system packages for resources needed before login or by the display manager.
 - Prefer Home Manager for user preferences, dotfiles, editor config, and per-user app config.
+- Physical machines keep one main desktop environment but also include Niri + Noctalia as an alternate SDDM session.
 - KDE dotfiles may require logout/login after rebuild.
 - If KDE icons or cursors look wrong, verify both the config name and the package providing the resources.
 - If `dbus-broker` errors return during `nixos-rebuild switch`, keep using `services.dbus.implementation = "dbus"`.

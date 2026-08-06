@@ -4,7 +4,7 @@
  * Date: 2026-07-31
  * Description: Host profile for Lenovo ThinkPad X270.
  */
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   imports = [
     inputs.nix-flatpak.nixosModules.nix-flatpak
@@ -19,4 +19,12 @@
     ../../modules/system/packages/hardware/thinkpad
     ../../modules/system/services/flatpak.nix
   ];
+
+  # Keep GNOME installed, but use SDDM as the session picker so Niri is
+  # available alongside the main desktop environment on real hardware.
+  services.displayManager.gdm.enable = lib.mkForce false;
+  services.displayManager.sddm = {
+    enable = lib.mkForce true;
+    wayland.enable = true;
+  };
 }
