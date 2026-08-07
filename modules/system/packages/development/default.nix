@@ -9,6 +9,7 @@
   imports = [
     ./general.nix
     ./embedded.nix
+    ./libs.nix
   ];
 
   environment.systemPackages = with pkgs; [
