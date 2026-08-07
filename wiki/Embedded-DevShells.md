@@ -211,11 +211,11 @@ arch = "arm64";
 nix develop .#allwinner
 ```
 
-系统级常驻工具仍放在：
+嵌入式工具链、烧录工具、串口工具和厂商 SDK 不再放进系统级 development 模块，统一由 `shells/embedded/` 管理：
 
 ```text
-modules/system/packages/development/embedded.nix
-modules/system/packages/development/embedded/*.nix
+shells/embedded/*.nix
+shells/lib/packages.nix
 ```
 
-重型 SDK 比如 ESP-IDF、Zephyr SDK、Buildroot、Yocto，建议继续做成单独 target shell。它们通常和项目版本强绑定，不适合一股脑装进全局系统包。
+`packages/system/development.nix` 只保留 GUI/IDE 这类常驻应用入口，不再重复定义编译工具链。重型 SDK 比如 ESP-IDF、Zephyr SDK、Buildroot、Yocto，建议继续做成单独 devShell。它们通常和项目版本强绑定，不适合一股脑装进全局系统包。

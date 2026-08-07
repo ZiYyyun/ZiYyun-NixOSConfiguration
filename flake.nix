@@ -34,18 +34,13 @@
         home-manager.backupFileExtension = "hm-backup";
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.users.ziyun = { pkgs, ... }: {
+        home-manager.users.ziyun = { ... }: {
           imports = [
-            ./modules/home-manager/home.nix
-            inputs.nixvim.homeModules.nixvim
             vscode-server.homeModules.default
+            inputs.nixvim.homeModules.nixvim
+            ./modules/home
+            ./packages/home
           ];
-
-          services.vscode-server = {
-            enable = true;
-            enableFHS = true;
-            nodejsPackage = pkgs.nodejs;
-          };
         };
       };
 
@@ -60,6 +55,7 @@
 
         ./hosts/common/installation-boot.nix
         ./modules/system
+        ./packages/system
 
       ];
 

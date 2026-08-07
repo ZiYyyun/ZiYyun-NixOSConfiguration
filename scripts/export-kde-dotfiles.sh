@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-kde_root="${repo_root}/dotfiles/kde"
+kde_root="${repo_root}/assets/dotfiles/kde"
 
 config_dir="${kde_root}/config"
 share_dir="${kde_root}/local-share"

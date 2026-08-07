@@ -25,7 +25,7 @@ Current target release: **NixOS 26.05**.
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
-| Embedded | Lightweight global flash/debug/serial tools; vendor SDKs and target toolchains live in Flake devShells |
+| Embedded | MCU/vendor/SoC toolchains live in Flake devShells, not in the global system profile |
 
 ## Flake Inputs
 
@@ -80,27 +80,33 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   `-- ThinkPad-P14s/
 |-- modules/
 |   |-- system/
-|   |   |-- packages/
-|   |   |   |-- desktop/
-|   |   |   |   |-- kde/
-|   |   |   |   |-- gnome/
-|   |   |   |   |-- niri/
-|   |   |   |   `-- noctalia/
-|   |   |   |-- development/
-|   |   |   `-- hardware/
+|   |   |-- desktops/
+|   |   |   |-- kde.nix
+|   |   |   |-- gnome.nix
+|   |   |   |-- niri.nix
+|   |   |   `-- noctalia.nix
 |   |   `-- services/
 |   |       |-- dbus.nix
 |   |       |-- input-method.nix
 |   |       |-- sddm.nix
 |   |       `-- flatpak.nix
-|   `-- home-manager/
-|       |-- home.nix
-|       |-- nixvim.nix
-|       `-- dotfiles/
-|-- dotfiles/
-|   |-- ghostty/
-|   |-- kde/
-|   `-- niri/
+|   `-- home/
+|       |-- accounts/
+|       |-- dotfile-links/
+|       `-- programs/
+|-- packages/
+|   |-- system/
+|   |   |-- apps.nix
+|   |   |-- base.nix
+|   |   |-- development.nix
+|   |   |-- desktops/
+|   |   `-- hardware/
+|   |-- home/
+|   `-- custom/
+|-- profiles/
+|   `-- desktops/
+|-- assets/
+|   `-- dotfiles/
 |-- shells/
 |   |-- lib/
 |   |-- languages/
@@ -111,11 +117,26 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   `-- export-kde-dotfiles.sh
 |-- wiki/
 |   |-- Embedded-DevShells.md
+|   |-- Language-DevShells.md
 |   `-- Host-Switching.md
 `-- TODO.md
 ```
 
-## System Modules
+## Structure Rules
+
+The repo is split by responsibility:
+
+- `configuration.nix` keeps only base machine settings.
+- `modules/system` keeps NixOS configuration modules.
+- `packages/system` keeps global package lists.
+- `modules/home` keeps Home Manager configuration modules.
+- `packages/home` keeps user package lists.
+- `packages/custom` keeps local derivations.
+- `profiles/desktops` composes a desktop profile from config modules and package lists.
+- `assets/dotfiles` stores real dotfile payloads.
+- `shells` stores `nix develop` environments only.
+
+## System Layers
 
 ### Base System
 
@@ -130,9 +151,10 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 - user `ziyun`
 - Firefox
 - unfree packages
-- base packages: `vim`, `wget`, `git`
 - OpenSSH
 - `system.stateVersion = "26.05"`
+
+System packages now live in `packages/system/base.nix`, `packages/system/apps.nix`, and `packages/system/development.nix`.
 
 ### Services
 
@@ -144,107 +166,50 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 
 `flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
 
-### KDE
+### Desktop Profiles
 
-`modules/system/packages/desktop/kde/default.nix` enables:
+Desktop profiles live in `profiles/desktops/` and combine the matching config module plus package list:
 
-- `services.xserver.enable`
-- SDDM
-- Plasma 6
+- `kde.nix`
+- `gnome.nix`
+- `niri.nix`
+- `noctalia.nix`
 
-It installs:
+Hosts import one of these profiles and keep their own hardware layout locally.
+The KDE and GNOME profiles also include Niri + Noctalia as alternate sessions.
 
-- KDE Discover
-- Marble
-- Okular
-- Fluent icon theme, purple variant
-- Breeze icons
-- hicolor icon fallback
-- Oreo cursor theme
+### Desktop Modules
 
-### GNOME
+`modules/system/desktops/*.nix` only enable desktop behavior:
 
-`modules/system/packages/desktop/gnome/default.nix` enables:
+- KDE: X server, SDDM, Plasma 6
+- GNOME: X server, GDM, GNOME
+- Niri: Wayland compositor, portals, graphics support
+- Noctalia: Noctalia module settings
 
-- X server
-- GDM
-- GNOME
-
-It currently installs `bottles`.
-
-Physical GNOME ThinkPad profiles override the display manager to SDDM at the
-host layer. GNOME remains installed as the main desktop, while SDDM exposes
-both GNOME and Niri as selectable login sessions. Noctalia is not a separate
-display-manager session; it starts inside the Niri session from
-`dotfiles/niri/config.kdl`. On the X230i and X270, the SDDM greeter itself runs
-on X11 for more reliable keyboard, mouse, and touchpad handling on older
-hardware; launching the Niri session still starts a Wayland compositor.
-
-### Niri
-
-`modules/system/packages/desktop/niri/default.nix` enables official NixOS Niri support:
-
-- `programs.niri.enable = true`
-- `programs.niri.package = pkgs.niri`
-- graphics support
-- XDG portals
-- `xdg-desktop-portal-gtk`
-- `xdg-desktop-portal-gnome`
-
-Niri helper packages:
-
-- `alacritty`
-- `brightnessctl`
-- `fuzzel`
-- `grim`
-- `mako`
-- `networkmanagerapplet`
-- `pavucontrol`
-- `playerctl`
-- `swaylock`
-- `slurp`
-- `swaybg`
-- `swappy`
-- `wl-clipboard`
-- `xwayland-satellite`
-
-### Noctalia
-
-`modules/system/packages/desktop/noctalia/default.nix` enables Noctalia through the flake module:
-
-```nix
-programs.noctalia = {
-  enable = true;
-  recommendedServices.enable = true;
-  systemd.enable = false;
-};
-```
-
-`systemd.enable = false` is intentional. Noctalia is available, but it is not auto-started as a user service. The session config decides when to run it.
+Desktop packages live in `packages/system/desktops/*.nix`.
 
 ### ThinkPad Tools
 
-`modules/system/packages/hardware/thinkpad/default.nix` installs:
+`packages/system/hardware/thinkpad.nix` only keeps ThinkPad-specific system packages:
 
 - `tpacpi-bat`
 - `hdapsd`
 
 ## Home Manager
 
-Home Manager is wired in `flake.nix` and imports `modules/home-manager/home.nix`, nixvim's Home Manager module, and VS Code Server.
+Home Manager is wired in `flake.nix` and imports `modules/home/default.nix`, `packages/home`, nixvim's Home Manager module, and VS Code Server.
 
-Home Manager currently manages:
+`modules/home` keeps configuration only:
 
 - Git username/email
-- user apps
-- Ghostty config
-- KDE dotfiles
-- Niri config
 - nixvim
-- VS Code Server service
+- VS Code Server
+- dotfile links
 
-User applications in `home.packages`:
+`packages/home/default.nix` keeps the user package list:
 
+- `honeyfetch`
 - `spotify`
 - `winboat`
 - `clash-verge-rev`
@@ -258,98 +223,20 @@ User applications in `home.packages`:
 
 ## Dotfiles
 
-### KDE
-
-KDE dotfiles live under:
+Real dotfiles live in `assets/dotfiles/`:
 
 ```text
-dotfiles/kde/
-|-- config/
-|-- local-share/
-`-- wallpapers/
+assets/dotfiles/
+|-- ghostty/
+|-- kde/
+`-- niri/
 ```
 
-`modules/home-manager/dotfiles/kde.nix` links selected files and directories into the user's XDG config/data locations. It currently handles:
-
-- `kdeglobals`
-- `kwinrc`
-- `kglobalshortcutsrc`
-- `kcminputrc`
-- `kscreenlockerrc` if present
-- `plasma-org.kde.plasma.desktop-appletsrc`
-- `plasmarc`
-- `plasmashellrc`
-- `konsolerc`
-- `gtkrc`
-- `gtkrc-2.0`
-- `kscreen` if present
-- `aurorae`
-- `color-schemes` if present
-- `desktoptheme` if present
-- `Kvantum` if present
-- `look-and-feel` if present
-- `plasma`
-- `wallpapers`
-
-Current KDE theme resources include:
-
-- icon theme configured as `Fluent-purple`
-- cursor theme configured as `oreo_purple_cursors`, size `32`
-- Layan Aurorae window decoration under `dotfiles/kde/local-share/aurorae`
-- custom Plasma look-and-feel data under `dotfiles/kde/local-share/plasma`
-- custom plasmoids, including `KdeControlStation` and `plasmusic-toolbar`
-
-KDE does not provide a reliable built-in account sync for full desktop layout, icons, cursor, widgets, and local themes. KDE Store can install themes, but it does not reproduce the complete machine state. This repo uses the more reproducible route: Nix installs theme resources, Home Manager links the dotfiles.
-
-To refresh KDE dotfiles from a configured machine, use:
-
-```bash
-./scripts/export-kde-dotfiles.sh
-```
-
-Then review the diff before committing. KDE config files can contain machine-specific screen IDs, absolute paths, and stale generated update markers.
-
-### Niri
-
-Niri config lives at:
-
-```text
-dotfiles/niri/config.kdl
-```
-
-Home Manager links it to:
-
-```text
-~/.config/niri/config.kdl
-```
-
-The current Niri config binds `Mod+T` to `ghostty`.
-
-### Ghostty
-
-Ghostty config lives at:
-
-```text
-dotfiles/ghostty/config
-```
-
-Home Manager links it to:
-
-```text
-~/.config/ghostty/config.ghostty
-```
-
-On VirtualBox, Ghostty may fail if the virtual GPU only exposes an old OpenGL version. The known workaround is:
-
-```bash
-LIBGL_ALWAYS_SOFTWARE=1 ghostty
-```
-
-The repository does not force this workaround globally because real hardware is the priority.
+`modules/home/dotfile-links/*.nix` links those files into XDG paths.
 
 ## Nixvim
 
-`modules/home-manager/nixvim.nix` enables flake-based nixvim.
+`modules/home/programs/nixvim.nix` enables flake-based nixvim.
 
 Current behavior:
 
@@ -380,63 +267,25 @@ Keymaps:
 | `<leader>fg` | Telescope live grep |
 | `<leader>e` | Open Yazi |
 
-## System Packages
+## Package Layers
 
-Shared development packages include:
+Global system packages:
 
-- `rustc`
-- `rustup`
-- `cargo`
-- `python3`
-- `clang`
-- `gcc`
-- `gdb`
-- `cmake`
-- `gnumake`
-- `ninja`
-- `pkg-config`
-- `perl`
+- `packages/system/base.nix`
+- `packages/system/apps.nix`
+- `packages/system/development.nix`
 
-General development and desktop tools include:
+User packages:
 
-- `ghostty`
-- `gnome-software`
-- `kdePackages.flatpak-kcm`
-- `nix-search-tv`
-- `neovim`
-- `vscode`
-- `warehouse`
-- `lmstudio`
-- `docker`
-- `jetbrains.clion`
-- `eclipses.eclipse-embedcpp`
-- `stm32cubemx`
-- `kicad`
-- `codeblocks`
-- `filezilla`
+- `packages/home/apps.nix`
 
-Commented or reserved packages:
+Local derivations:
 
-- `trae`
-- `claude-code`
-- `.NET` runtimes
-- `steam`
-- `wechat`
+- `packages/custom/trae/default.nix`
 
 ## Embedded Development
 
-Shared embedded packages kept globally available:
-
-- `openocd`
-- `probe-rs-tools`
-- `dfu-util`
-- `libusb1`
-- `minicom`
-- `picocom`
-- `screen`
-- `usbutils`
-
-Vendor SDKs and target-specific toolchains are intentionally kept out of the shared system profile. Use devShells for those:
+Embedded packages are not installed globally. Use devShells for vendor SDKs, flashing tools, serial tools, and cross toolchains:
 
 - STM: `nix develop .#stm`
 - Espressif: `nix develop .#esp`
@@ -446,7 +295,7 @@ Vendor SDKs and target-specific toolchains are intentionally kept out of the sha
 - Allwinner: `nix develop .#allwinner`
 - Rockchip: `nix develop .#rockchip`
 
-Nordic global packages are kept empty because the old `nrf-command-line-tools` dependency path can pull obsolete Qt4. Keeping that out of the global system profile prevents a single vendor tool from breaking `nixos-rebuild`.
+This keeps `nixos-rebuild` small and avoids one vendor package, such as an old Nordic/J-Link Qt4 dependency path, from breaking the whole system build.
 
 ## Dev Shells
 
@@ -651,4 +500,4 @@ Near-term ideas:
 - Continue refining KDE dotfile export/import coverage.
 - Add more nixvim language/tooling polish.
 - Expand yazi configuration beyond the basic nixvim plugin.
-- Add heavier SDK shells only where they do not poison the global system profile.
+- Keep language and embedded toolchains in devShells unless a tool is genuinely needed before login.
