@@ -12,7 +12,7 @@
     ../common/hardware-configuration.nix
     ../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../profiles/desktops/gnome.nix
+    ../../modules/system/profiles/gnome.nix
     ../../modules/system/services/flatpak.nix
   ];
 }

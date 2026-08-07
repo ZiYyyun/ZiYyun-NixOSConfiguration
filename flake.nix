@@ -103,25 +103,26 @@
       ];
 
       devShells.${system} = {
-        default = mkDevShell ./shells/languages/c.nix;
+        default = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
 
-        c = mkDevShell ./shells/languages/c.nix;
-        cpp = mkDevShell ./shells/languages/cpp.nix;
-        rust = mkDevShell ./shells/languages/rust.nix;
-        python = mkDevShell ./shells/languages/python.nix;
-        node = mkDevShell ./shells/languages/node.nix;
-        go = mkDevShell ./shells/languages/go.nix;
-        java = mkDevShell ./shells/languages/java.nix;
-        dotnet = mkDevShell ./shells/languages/dotnet.nix;
+        c = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        cpp = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        c-cpp = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        rust = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_rust.nix;
+        python = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_python.nix;
+        node = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_node.nix;
+        go = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_go.nix;
+        java = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_java.nix;
+        dotnet = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_dotnet.nix;
 
-        stm = mkDevShell ./shells/embedded/stm.nix;
-        esp = mkDevShell ./shells/embedded/esp.nix;
-        nordic = mkDevShell ./shells/embedded/nordic.nix;
+        stm = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_stm.nix;
+        esp = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_esp.nix;
+        nordic = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_nordic.nix;
 
-        arm32 = mkDevShell ./shells/embedded/arm32.nix;
-        arm64 = mkDevShell ./shells/embedded/arm64.nix;
-        allwinner = mkDevShell ./shells/embedded/allwinner.nix;
-        rockchip = mkDevShell ./shells/embedded/rockchip.nix;
+        arm32 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm32.nix;
+        arm64 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm64.nix;
+        allwinner = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_allwinner.nix;
+        rockchip = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_rockchip.nix;
       };
     };
 }

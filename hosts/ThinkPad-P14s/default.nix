@@ -13,7 +13,7 @@
     ../common/hardware-configuration.nix
     ../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../profiles/desktops/kde.nix
+    ../../modules/system/profiles/kde.nix
     ../../packages/system/hardware/thinkpad.nix
     ../../modules/system/services/flatpak.nix
   ];

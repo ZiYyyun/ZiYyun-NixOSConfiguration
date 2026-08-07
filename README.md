@@ -25,7 +25,7 @@ Current target release: **NixOS 26.05**.
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
-| Embedded | MCU/vendor/SoC toolchains live in Flake devShells, not in the global system profile |
+| Embedded | MCU/vendor/SoC toolchain definitions live in Flake devShells, not in the global system profile |
 
 ## Flake Inputs
 
@@ -80,7 +80,12 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   `-- ThinkPad-P14s/
 |-- modules/
 |   |-- system/
-|   |   |-- desktops/
+|   |   |-- desktop/
+|   |   |   |-- kde.nix
+|   |   |   |-- gnome.nix
+|   |   |   |-- niri.nix
+|   |   |   `-- noctalia.nix
+|   |   |-- profiles/
 |   |   |   |-- kde.nix
 |   |   |   |-- gnome.nix
 |   |   |   |-- niri.nix
@@ -92,49 +97,49 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |       `-- flatpak.nix
 |   `-- home/
 |       |-- accounts/
-|       |-- dotfile-links/
+|       |-- config-files/
 |       `-- programs/
 |-- packages/
 |   |-- system/
 |   |   |-- apps.nix
 |   |   |-- base.nix
 |   |   |-- development.nix
-|   |   |-- desktops/
 |   |   `-- hardware/
 |   |-- home/
 |   `-- custom/
-|-- profiles/
-|   `-- desktops/
-|-- assets/
-|   `-- dotfiles/
+|-- dotfiles/
+|   |-- ghostty/
+|   |-- kde/
+|   `-- niri/
+|-- dev_toolchains/
+|   |-- libs/
+|   |-- dev_compliers/
+|   `-- dev_embedded/
 |-- shells/
-|   |-- lib/
-|   |-- languages/
-|   `-- embedded/
-|-- scripts/
 |   |-- bootstrap.sh
 |   |-- install.sh
 |   `-- export-kde-dotfiles.sh
 |-- wiki/
-|   |-- Embedded-DevShells.md
-|   |-- Language-DevShells.md
+|   |-- Dev-Embedded-Toolchains.md
+|   |-- Dev-Programming-Toolchains.md
 |   `-- Host-Switching.md
 `-- TODO.md
 ```
 
 ## Structure Rules
 
-The repo is split by responsibility:
+The repo is split by the work you usually do:
 
-- `configuration.nix` keeps only base machine settings.
-- `modules/system` keeps NixOS configuration modules.
-- `packages/system` keeps global package lists.
-- `modules/home` keeps Home Manager configuration modules.
-- `packages/home` keeps user package lists.
-- `packages/custom` keeps local derivations.
-- `profiles/desktops` composes a desktop profile from config modules and package lists.
-- `assets/dotfiles` stores real dotfile payloads.
-- `shells` stores `nix develop` environments only.
+- Install or remove global system packages: edit `packages/system/*.nix`.
+- Install or remove user apps: edit `packages/home/apps.nix`.
+- Change system services, desktop enablement, input method, Flatpak, or SDDM: edit `modules/system/`.
+- Change Home Manager config, editor config, VS Code Server, or dotfile links: edit `modules/home/`.
+- Change real dotfile payloads: edit `dotfiles/`.
+- Add tools or libraries to a programming development environment: edit `dev_toolchains/libs/libs_cmp_packages.nix`.
+- Add tools to an embedded MCU/SoC environment: edit `dev_toolchains/libs/libs_emb_packages.nix`.
+- Change a host machine's disks, boot mode, or hardware profile: edit `hosts/<host>/default.nix` and `hosts/<host>/hardware-configuration.nix`.
+
+The important rule is: root-level folders are real daily entrypoints. There is no root-level `profiles/`, and desktop-specific packages are kept with the matching desktop module in `modules/system/desktop/`.
 
 ## System Layers
 
@@ -168,7 +173,7 @@ System packages now live in `packages/system/base.nix`, `packages/system/apps.ni
 
 ### Desktop Profiles
 
-Desktop profiles live in `profiles/desktops/` and combine the matching config module plus package list:
+Desktop profiles live in `modules/system/profiles/` and compose one or more desktop modules:
 
 - `kde.nix`
 - `gnome.nix`
@@ -180,14 +185,14 @@ The KDE and GNOME profiles also include Niri + Noctalia as alternate sessions.
 
 ### Desktop Modules
 
-`modules/system/desktops/*.nix` only enable desktop behavior:
+Desktop modules live in `modules/system/desktop/*.nix`. Each file keeps desktop enablement and that desktop's specific packages together:
 
-- KDE: X server, SDDM, Plasma 6
-- GNOME: X server, GDM, GNOME
-- Niri: Wayland compositor, portals, graphics support
+- KDE: X server, SDDM, Plasma 6, KDE apps, icon/cursor/theme resources
+- GNOME: X server, GDM, GNOME, GNOME-specific apps
+- Niri: Wayland compositor, portals, graphics support, Niri helper tools
 - Noctalia: Noctalia module settings
 
-Desktop packages live in `packages/system/desktops/*.nix`.
+There is intentionally no second desktop package layer now. If a package only makes sense for KDE, edit `modules/system/desktop/kde.nix`; if it should be installed everywhere, edit `packages/system/apps.nix` or `packages/system/development.nix`.
 
 ### ThinkPad Tools
 
@@ -205,7 +210,7 @@ Home Manager is wired in `flake.nix` and imports `modules/home/default.nix`, `pa
 - Git username/email
 - nixvim
 - VS Code Server
-- dotfile links
+- config file links for repository-managed dotfiles
 
 `packages/home/default.nix` keeps the user package list:
 
@@ -223,16 +228,16 @@ Home Manager is wired in `flake.nix` and imports `modules/home/default.nix`, `pa
 
 ## Dotfiles
 
-Real dotfiles live in `assets/dotfiles/`:
+Real dotfiles live in `dotfiles/`:
 
 ```text
-assets/dotfiles/
+dotfiles/
 |-- ghostty/
 |-- kde/
 `-- niri/
 ```
 
-`modules/home/dotfile-links/*.nix` links those files into XDG paths.
+`modules/home/config-files/*.nix` links those files into XDG paths.
 
 ## Nixvim
 
@@ -297,20 +302,21 @@ Embedded packages are not installed globally. Use devShells for vendor SDKs, fla
 
 This keeps `nixos-rebuild` small and avoids one vendor package, such as an old Nordic/J-Link Qt4 dependency path, from breaking the whole system build.
 
-## Dev Shells
+## Dev Toolchains
 
 Flake dev shells are split by purpose:
 
-- `shells/languages/`: common language environments for project work.
-- `shells/embedded/`: MCU/vendor/SoC environments for flashing, debugging, SDK tools, and cross compilation.
-- `shells/lib/`: shared helpers and reusable package groups.
+- `dev_toolchains/dev_compliers/`: common programming environments for project work.
+- `dev_toolchains/dev_embedded/`: MCU/vendor/SoC environments for flashing, debugging, SDK tools, and cross compilation.
+- `dev_toolchains/libs/`: shared helpers and reusable package groups.
 
-Common language shells:
+Common programming shells:
 
 ```bash
 nix develop
 nix develop .#c
 nix develop .#cpp
+nix develop .#c-cpp
 nix develop .#rust
 nix develop .#python
 nix develop .#node
@@ -331,9 +337,9 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-`devShells.default` points to the C shell, so plain `nix develop` is useful for clangd/pthread/CMake projects.
+`devShells.default`, `.#c`, `.#cpp`, and `.#c-cpp` point to the same C/C++ shell, so plain `nix develop` is useful for clangd/pthread/CMake projects.
 
-Details are in [wiki/Language-DevShells.md](wiki/Language-DevShells.md) and [wiki/Embedded-DevShells.md](wiki/Embedded-DevShells.md).
+Details are in [wiki/Dev-Programming-Toolchains.md](wiki/Dev-Programming-Toolchains.md) and [wiki/Dev-Embedded-Toolchains.md](wiki/Dev-Embedded-Toolchains.md).
 
 ## Flatpak
 
@@ -371,7 +377,7 @@ GUI helpers installed by the system:
 Boot into a NixOS live ISO, connect to the network, then run:
 
 ```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash
 ```
 
 The default path assumes you already partitioned, formatted, and mounted the target system at `/mnt`. The installer prepares the repo under `/mnt/etc/nixos` and installs the default flake output.
@@ -379,13 +385,13 @@ The default path assumes you already partitioned, formatted, and mounted the tar
 To specify a disk without erasing it:
 
 ```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
 ```
 
 To erase, partition, format, and mount a disk, pass `--erase` explicitly:
 
 ```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/scripts/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
+curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
 ```
 
 The script asks for an explicit confirmation such as:
@@ -397,7 +403,7 @@ ERASE /dev/sda
 To prepare files but skip installation:
 
 ```bash
-sudo bash scripts/install.sh --mountpoint /mnt --skip-install
+sudo bash shells/install.sh --mountpoint /mnt --skip-install
 ```
 
 ## Rebuild
@@ -498,6 +504,6 @@ Tracked in [TODO.md](TODO.md):
 Near-term ideas:
 
 - Continue refining KDE dotfile export/import coverage.
-- Add more nixvim language/tooling polish.
+- Add more nixvim programming/tooling polish.
 - Expand yazi configuration beyond the basic nixvim plugin.
-- Keep language and embedded toolchains in devShells unless a tool is genuinely needed before login.
+- Keep programming and embedded toolchains in devShells unless a tool is genuinely needed before login.

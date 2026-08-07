@@ -12,7 +12,7 @@
     ../common/hardware-configuration.nix
     ../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../profiles/desktops/niri.nix
+    ../../modules/system/profiles/niri.nix
     ../../modules/system/services/flatpak.nix
   ];
 

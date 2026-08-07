@@ -9,7 +9,7 @@
   imports = [
     ./accounts
     ./programs
-    ./dotfile-links
+    ./config-files
   ];
 
   home.stateVersion = "26.05";
