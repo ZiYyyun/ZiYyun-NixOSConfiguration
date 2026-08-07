@@ -2,17 +2,12 @@
  * File: default.nix
  * Author: ziyun
  * Date: 2026-08-03
- * Description: Vendor-specific embedded package module entrypoint.
+ * Description: Optional vendor-specific embedded system package entrypoint.
  */
 { ... }:
 {
-  imports = [
-    ./espressif.nix
-    ./stm.nix
-
-    # Allwinner tools remain in devShells for SoC work. Nordic is kept out of
-    # the shared system profile because one package still pulls obsolete Qt4.
-    # ./Allwinner.nix
-    # ./nordic.nix
-  ];
+  # Intentionally empty. Vendor-specific SDK/tooling belongs in devShells by
+  # default, so the global system profile stays small and avoids stale GUI
+  # dependencies such as Nordic's Qt4 path.
+  imports = [ ];
 }

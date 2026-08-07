@@ -2,14 +2,10 @@
 * File: embedded.nix
 * Author: ziyun
 * Date: 2026-07-29
-* Description: Common embedded development packages and vendor-specific imports.
+* Description: Lightweight embedded tools kept globally available.
 */
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
-  imports = [
-    ./embedded
-  ];
-
   environment.systemPackages = with pkgs; [
     openocd
     probe-rs-tools
@@ -20,8 +16,5 @@
     picocom
     screen
     usbutils
-
-    platformio
-    openocd
   ];
 }

@@ -25,7 +25,7 @@ Current target release: **NixOS 26.05**.
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
-| Embedded | STM32, Espressif, PlatformIO, OpenOCD, probe-rs, serial tools, USB tools |
+| Embedded | Lightweight global flash/debug/serial tools; vendor SDKs and target toolchains live in Flake devShells |
 
 ## Flake Inputs
 
@@ -103,7 +103,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   `-- niri/
 |-- shells/
 |   |-- lib/
-|   `-- targets/
+|   |-- languages/
+|   `-- embedded/
 |-- scripts/
 |   |-- bootstrap.sh
 |   |-- install.sh
@@ -424,7 +425,7 @@ Commented or reserved packages:
 
 ## Embedded Development
 
-Shared embedded packages:
+Shared embedded packages kept globally available:
 
 - `openocd`
 - `probe-rs-tools`
@@ -434,23 +435,42 @@ Shared embedded packages:
 - `picocom`
 - `screen`
 - `usbutils`
-- `platformio`
 
-Vendor modules imported into the shared system profile:
+Vendor SDKs and target-specific toolchains are intentionally kept out of the shared system profile. Use devShells for those:
 
-- Espressif: `esphome`, `esptool`, `espflash`
-- STM32: `stm32flash`, `stlink`
+- STM: `nix develop .#stm`
+- Espressif: `nix develop .#esp`
+- Nordic: `nix develop .#nordic`
+- ARM32 Linux SoC/i.MX6ULL: `nix develop .#arm32`
+- ARM64 Linux SoC: `nix develop .#arm64`
+- Allwinner: `nix develop .#allwinner`
+- Rockchip: `nix develop .#rockchip`
 
-Vendor modules kept available but not imported globally:
-
-- Nordic: `nrf-command-line-tools`, `nrfconnect`, `nrf5-sdk`, `nrf-udev`, `nrfutil`
-- Allwinner: `sunxi-tools`, `xfel`
-
-Nordic is kept out of the shared system profile because one dependency path still pulls obsolete Qt4. Allwinner tools are currently used through dev shells instead of the global profile.
+Nordic global packages are kept empty because the old `nrf-command-line-tools` dependency path can pull obsolete Qt4. Keeping that out of the global system profile prevents a single vendor tool from breaking `nixos-rebuild`.
 
 ## Dev Shells
 
-Flake dev shells are defined under `shells/targets/`.
+Flake dev shells are split by purpose:
+
+- `shells/languages/`: common language environments for project work.
+- `shells/embedded/`: MCU/vendor/SoC environments for flashing, debugging, SDK tools, and cross compilation.
+- `shells/lib/`: shared helpers and reusable package groups.
+
+Common language shells:
+
+```bash
+nix develop
+nix develop .#c
+nix develop .#cpp
+nix develop .#rust
+nix develop .#python
+nix develop .#node
+nix develop .#go
+nix develop .#java
+nix develop .#dotnet
+```
+
+Embedded shells:
 
 ```bash
 nix develop .#stm
@@ -462,9 +482,9 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-`devShells.default` points to the STM shell.
+`devShells.default` points to the C shell, so plain `nix develop` is useful for clangd/pthread/CMake projects.
 
-Details are in [wiki/Embedded-DevShells.md](wiki/Embedded-DevShells.md).
+Details are in [wiki/Language-DevShells.md](wiki/Language-DevShells.md) and [wiki/Embedded-DevShells.md](wiki/Embedded-DevShells.md).
 
 ## Flatpak
 

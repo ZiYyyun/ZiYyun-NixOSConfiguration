@@ -107,16 +107,25 @@
       ];
 
       devShells.${system} = {
-        default = mkDevShell ./shells/targets/stm.nix;
+        default = mkDevShell ./shells/languages/c.nix;
 
-        stm = mkDevShell ./shells/targets/stm.nix;
-        esp = mkDevShell ./shells/targets/esp.nix;
-        nordic = mkDevShell ./shells/targets/nordic.nix;
+        c = mkDevShell ./shells/languages/c.nix;
+        cpp = mkDevShell ./shells/languages/cpp.nix;
+        rust = mkDevShell ./shells/languages/rust.nix;
+        python = mkDevShell ./shells/languages/python.nix;
+        node = mkDevShell ./shells/languages/node.nix;
+        go = mkDevShell ./shells/languages/go.nix;
+        java = mkDevShell ./shells/languages/java.nix;
+        dotnet = mkDevShell ./shells/languages/dotnet.nix;
 
-        arm32 = mkDevShell ./shells/targets/arm32.nix;
-        arm64 = mkDevShell ./shells/targets/arm64.nix;
-        allwinner = mkDevShell ./shells/targets/allwinner.nix;
-        rockchip = mkDevShell ./shells/targets/rockchip.nix;
+        stm = mkDevShell ./shells/embedded/stm.nix;
+        esp = mkDevShell ./shells/embedded/esp.nix;
+        nordic = mkDevShell ./shells/embedded/nordic.nix;
+
+        arm32 = mkDevShell ./shells/embedded/arm32.nix;
+        arm64 = mkDevShell ./shells/embedded/arm64.nix;
+        allwinner = mkDevShell ./shells/embedded/allwinner.nix;
+        rockchip = mkDevShell ./shells/embedded/rockchip.nix;
       };
     };
 }

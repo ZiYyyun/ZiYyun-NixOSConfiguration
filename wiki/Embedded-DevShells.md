@@ -25,11 +25,13 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-默认 shell 目前指向 `stm`：
+默认 shell 目前指向通用 C 开发环境：
 
 ```bash
 nix develop
 ```
+
+嵌入式环境请显式选择 `.#stm`、`.#esp`、`.#arm32` 等入口。
 
 ## 为什么不按芯片型号拆
 
@@ -63,7 +65,16 @@ shells/
 │   ├── packages.nix              # 可复用包组
 │   ├── mk-mcu-shell.nix          # MCU shell 生成器
 │   └── mk-linux-cross-shell.nix  # Linux SoC 交叉编译 shell 生成器
-└── targets/
+├── languages/
+│   ├── c.nix
+│   ├── cpp.nix
+│   ├── rust.nix
+│   ├── python.nix
+│   ├── node.nix
+│   ├── go.nix
+│   ├── java.nix
+│   └── dotnet.nix
+└── embedded/
     ├── stm.nix
     ├── esp.nix
     ├── nordic.nix
@@ -82,7 +93,7 @@ shells/
 | `shells/lib/packages.nix` | 定义可复用包组，比如 `buildCore`、`debugAndFlash`、`serialTools`、`stm`、`esp`、`nordic`、`linuxSocCommon` |
 | `shells/lib/mk-mcu-shell.nix` | 生成 MCU 环境，适合 STM、ESP、Nordic 这类主要需要构建、烧录、调试工具的目标 |
 | `shells/lib/mk-linux-cross-shell.nix` | 生成 Linux SoC 交叉编译环境，会导出 `ARCH` 和 `CROSS_COMPILE` |
-| `shells/targets/*.nix` | 每个厂家/平台族自己的薄配置文件 |
+| `shells/embedded/*.nix` | 每个厂家/平台族自己的薄配置文件 |
 
 ## 交叉编译工具链怎么引入
 
@@ -137,7 +148,7 @@ Nordic shell 暂时不放 `nrf-command-line-tools`，因为它会拉 `segger-jli
 比如新增 `gd`：
 
 ```text
-shells/targets/gd.nix
+shells/embedded/gd.nix
 ```
 
 内容示例：
@@ -162,7 +173,7 @@ mkMcuShell {
 再在 `flake.nix` 加入口：
 
 ```nix
-devShells.${system}.gd = mkDevShell ./shells/targets/gd.nix;
+devShells.${system}.gd = mkDevShell ./shells/embedded/gd.nix;
 ```
 
 ## 新增一个 Linux SoC 平台
