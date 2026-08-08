@@ -4,7 +4,7 @@
  * Date: 2026-08-04
  * Description: Shared SDDM appearance settings.
  */
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 let
   astronautTheme = (pkgs.sddm-astronaut.override {
     embeddedTheme = "astronaut";
@@ -25,7 +25,7 @@ in
   fonts.packages = [ astronautTheme ];
 
   services.displayManager.sddm = {
-    package = pkgs.kdePackages.sddm;
+    package = lib.mkDefault pkgs.kdePackages.sddm;
     theme = "${astronautTheme}/share/sddm/themes/sddm-astronaut-theme";
     extraPackages = [
       astronautTheme
