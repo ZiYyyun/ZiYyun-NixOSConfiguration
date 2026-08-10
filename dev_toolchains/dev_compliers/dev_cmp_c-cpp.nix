@@ -15,5 +15,5 @@ mkDevCmpShell {
     CPLUS_INCLUDE_PATH = "${pkgs.glibc.dev}/include:${pkgs.linuxHeaders}/include";
     LIBRARY_PATH = "${pkgs.glibc}/lib";
   };
-  message = "C/C++ shell: clang/clangd, glibc headers, pthread support, common C++ libraries, CMake/Ninja, gdb/lldb. Use -pthread for pthread code.";
+  message = "C/C++ shell: clang/clangd, glibc headers, pthread support, libmodbus, Eclipse Paho MQTT C, OpenSSL/Zlib, CMake/Ninja, gdb/lldb. Use -pthread for pthread code.";
 }

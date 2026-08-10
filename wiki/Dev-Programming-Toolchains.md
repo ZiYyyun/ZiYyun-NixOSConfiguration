@@ -52,6 +52,10 @@ Included tools and libraries:
 - `glibc`
 - `glibc.dev`
 - `linuxHeaders`
+- `libmodbus`
+- `paho.mqtt.c`
+- `openssl`
+- `zlib`
 - `gdb`
 - `lldb`
 - `cmake`

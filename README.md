@@ -343,7 +343,9 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-`devShells.default`, `.#c`, `.#cpp`, and `.#c-cpp` point to the same C/C++ shell, so plain `nix develop` is useful for clangd/pthread/CMake projects.
+`devShells.default`, `.#c`, `.#cpp`, and `.#c-cpp` point to the same C/C++ shell, so plain `nix develop` is useful for clangd/pthread/libmodbus/Paho MQTT C/CMake projects.
+
+Home Manager enables `direnv` with `nix-direnv`, so VS Code can load a project's `.envrc` and expose the devShell environment to clangd.
 
 Details are in [wiki/Dev-Programming-Toolchains.md](wiki/Dev-Programming-Toolchains.md) and [wiki/Dev-Embedded-Toolchains.md](wiki/Dev-Embedded-Toolchains.md).
 

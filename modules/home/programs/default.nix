@@ -7,6 +7,7 @@
 { ... }:
 {
   imports = [
+    ./direnv.nix
     ./nixvim.nix
     ./vscode-server.nix
   ];

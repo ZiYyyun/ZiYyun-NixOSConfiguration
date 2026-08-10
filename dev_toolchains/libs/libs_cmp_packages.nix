@@ -21,6 +21,10 @@ rec {
     glibc
     glibc.dev
     linuxHeaders
+    libmodbus
+    paho.mqtt.c
+    openssl
+    zlib
     gdb
     lldb
     bear
