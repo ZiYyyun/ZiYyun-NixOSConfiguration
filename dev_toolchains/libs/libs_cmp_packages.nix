@@ -22,7 +22,7 @@ rec {
     glibc.dev
     linuxHeaders
     libmodbus
-    paho.mqtt.c
+    pkgs."paho-mqtt-c"
     openssl
     zlib
     gdb

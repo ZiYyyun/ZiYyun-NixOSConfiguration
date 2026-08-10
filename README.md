@@ -347,6 +347,12 @@ nix develop .#rockchip
 
 Home Manager enables `direnv` with `nix-direnv`, so VS Code can load a project's `.envrc` and expose the devShell environment to clangd.
 
+For one-off VS Code sessions, start Code inside the shell instead of after it exits:
+
+```bash
+nix develop .#c --command code .
+```
+
 Details are in [wiki/Dev-Programming-Toolchains.md](wiki/Dev-Programming-Toolchains.md) and [wiki/Dev-Embedded-Toolchains.md](wiki/Dev-Embedded-Toolchains.md).
 
 ## Flatpak

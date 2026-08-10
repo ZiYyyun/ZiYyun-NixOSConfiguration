@@ -53,7 +53,7 @@ Included tools and libraries:
 - `glibc.dev`
 - `linuxHeaders`
 - `libmodbus`
-- `paho.mqtt.c`
+- `paho-mqtt-c`
 - `openssl`
 - `zlib`
 - `gdb`
