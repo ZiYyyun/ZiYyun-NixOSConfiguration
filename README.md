@@ -8,7 +8,7 @@ Current target release: **NixOS 26.05**.
 
 | Area | Current State |
 | --- | --- |
-| Nix | Flakes enabled, `nix-command` enabled, `nixpkgs` pinned to `nixos-26.05` through the NJU Git mirror |
+| Nix | Flakes enabled, `nix-command` enabled, `nixpkgs` pinned to `nixos-26.05` through the NJU Git mirror; Lix is tested on `codex/lix-kde-config-test` |
 | Binary cache | USTC Nix binary cache first, official `cache.nixos.org` as fallback |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
@@ -36,10 +36,16 @@ Current target release: **NixOS 26.05**.
 | `nix-flatpak` | Declarative Flatpak remote and package management |
 | `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults |
 | `nixos-vscode-server` | VS Code Remote server support through Home Manager |
+| `lix-module` | Test branch module for replacing upstream CppNix with Lix from nixpkgs |
 | `noctalia` | Noctalia shell NixOS module |
 | `nixvim` | Flake-based Neovim configuration |
 
 `nixvim` is fetched through `git+https` instead of the GitHub flake shorthand to avoid GitHub API rate-limit pain.
+
+The Lix migration is intentionally tested on a branch first. It imports
+`lix-module.nixosModules.lixFromNixpkgs`, so it uses the Lix package already
+provided by nixpkgs instead of building Lix directly from the latest source
+tree.
 
 ## Host Outputs
 
@@ -443,6 +449,33 @@ If you only want a lightweight evaluation target:
 ```bash
 nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
 ```
+
+## Lix Test Branch
+
+The branch `codex/lix-kde-config-test` enables Lix through the official Lix
+NixOS module:
+
+```nix
+lix-module.nixosModules.lixFromNixpkgs
+```
+
+Test flow on NixOS:
+
+```bash
+git fetch origin
+git switch codex/lix-kde-config-test
+nix flake lock --update-input lix-module
+sudo nixos-rebuild test --flake .#kde-default
+```
+
+If the test activation is clean, switch can be tested next:
+
+```bash
+sudo nixos-rebuild switch --flake .#kde-default
+```
+
+Only merge this branch back into `main` after the target host can evaluate,
+build, and activate with Lix.
 
 ## Mirrors
 

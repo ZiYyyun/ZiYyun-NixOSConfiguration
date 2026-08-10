@@ -10,6 +10,8 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
+    lix-module.url = "git+https://git.lix.systems/lix-project/nixos-module.git?ref=stable";
+    lix-module.inputs.nixpkgs.follows = "nixpkgs";
     noctalia.url = "git+https://github.com/noctalia-dev/noctalia.git";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -22,7 +24,7 @@
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
+    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, lix-module, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -46,6 +48,7 @@
 
       commonModules = [
         /* Modules */
+        lix-module.nixosModules.lixFromNixpkgs
         home-manager.nixosModules.home-manager
         homeManagerModule
 

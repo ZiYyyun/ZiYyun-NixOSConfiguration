@@ -1,2 +1,8 @@
+[Theme]
+name=mkos-BigSur
+
+[Theme-plasmathemeexplorer]
+name=mkos-BigSur
+
 [Wallpapers]
-usersWallpapers=
+usersWallpapers=/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png,/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png

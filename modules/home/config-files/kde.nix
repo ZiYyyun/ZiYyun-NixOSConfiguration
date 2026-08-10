@@ -7,7 +7,7 @@
  * Put exported KDE configuration files under:
  *   dotfiles/kde/config/
  *
- * Put wallpapers under:
+ * Put repository-managed wallpapers under:
  *   dotfiles/kde/wallpapers/
  *
  * This module only links files that exist, so it is safe to enable while the
@@ -18,6 +18,7 @@ let
   dotfilesRoot = ../../../dotfiles/kde;
   configRoot = dotfilesRoot + "/config";
   localShareRoot = dotfilesRoot + "/local-share";
+  wallpapersRoot = dotfilesRoot + "/wallpapers";
 
   configFile = name: target:
     let
@@ -37,6 +38,11 @@ let
         inherit source;
       };
     };
+  wallpaperDir = lib.optionalAttrs (builtins.pathExists wallpapersRoot) {
+    "wallpapers" = {
+      source = wallpapersRoot;
+    };
+  };
 in
 {
   home.pointerCursor = {
@@ -60,6 +66,13 @@ in
     (configFile "gtkrc" "gtkrc")
     (configFile "gtkrc-2.0" "gtkrc-2.0")
     (configFile "kscreen" "kscreen")
+    (configFile "plasma-localerc" "plasma-localerc")
+    (configFile "plasma-nm" "plasma-nm")
+    (configFile "plasma-welcomerc" "plasma-welcomerc")
+    (configFile "PlasmaDiscoverUpdates" "PlasmaDiscoverUpdates")
+    (configFile "KDE" "KDE")
+    (configFile "kde.org" "kde.org")
+    (configFile "kdedefaults" "kdedefaults")
   ];
 
   xdg.dataFile = lib.mkMerge [
@@ -69,6 +82,6 @@ in
     (dataDir "Kvantum" "Kvantum")
     (dataDir "look-and-feel" "look-and-feel")
     (dataDir "plasma" "plasma")
-    (dataDir "wallpapers" "wallpapers")
+    wallpaperDir
   ];
 }
