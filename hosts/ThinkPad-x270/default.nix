@@ -13,10 +13,8 @@
     ../common/hardware-configuration.nix
     ../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../modules/system/packages/desktop/gnome
-    ../../modules/system/packages/desktop/niri
-    ../../modules/system/packages/desktop/noctalia
-    ../../modules/system/packages/hardware/thinkpad
+    ../../modules/system/profiles/gnome.nix
+    ../../packages/system/hardware/thinkpad.nix
     ../../modules/system/services/flatpak.nix
   ];
 

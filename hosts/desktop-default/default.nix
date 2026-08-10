@@ -14,9 +14,7 @@
     ../common/hardware-configuration.nix
     ../common/boot/uefi.nix
     ./hardware-configuration.nix
-    ../../modules/system/packages/desktop/kde
-    ../../modules/system/packages/desktop/niri
-    ../../modules/system/packages/desktop/noctalia
+    ../../modules/system/profiles/kde.nix
     ../../modules/system/services/flatpak.nix
   ];
 }

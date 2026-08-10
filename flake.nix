@@ -10,6 +10,8 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
+    lix-module.url = "git+https://git.lix.systems/lix-project/nixos-module.git?ref=stable";
+    lix-module.inputs.nixpkgs.follows = "nixpkgs";
     noctalia.url = "git+https://github.com/noctalia-dev/noctalia.git";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -22,7 +24,7 @@
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
+    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, lix-module, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -34,23 +36,19 @@
         home-manager.backupFileExtension = "hm-backup";
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.users.ziyun = { pkgs, ... }: {
+        home-manager.users.ziyun = { ... }: {
           imports = [
-            ./modules/home-manager/home.nix
-            inputs.nixvim.homeModules.nixvim
             vscode-server.homeModules.default
+            inputs.nixvim.homeModules.nixvim
+            ./modules/home
+            ./packages/home
           ];
-
-          services.vscode-server = {
-            enable = true;
-            enableFHS = true;
-            nodejsPackage = pkgs.nodejs;
-          };
         };
       };
 
       commonModules = [
         /* Modules */
+        lix-module.nixosModules.lixFromNixpkgs
         home-manager.nixosModules.home-manager
         homeManagerModule
 
@@ -60,6 +58,7 @@
 
         ./hosts/common/installation-boot.nix
         ./modules/system
+        ./packages/system
 
       ];
 
@@ -107,17 +106,34 @@
       ];
 
       devShells.${system} = {
-        default = mkDevShell ./shells/targets/stm.nix;
+        default = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
 
-        stm = mkDevShell ./shells/targets/stm.nix;
-        esp = mkDevShell ./shells/targets/esp.nix;
-        nordic = mkDevShell ./shells/targets/nordic.nix;
+        c = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        cpp = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        c-cpp = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix;
+        rust = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_rust.nix;
+        python = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_python.nix;
+        node = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_node.nix;
+        go = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_go.nix;
+        java = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_java.nix;
+        dotnet = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_dotnet.nix;
 
+<<<<<<< HEAD
         arm32 = mkDevShell ./shells/targets/arm32.nix;
         arm64 = mkDevShell ./shells/targets/arm64.nix;
         allwinner = mkDevShell ./shells/targets/allwinner.nix;
         rockchip = mkDevShell ./shells/targets/rockchip.nix;
         c = mkDevShell ./
+=======
+        stm = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_stm.nix;
+        esp = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_esp.nix;
+        nordic = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_nordic.nix;
+
+        arm32 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm32.nix;
+        arm64 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm64.nix;
+        allwinner = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_allwinner.nix;
+        rockchip = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_rockchip.nix;
+>>>>>>> 3b3353e83cdeee103af214ed756216c58569064f
       };
     };
 }

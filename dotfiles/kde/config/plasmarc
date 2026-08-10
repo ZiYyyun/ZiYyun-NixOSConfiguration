@@ -1,2 +1,8 @@
+[Theme]
+name=default
+
+[Theme-plasmathemeexplorer]
+name=default
+
 [Wallpapers]
-usersWallpapers=
+usersWallpapers=/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png,/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png
