@@ -12,6 +12,10 @@
  *
  * This module only links files that exist, so it is safe to enable while the
  * dotfiles directory is still being populated.
+ *
+ * The old plasma-org.kde.plasma.desktop-appletsrc layout is kept under
+ * dotfiles/kde/config/ as a reference only. It contains Plasma 5-era applet
+ * IDs that Plasma 6.6 reports as missing packages.
  */
 { lib, pkgs, ... }:
 let
@@ -59,7 +63,6 @@ in
     (configFile "kglobalshortcutsrc" "kglobalshortcutsrc")
     (configFile "kcminputrc" "kcminputrc")
     (configFile "kscreenlockerrc" "kscreenlockerrc")
-    (configFile "plasma-org.kde.plasma.desktop-appletsrc" "plasma-org.kde.plasma.desktop-appletsrc")
     (configFile "plasmarc" "plasmarc")
     (configFile "plasmashellrc" "plasmashellrc")
     (configFile "konsolerc" "konsolerc")

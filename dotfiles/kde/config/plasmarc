@@ -1,8 +1,8 @@
 [Theme]
-name=mkos-BigSur
+name=default
 
 [Theme-plasmathemeexplorer]
-name=mkos-BigSur
+name=default
 
 [Wallpapers]
 usersWallpapers=/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png,/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png

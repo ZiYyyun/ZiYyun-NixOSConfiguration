@@ -6,7 +6,7 @@ This directory stores the repository-managed KDE configuration used by Home Mana
 
 Imported from the old Arch KDE config:
 
-- Plasma layout and shell config
+- Plasma shell config
 - Plasma locale/network/welcome/discover config
 - KDE defaults
 - KDE user feedback config
@@ -14,6 +14,7 @@ Imported from the old Arch KDE config:
 
 Intentionally not imported:
 
+- `plasma-org.kde.plasma.desktop-appletsrc`, because the old layout contains Plasma 5-era applet IDs that Plasma 6.6 reports as missing packages. It remains in `config/` only as a reference.
 - `kdeconnect/`, because it contains private keys, certificates, and trusted-device state
 - `.git/` and old repository metadata
 - absolute wallpaper references under `/home/ziyun/Downloads/`

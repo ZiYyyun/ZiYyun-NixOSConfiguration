@@ -13,6 +13,16 @@
   environment.systemPackages = with pkgs; [
     (fluent-icon-theme.override { colorVariants = [ "purple" ]; })
     hicolor-icon-theme
+    kdePackages.bluedevil
+    kdePackages.kdeconnect-kde
+    kdePackages.kdeplasma-addons
+    kdePackages.kscreen
+    kdePackages.plasma-nm
+    kdePackages.plasma-pa
+    kdePackages.plasma-systemmonitor
+    kdePackages.plasma-vault
+    kdePackages.powerdevil
+    kdePackages.print-manager
     kdePackages.discover
     kdePackages.marble
     kdePackages.okular
