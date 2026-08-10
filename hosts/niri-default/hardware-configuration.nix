@@ -2,12 +2,12 @@
  * File: hardware-configuration.nix
  * Author: ziyun
  * Date: 2026-08-04
- * Description: VirtualBox/default Niri filesystem layout.
+ * Description: Default Niri filesystem layout for the test VM.
  */
 { ... }:
 {
   fileSystems."/" = {
-    device = "/dev/sda2";
+    device = "/dev/sda1";
     fsType = "ext4";
   };
 
