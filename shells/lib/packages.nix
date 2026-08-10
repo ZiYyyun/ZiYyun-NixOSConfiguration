@@ -71,7 +71,7 @@ rec {
   ]);
 
   nxpImx = with pkgs; [
-      uuu
+    uuu
   ];
 
   allwinner = linuxSocCommon ++ (with pkgs; [
@@ -83,5 +83,12 @@ rec {
       rkflashtool
       rkbin
       rkboot
+  ]);
+
+  c = linuxSocCommon ++ (with pkgs; [
+      clang
+      paho-mqtt-c
+      libclang
+      glibc
   ]);
 }

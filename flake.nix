@@ -117,6 +117,7 @@
         arm64 = mkDevShell ./shells/targets/arm64.nix;
         allwinner = mkDevShell ./shells/targets/allwinner.nix;
         rockchip = mkDevShell ./shells/targets/rockchip.nix;
+        c = mkDevShell ./
       };
     };
 }
