@@ -1,0 +1,29 @@
+# This file is copied to /etc/winboat/compose.yml by NixOS.
+# The Windows VM state lives under /var/lib/winboat/windows, not in the Docker image.
+services:
+  windows:
+    # For stricter reproducibility, replace this with a pinned digest:
+    # image: dockurr/windows@sha256:<digest>
+    image: dockurr/windows
+    container_name: winboat-windows
+    environment:
+      VERSION: "11"
+      RAM_SIZE: "8G"
+      CPU_CORES: "4"
+      DISK_SIZE: "128G"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 127.0.0.1:8006:8006
+      - 127.0.0.1:3389:3389/tcp
+      - 127.0.0.1:3389:3389/udp
+    volumes:
+      - /var/lib/winboat/windows:/storage
+      - /var/lib/winboat/shared:/shared
+      # To force a self-managed ISO, put it at /var/lib/winboat/iso/windows.iso
+      # and uncomment the next line. VERSION is ignored when /custom.iso exists.
+      # - /var/lib/winboat/iso/windows.iso:/custom.iso:ro
+    restart: always

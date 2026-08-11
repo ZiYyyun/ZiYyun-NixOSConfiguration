@@ -3,28 +3,32 @@
 
   inputs = {
     # Nixpkgs mirror.
-    nixpkgs.url = "git+https://mirrors.nju.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
+    nixpkgs.url = "https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz";
 
     # System integration modules.
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    flake-parts.url = "git+https://gh.llkk.cc/https://github.com/hercules-ci/flake-parts.git";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+    nixpkgs-lib.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixpkgs.lib.git";
+    systems.url = "git+https://gh.llkk.cc/https://github.com/nix-systems/default.git";
+    nix-flatpak.url = "git+https://gh.llkk.cc/https://github.com/gmodena/nix-flatpak.git?ref=latest";
+    vscode-server.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixos-vscode-server.git";
+    vscode-server.inputs.flake-parts.follows = "flake-parts";
+    nixos-hardware.url = "git+https://gh.llkk.cc/https://github.com/NixOS/nixos-hardware.git?ref=master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
-    lix-module.url = "git+https://git.lix.systems/lix-project/nixos-module.git?ref=stable";
-    lix-module.inputs.nixpkgs.follows = "nixpkgs";
-    noctalia.url = "git+https://github.com/noctalia-dev/noctalia.git";
+    noctalia.url = "git+https://gh.llkk.cc/https://github.com/noctalia-dev/noctalia.git";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
     # Home Manager.
-    home-manager.url = "github:nix-community/home-manager/release-26.05";
-    # home-manager.url = "git+https://mirror.ghproxy.com/https://github.com/nix-community/home-manager.git";
+    home-manager.url = "git+https://gh.llkk.cc/https://github.com/nix-community/home-manager.git?ref=release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixvim.url = "git+https://github.com/nix-community/nixvim.git?ref=nixos-26.05";
+    nixvim.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixvim.git?ref=nixos-26.05";
+    nixvim.inputs.flake-parts.follows = "flake-parts";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
+    nixvim.inputs.systems.follows = "systems";
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, lix-module, ... }@inputs:
+    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -48,7 +52,6 @@
 
       commonModules = [
         /* Modules */
-        lix-module.nixosModules.lixFromNixpkgs
         home-manager.nixosModules.home-manager
         homeManagerModule
 

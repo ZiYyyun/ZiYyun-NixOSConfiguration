@@ -8,7 +8,7 @@ Current target release: **NixOS 26.05**.
 
 | Area | Current State |
 | --- | --- |
-| Nix | Flakes enabled, `nix-command` enabled, `nixpkgs` pinned to `nixos-26.05` through the NJU Git mirror; Lix is tested on `codex/lix-kde-config-test` |
+| Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to `nixos-26.05` through the USTC channel mirror |
 | Binary cache | USTC Nix binary cache first, official `cache.nixos.org` as fallback |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
@@ -19,6 +19,7 @@ Current target release: **NixOS 26.05**.
 | Input method | Fcitx5 + Rime + Chinese addons, with GTK/Qt/X11 session variables |
 | D-Bus | Reference `dbus-daemon` implementation, chosen because `dbus-broker` was unreliable during live rebuilds |
 | Flatpak | `nix-flatpak`, Flathub via SJTU mirror, Tor Browser launcher installed |
+| WinBoat/Windows VM | ThinkPad-P14s enables Docker, KVM/libvirt, WinBoat, and a systemd-managed `dockurr/windows` backend |
 | Home Manager | Git identity, user apps, VS Code Server, Ghostty config, KDE dotfiles, Niri config, nixvim |
 | Editors | Nixvim/Neovim, VS Code, CLion, Eclipse Embedded CDT, Code::Blocks |
 | Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
@@ -31,33 +32,35 @@ Current target release: **NixOS 26.05**.
 
 | Input | Purpose |
 | --- | --- |
-| `nixpkgs` | Main package set, pinned to `nixos-26.05` through `git+https://mirrors.nju.edu.cn/git/nixpkgs.git` |
-| `home-manager` | Home Manager release `26.05` |
-| `nix-flatpak` | Declarative Flatpak remote and package management |
-| `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults |
-| `nixos-vscode-server` | VS Code Remote server support through Home Manager |
-| `lix-module` | Test branch module for replacing upstream CppNix with Lix from nixpkgs |
-| `noctalia` | Noctalia shell NixOS module |
-| `nixvim` | Flake-based Neovim configuration |
+| `nixpkgs` | Main package set, pinned to `nixos-26.05` through the USTC `nixexprs.tar.xz` channel tarball |
+| `flake-parts` | Shared transitive input for nixvim and VS Code Server, fetched through the GitHub mirror |
+| `nixpkgs-lib` | Shared flake-parts library input, fetched through the GitHub mirror |
+| `systems` | Shared systems list for nixvim, fetched through the GitHub mirror |
+| `home-manager` | Home Manager release `26.05`, fetched through the GitHub mirror |
+| `nix-flatpak` | Declarative Flatpak remote and package management, fetched through the GitHub mirror |
+| `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults, fetched through the GitHub mirror |
+| `nixos-vscode-server` | VS Code Remote server support through Home Manager, fetched through the GitHub mirror |
+| `noctalia` | Noctalia shell NixOS module, fetched through the GitHub mirror |
+| `nixvim` | Flake-based Neovim configuration, fetched through the GitHub mirror |
 
-`nixvim` is fetched through `git+https` instead of the GitHub flake shorthand to avoid GitHub API rate-limit pain.
+GitHub-backed inputs use `git+https://gh.llkk.cc/https://github.com/...`
+instead of the GitHub flake shorthand. This avoids GitHub API rate-limit pain
+and keeps updates usable on domestic networks.
 
-The Lix migration is intentionally tested on a branch first. It imports
-`lix-module.nixosModules.lixFromNixpkgs`, so it uses the Lix package already
-provided by nixpkgs instead of building Lix directly from the latest source
-tree.
+Lix is enabled with `nix.package = pkgs.lix`, so it is fetched from nixpkgs and
+does not need a separate `git.lix.systems` flake input.
 
 ## Host Outputs
 
 | Flake output | Desktop/session | Hardware profile | Storage notes |
 | --- | --- | --- | --- |
-| `kde-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | none | VirtualBox/default KDE layout, root `/dev/sda2` |
-| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | VirtualBox/Niri layout, root `/dev/sda2`, VMware graphics workaround kept here |
-| `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | Default GNOME layout, root `/dev/sda2` |
+| `kde-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | none | default KDE layout, root `/dev/sda1` |
+| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1`, VMware graphics workaround kept here |
+| `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | default GNOME layout, root `/dev/sda1` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | USB-SATA SSD layout: GRUB on `/dev/sda`, root `/dev/sda1`, swap `/dev/sda2` |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | current test layout: GRUB on `/dev/sda`, root `/dev/sda1`, no swap device declared; WinBoat Windows VM state in `/var/lib/winboat/windows` |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -117,6 +120,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |-- ghostty/
 |   |-- kde/
 |   `-- niri/
+|-- winboat/
+|   `-- compose.yml
 |-- dev_toolchains/
 |   |-- libs/
 |   |-- dev_compliers/
@@ -176,6 +181,11 @@ System packages now live in `packages/system/base.nix`, `packages/system/apps.ni
 - `sddm.nix`: SDDM Astronaut theme
 
 `flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
+
+`winboat-windows.nix` is imported by `ThinkPad-P14s` only. It enables Docker,
+KVM/libvirt, the `docker`/`kvm`/`libvirtd` user groups, creates
+`/var/lib/winboat`, installs `/etc/winboat/compose.yml`, and starts
+`winboat-windows.service`.
 
 ### Desktop Profiles
 
@@ -386,6 +396,46 @@ GUI helpers installed by the system:
 - KDE Discover
 - KDE Flatpak KCM
 
+## WinBoat Windows VM
+
+`ThinkPad-P14s` imports:
+
+```text
+modules/system/services/winboat-windows.nix
+```
+
+The backend Compose file lives in:
+
+```text
+winboat/compose.yml
+```
+
+During rebuild, Nix copies it to `/etc/winboat/compose.yml`, creates the data
+directories, enables Docker and KVM/libvirt, and starts:
+
+```bash
+systemctl status winboat-windows.service
+```
+
+The current Compose config uses `dockurr/windows` with `VERSION: "11"`, binds
+the web/RDP ports to localhost only, and stores Windows state here:
+
+```text
+/var/lib/winboat/windows
+```
+
+Backup these paths:
+
+- this git repository, especially `flake.lock` and `winboat/compose.yml`
+- `/var/lib/winboat/windows`
+- `/var/lib/winboat/iso` if using a self-managed ISO
+- `/var/lib/winboat/shared`
+- important data inside Windows itself
+
+The Docker image can be pulled again. The installed Windows disk, UEFI/NVRAM
+state, and installation progress are under `/var/lib/winboat/windows`, so do
+not rely on `docker save` alone as a Windows backup.
+
 ## Install From Live ISO
 
 Boot into a NixOS live ISO, connect to the network, then run:
@@ -458,38 +508,24 @@ If you only want a lightweight evaluation target:
 nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
 ```
 
-## Lix Test Branch
+## Lix
 
-The branch `codex/lix-kde-config-test` enables Lix through the official Lix
-NixOS module:
+Lix is enabled directly from nixpkgs:
 
 ```nix
-lix-module.nixosModules.lixFromNixpkgs
+nix.package = pkgs.lix;
 ```
 
-Test flow on NixOS:
-
-```bash
-git fetch origin
-git switch codex/lix-kde-config-test
-nix flake lock --update-input lix-module
-sudo nixos-rebuild test --flake .#kde-default
-```
-
-If the test activation is clean, switch can be tested next:
-
-```bash
-sudo nixos-rebuild switch --flake .#kde-default
-```
-
-Only merge this branch back into `main` after the target host can evaluate,
-build, and activate with Lix.
+This avoids an extra `git.lix.systems` input. Updating Lix now follows the
+normal nixpkgs update path.
 
 ## Mirrors
 
 | Component | Mirror |
 | --- | --- |
-| nixpkgs Git input | NJU, `https://mirrors.nju.edu.cn/git/nixpkgs.git` |
+| nixpkgs input | USTC channel tarball, `https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz` |
+| GitHub flake inputs | `https://gh.llkk.cc/https://github.com/...` |
+| Lix | from nixpkgs, therefore through the nixpkgs mirror |
 | Nix binary cache | USTC, `https://mirrors.ustc.edu.cn/nix-channels/store` |
 | Nix official fallback | `https://cache.nixos.org/` |
 | Flatpak | SJTU Flathub mirror |
@@ -500,27 +536,58 @@ Temporary rebuild with explicit substituters:
 sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
 ```
 
-## Updating Inputs
+`nixpkgs` uses the channel tarball mirror instead of a Git mirror because the
+Git repository is large and domestic Git mirrors can reset the connection during
+`nix flake update`.
 
-Update one input:
+## Updating Packages And Modules
 
-```bash
-nix flake lock --update-input home-manager
-```
+All system packages, Home Manager modules, nixos-hardware profiles, nixvim,
+nix-flatpak, Noctalia, VS Code Server support, and Lix are pinned by
+`flake.lock`. Updating the lock file is the normal way to update all of them.
 
-Update the lock file:
-
-```bash
-nix flake lock
-```
-
-Check evaluation:
+Update every flake input:
 
 ```bash
-nix flake check
+nix flake update
 ```
 
-If GitHub rate limits appear while updating GitHub-backed inputs, change proxy/IP and retry. The `nixvim` input already uses Git transport to reduce API pressure.
+Update one input only:
+
+```bash
+nix flake update home-manager
+nix flake update nixpkgs
+nix flake update nixos-hardware
+```
+
+Build the target host before switching:
+
+```bash
+nix build .#nixosConfigurations.ThinkPad-P14s.config.system.build.toplevel
+```
+
+Test activation without making it the boot default:
+
+```bash
+sudo nixos-rebuild test --flake .#ThinkPad-P14s
+```
+
+Switch after the build and test are clean:
+
+```bash
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+```
+
+Commit the updated lock file after a successful test:
+
+```bash
+git add flake.lock
+git commit -m "update flake inputs"
+```
+
+If a mirror is temporarily unavailable, retry later or change only the affected
+input URL in `flake.nix`. Do not commit a lock update unless the target host can
+build.
 
 ## Maintenance Notes
 
