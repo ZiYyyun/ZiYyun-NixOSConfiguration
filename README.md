@@ -311,6 +311,7 @@ Embedded packages are not installed globally. Use devShells for vendor SDKs, fla
 - STM: `nix develop .#stm`
 - Espressif: `nix develop .#esp`
 - Nordic: `nix develop .#nordic`
+- SEGGER: `nix develop .#segger`
 - ARM32 Linux SoC/i.MX6ULL: `nix develop .#arm32`
 - ARM64 Linux SoC: `nix develop .#arm64`
 - Allwinner: `nix develop .#allwinner`
@@ -347,6 +348,7 @@ Embedded shells:
 nix develop .#stm
 nix develop .#esp
 nix develop .#nordic
+nix develop .#segger
 nix develop .#arm32
 nix develop .#arm64
 nix develop .#allwinner

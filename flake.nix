@@ -124,6 +124,7 @@
         stm = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_stm.nix;
         esp = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_esp.nix;
         nordic = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_nordic.nix;
+        segger = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_segger.nix;
 
         arm32 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm32.nix;
         arm64 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm64.nix;

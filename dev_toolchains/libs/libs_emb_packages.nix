@@ -59,6 +59,10 @@ rec {
     nrfutil
   ]);
 
+  segger = buildCore ++ serialTools ++ (with pkgs; [
+    steam-run
+  ]);
+
   linuxSocCommon = firmwareTools ++ (with pkgs; [
     bc
     bison

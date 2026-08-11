@@ -8,6 +8,7 @@
 {
   home.packages = with pkgs; [
     honeyfetch
+    github-desktop
     spotify
     winboat
     clash-verge-rev
