@@ -121,13 +121,6 @@
         java = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_java.nix;
         dotnet = mkDevShell ./dev_toolchains/dev_compliers/dev_cmp_dotnet.nix;
 
-<<<<<<< HEAD
-        arm32 = mkDevShell ./shells/targets/arm32.nix;
-        arm64 = mkDevShell ./shells/targets/arm64.nix;
-        allwinner = mkDevShell ./shells/targets/allwinner.nix;
-        rockchip = mkDevShell ./shells/targets/rockchip.nix;
-        c = mkDevShell ./
-=======
         stm = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_stm.nix;
         esp = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_esp.nix;
         nordic = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_nordic.nix;
@@ -136,7 +129,6 @@
         arm64 = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_arm64.nix;
         allwinner = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_allwinner.nix;
         rockchip = mkDevShell ./dev_toolchains/dev_embedded/dev_emb_rockchip.nix;
->>>>>>> 3b3353e83cdeee103af214ed756216c58569064f
       };
     };
 }
