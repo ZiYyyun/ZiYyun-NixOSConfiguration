@@ -1,7 +1,8 @@
 # Embedded Toolchains
 
-Embedded tools are managed as Flake devShells instead of global system packages.
-This keeps `nixos-rebuild` smaller and prevents one vendor toolchain from breaking the whole machine.
+Embedded compiler, flashing, debug, and cross-compilation tools are managed as
+Flake devShells instead of global system packages. GUI IDEs should stay as
+system applications or manual vendor installs unless they can be packaged cleanly.
 
 Reference reading:
 
@@ -74,7 +75,7 @@ dev_toolchains/
 | `stm` | `pkgsCross.arm-embedded` toolchain, `openocd`, `stlink`, `stm32flash`, serial tools |
 | `esp` | `esptool`, `espflash`, `platformio`, serial tools, common build tools |
 | `nordic` | `nrfutil`, `probe-rs-tools`, `openocd`, serial tools |
-| `segger` | `steam-run`, `segger-studio`, and `jlink-exe` launchers for manual SEGGER installs |
+| `segger` | `steam-run` and `jlink-exe` launcher for manual SEGGER J-Link installs |
 | `arm32` | ARMv7 Linux cross toolchain, `dtc`, `ubootTools`, image/filesystem tools, NXP `uuu` |
 | `arm64` | ARM64 Linux cross toolchain, `dtc`, `ubootTools`, image/filesystem tools |
 | `allwinner` | ARMv7 Linux cross toolchain plus `sunxi-tools` |
@@ -82,29 +83,18 @@ dev_toolchains/
 
 Nordic intentionally does not include `nrf-command-line-tools` right now because that path can pull an obsolete Qt4/J-Link dependency and break evaluation. Add it only after handling that package explicitly.
 
-## SEGGER Embedded Studio
+## SEGGER Tools
 
 `segger-jlink` exists in nixpkgs, but the full package pulls bundled Qt4 GUI
 libraries and is marked insecure. Headless mode avoids Qt4 but also omits the
 usual `JLinkExe` command. This repository therefore does not install
 `segger-jlink` from nixpkgs by default.
 
-Use the SEGGER shell as a wrapper around manual SEGGER installs:
+Use the SEGGER shell only for J-Link helper commands:
 
 ```bash
 nix develop .#segger
-segger-studio
 jlink-exe
-```
-
-The shell searches these paths:
-
-```text
-$SEGGER_STUDIO_HOME/bin/emStudio
-$HOME/SEGGER/EmbeddedStudio/bin/emStudio
-$HOME/SEGGER/SEGGER Embedded Studio/bin/emStudio
-/opt/SEGGER/SEGGER Embedded Studio for ARM/bin/emStudio
-/opt/SEGGER/EmbeddedStudio/bin/emStudio
 ```
 
 `jlink-exe` searches these paths:
@@ -116,13 +106,9 @@ $HOME/SEGGER/JLink/JLinkExe
 /opt/SEGGER/JLink/JLinkExe
 ```
 
-If your install is elsewhere:
-
-```bash
-export SEGGER_STUDIO_HOME="/path/to/SEGGER Embedded Studio for ARM"
-nix develop .#segger
-segger-studio
-```
+SEGGER Embedded Studio is intentionally not exposed through `nix develop
+.#segger`. The official Linux download is license-gated and installer-based, so
+it is not treated as a normal devShell tool in this repository.
 
 ## Target Granularity
 

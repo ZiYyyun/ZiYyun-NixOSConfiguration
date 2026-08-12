@@ -16,6 +16,6 @@
     ../../modules/system/profiles/kde.nix
     ../../packages/system/hardware/thinkpad.nix
     ../../modules/system/services/flatpak.nix
-    ../../modules/system/services/winboat-windows.nix
+    ../../modules/system/services/winboat.nix
   ];
 }

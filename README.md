@@ -19,7 +19,7 @@ Current target release: **NixOS 26.05**.
 | Input method | Fcitx5 + Rime + Chinese addons, with GTK/Qt/X11 session variables |
 | D-Bus | Reference `dbus-daemon` implementation, chosen because `dbus-broker` was unreliable during live rebuilds |
 | Flatpak | `nix-flatpak`, Flathub via SJTU mirror, Tor Browser launcher installed |
-| WinBoat/Windows VM | ThinkPad-P14s enables Docker, KVM/libvirt, WinBoat, and a systemd-managed `dockurr/windows` backend |
+| WinBoat/Windows VM | ThinkPad-P14s enables Docker, KVM/libvirt, and WinBoat prerequisites; the WinBoat GUI owns the Windows container |
 | Home Manager | Git identity, user apps, VS Code Server, Ghostty config, KDE dotfiles, Niri config, nixvim |
 | Editors | Nixvim/Neovim, VS Code, CLion, Eclipse Embedded CDT, Code::Blocks |
 | Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
@@ -60,7 +60,7 @@ does not need a separate `git.lix.systems` flake input.
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | current test layout: GRUB on `/dev/sda`, root `/dev/sda1`, no swap device declared; WinBoat Windows VM state in `/var/lib/winboat/windows` |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | current test layout: GRUB on `/dev/sda`, root `/dev/sda1`, no swap device declared; WinBoat state is managed by the WinBoat app |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -120,8 +120,6 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |-- ghostty/
 |   |-- kde/
 |   `-- niri/
-|-- winboat/
-|   `-- compose.yml
 |-- dev_toolchains/
 |   |-- libs/
 |   |-- dev_compliers/
@@ -182,10 +180,10 @@ System packages now live in `packages/system/base.nix`, `packages/system/apps.ni
 
 `flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
 
-`winboat-windows.nix` is imported by `ThinkPad-P14s` only. It enables Docker,
-KVM/libvirt, the `docker`/`kvm`/`libvirtd` user groups, creates
-`/var/lib/winboat`, installs `/etc/winboat/compose.yml`, and starts
-`winboat-windows.service`.
+`winboat.nix` is imported by `ThinkPad-P14s` only. It enables Docker,
+KVM/libvirt, the `docker`/`kvm`/`libvirtd` user groups, and supporting CLI
+tools. It does not start a separate `dockurr/windows` container; the WinBoat GUI
+manages its own container and state.
 
 ### Desktop Profiles
 
@@ -403,40 +401,46 @@ GUI helpers installed by the system:
 `ThinkPad-P14s` imports:
 
 ```text
-modules/system/services/winboat-windows.nix
+modules/system/services/winboat.nix
 ```
 
-The backend Compose file lives in:
+During rebuild, Nix enables Docker and KVM/libvirt and installs the CLI tools
+WinBoat needs. It intentionally does not install `/etc/winboat/compose.yml` or
+start a separate WinBoat backend service, because the WinBoat GUI creates and manages
+its own Docker container.
 
-```text
-winboat/compose.yml
-```
-
-During rebuild, Nix copies it to `/etc/winboat/compose.yml`, creates the data
-directories, enables Docker and KVM/libvirt, and starts:
+If an older revision of this repository already started the removed backend,
+clean it once after switching to the new configuration:
 
 ```bash
-systemctl status winboat-windows.service
+sudo systemctl stop winboat-windows.service 2>/dev/null || true
+sudo systemctl disable winboat-windows.service 2>/dev/null || true
+sudo docker rm -f winboat-windows 2>/dev/null || true
+sudo rm -f /etc/winboat/compose.yml
+sudo rmdir /etc/winboat 2>/dev/null || true
 ```
 
-The current Compose config uses `dockurr/windows` with `VERSION: "11"`, binds
-the web/RDP ports to localhost only, and stores Windows state here:
+Do not remove `/var/lib/winboat` unless you have separately backed up the
+Windows disk and explicitly intend to delete it.
 
-```text
-/var/lib/winboat/windows
+Then restart WinBoat from the desktop launcher and inspect the app-managed
+container if it still fails:
+
+```bash
+docker logs WinBoat
+ls -la ~/.winboat
 ```
 
 Backup these paths:
 
-- this git repository, especially `flake.lock` and `winboat/compose.yml`
-- `/var/lib/winboat/windows`
-- `/var/lib/winboat/iso` if using a self-managed ISO
-- `/var/lib/winboat/shared`
+- this git repository, especially `flake.lock`
+- `~/.winboat`
+- Docker volumes/containers created by WinBoat
 - important data inside Windows itself
 
 The Docker image can be pulled again. The installed Windows disk, UEFI/NVRAM
-state, and installation progress are under `/var/lib/winboat/windows`, so do
-not rely on `docker save` alone as a Windows backup.
+state, and installation progress are app-managed state, so do not rely on
+`docker save` alone as a Windows backup.
 
 ## Install From Live ISO
 

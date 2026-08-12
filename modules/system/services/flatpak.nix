@@ -17,6 +17,7 @@
       # "org.blender.Blender"
       # "com.spotify.Client"
       # "org.mozilla.firefox"
+      "com.qq.QQ"
       "org.torproject.torbrowser-launcher"
     ];
 

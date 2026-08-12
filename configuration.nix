@@ -7,9 +7,15 @@
 {
   # Use the USTC mirror first and keep the official cache as a fallback.
   nix.settings.substituters = [
+    "https://mirror.sjtu.edu.cn/nix-channels/store"
+    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
     "https://cache.nixos.org/"
   ];
+  nix.settings.connect-timeout = 30;
+  nix.settings.download-attempts = 10;
+  nix.settings.http-connections = 4;
+  nix.settings.stalled-download-timeout = 60;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.package = pkgs.lix;
 

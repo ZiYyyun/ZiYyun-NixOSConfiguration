@@ -14,7 +14,6 @@
     clash-verge-rev
     obsidian
     koodo-reader
-    qq
     microsoft-edge
     eudic
     libreoffice

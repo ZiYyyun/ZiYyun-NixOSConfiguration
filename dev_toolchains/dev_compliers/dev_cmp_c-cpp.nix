@@ -34,5 +34,30 @@ mkDevCmpShell {
     PKG_CONFIG_PATH = cPkgConfigPath;
     NIX_CFLAGS_COMPILE = builtins.concatStringsSep " " (map (pkg: "-isystem ${pkg}/include") cIncludePackages);
   };
+  tools = [
+    "clang / clang++"
+    "clangd"
+    "cmake"
+    "ninja"
+    "gdb / lldb"
+    "pkg-config"
+  ];
+  libraries = [
+    "glibc and linuxHeaders"
+    "pthread via glibc; compile with -pthread"
+    "libmodbus"
+    "paho-mqtt-c"
+    "openssl"
+    "zlib"
+    "boost"
+    "fmt"
+    "spdlog"
+  ];
+  versionCommands = [
+    { name = "clang"; bin = "clang"; command = "clang --version"; }
+    { name = "clangd"; bin = "clangd"; command = "clangd --version"; }
+    { name = "cmake"; bin = "cmake"; command = "cmake --version"; }
+    { name = "pkg-config"; bin = "pkg-config"; command = "pkg-config --version"; }
+  ];
   message = "C/C++ shell: clang/clangd, glibc headers, pthread support, libmodbus, Eclipse Paho MQTT C, OpenSSL/Zlib, CMake/Ninja, gdb/lldb. Use -pthread for pthread code.";
 }

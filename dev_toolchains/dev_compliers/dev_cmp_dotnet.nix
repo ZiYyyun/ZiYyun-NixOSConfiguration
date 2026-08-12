@@ -10,5 +10,9 @@ mkDevCmpShell {
   env = {
     DOTNET_CLI_TELEMETRY_OPTOUT = "1";
   };
+  tools = [ "dotnet SDK" "csharp-ls" ];
+  versionCommands = [
+    { name = "dotnet"; bin = "dotnet"; command = "dotnet --version"; }
+  ];
   message = ".NET shell: dotnet SDK and csharp-ls language server.";
 }
