@@ -1,5 +1,5 @@
 /**
- * File: libs_cmp_shell.nix
+ * File: compiler-shell.nix
  * Author: ziyun
  * Date: 2026-08-07
  * Description: Helper for programming-oriented devShells.

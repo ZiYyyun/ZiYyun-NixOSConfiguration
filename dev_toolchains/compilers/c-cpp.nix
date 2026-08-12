@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  devCmpPackages = import ../libs/libs_cmp_packages.nix { inherit pkgs; };
-  mkDevCmpShell = import ../libs/libs_cmp_shell.nix;
+  compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
+  mkCompilerShell = import ../libs/compiler-shell.nix;
   cLibraryPackages = [
     pkgs.glibc
     pkgs.libmodbus
@@ -20,10 +20,10 @@ let
   cLibraryPath = pkgs.lib.makeLibraryPath cLibraryPackages;
   cPkgConfigPath = pkgs.lib.makeSearchPath "lib/pkgconfig" cIncludePackages;
 in
-mkDevCmpShell {
+mkCompilerShell {
   inherit pkgs;
   name = "c-cpp";
-  packages = devCmpPackages.cFamily;
+  packages = compilerPackages.cFamily;
   env = {
     CC = "clang";
     CXX = "clang++";

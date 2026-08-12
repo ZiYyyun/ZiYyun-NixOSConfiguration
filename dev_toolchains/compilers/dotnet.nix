@@ -1,12 +1,12 @@
 { pkgs, ... }:
 let
-  devCmpPackages = import ../libs/libs_cmp_packages.nix { inherit pkgs; };
-  mkDevCmpShell = import ../libs/libs_cmp_shell.nix;
+  compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
+  mkCompilerShell = import ../libs/compiler-shell.nix;
 in
-mkDevCmpShell {
+mkCompilerShell {
   inherit pkgs;
   name = "dotnet";
-  packages = devCmpPackages.dotnet;
+  packages = compilerPackages.dotnet;
   env = {
     DOTNET_CLI_TELEMETRY_OPTOUT = "1";
   };

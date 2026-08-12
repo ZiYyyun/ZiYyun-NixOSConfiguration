@@ -1,14 +1,14 @@
 { pkgs, ... }:
 let
-  devEmbPackages = import ../libs/libs_emb_packages.nix { inherit pkgs; };
-  mkDevEmbLinuxCrossShell = import ../libs/libs_emb_linux_cross_shell.nix;
+  embeddedPackages = import ../libs/embedded-packages.nix { inherit pkgs; };
+  mkEmbeddedLinuxCrossShell = import ../libs/embedded-linux-cross-shell.nix;
 in
-mkDevEmbLinuxCrossShell {
+mkEmbeddedLinuxCrossShell {
   inherit pkgs;
   name = "arm32";
   crossPkgs = pkgs.pkgsCross.armv7l-hf-multiplatform;
   arch = "arm";
-  packages = devEmbPackages.linuxSocCommon ++ devEmbPackages.nxpImx;
+  packages = embeddedPackages.linuxSocCommon ++ embeddedPackages.nxpImx;
   tools = [ "armv7l cross gcc" "gdb" "dtc" "ubootTools" "NXP uuu" "filesystem image tools" ];
   versionCommands = [
     { name = "cross gcc"; bin = "${pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.targetPrefix}gcc"; command = "${pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.targetPrefix}gcc --version"; }

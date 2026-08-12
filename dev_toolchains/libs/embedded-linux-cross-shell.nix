@@ -1,5 +1,5 @@
 /**
- * File: libs_emb_linux_cross_shell.nix
+ * File: embedded-linux-cross-shell.nix
  * Author: ziyun
  * Date: 2026-07-31
  * Description: Helper for Linux SoC cross-compiling devShells.

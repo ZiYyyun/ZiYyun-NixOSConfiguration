@@ -1,12 +1,12 @@
 { pkgs, ... }:
 let
-  devCmpPackages = import ../libs/libs_cmp_packages.nix { inherit pkgs; };
-  mkDevCmpShell = import ../libs/libs_cmp_shell.nix;
+  compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
+  mkCompilerShell = import ../libs/compiler-shell.nix;
 in
-mkDevCmpShell {
+mkCompilerShell {
   inherit pkgs;
   name = "python";
-  packages = devCmpPackages.python;
+  packages = compilerPackages.python;
   env = {
     UV_LINK_MODE = "copy";
   };

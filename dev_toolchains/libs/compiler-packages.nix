@@ -1,5 +1,5 @@
 /**
- * File: libs_cmp_packages.nix
+ * File: compiler-packages.nix
  * Author: ziyun
  * Date: 2026-08-07
  * Description: Reusable package groups for Programming Toolchains.

@@ -122,8 +122,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   `-- niri/
 |-- dev_toolchains/
 |   |-- libs/
-|   |-- dev_compliers/
-|   `-- dev_embedded/
+|   |-- compilers/
+|   `-- embedded/
 |-- shells/
 |   |-- bootstrap.sh
 |   |-- install.sh
@@ -144,8 +144,8 @@ The repo is split by the work you usually do:
 - Change system services, desktop enablement, input method, Flatpak, or SDDM: edit `modules/system/`.
 - Change Home Manager config, editor config, VS Code Server, or dotfile links: edit `modules/home/`.
 - Change real dotfile payloads: edit `dotfiles/`.
-- Add tools or libraries to a programming development environment: edit `dev_toolchains/libs/libs_cmp_packages.nix`.
-- Add tools to an embedded MCU/SoC environment: edit `dev_toolchains/libs/libs_emb_packages.nix`.
+- Add tools or libraries to a programming development environment: edit `dev_toolchains/libs/compiler-packages.nix`.
+- Add tools to an embedded MCU/SoC environment: edit `dev_toolchains/libs/embedded-packages.nix`.
 - Change a host machine's disks, boot mode, or hardware profile: edit `hosts/<host>/default.nix` and `hosts/<host>/hardware-configuration.nix`.
 
 The important rule is: root-level folders are real daily entrypoints. There is no root-level `profiles/`, and desktop-specific packages are kept with the matching desktop module in `modules/system/desktop/`.
@@ -321,8 +321,8 @@ This keeps `nixos-rebuild` small and avoids one vendor package, such as an old N
 
 Flake dev shells are split by purpose:
 
-- `dev_toolchains/dev_compliers/`: common programming environments for project work.
-- `dev_toolchains/dev_embedded/`: MCU/vendor/SoC environments for flashing, debugging, SDK tools, and cross compilation.
+- `dev_toolchains/compilers/`: common programming environments for project work.
+- `dev_toolchains/embedded/`: MCU/vendor/SoC environments for flashing, debugging, SDK tools, and cross compilation.
 - `dev_toolchains/libs/`: shared helpers and reusable package groups.
 
 Common programming shells:

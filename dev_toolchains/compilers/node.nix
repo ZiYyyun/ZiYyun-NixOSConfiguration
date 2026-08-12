@@ -1,12 +1,12 @@
 { pkgs, ... }:
 let
-  devCmpPackages = import ../libs/libs_cmp_packages.nix { inherit pkgs; };
-  mkDevCmpShell = import ../libs/libs_cmp_shell.nix;
+  compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
+  mkCompilerShell = import ../libs/compiler-shell.nix;
 in
-mkDevCmpShell {
+mkCompilerShell {
   inherit pkgs;
   name = "node";
-  packages = devCmpPackages.node;
+  packages = compilerPackages.node;
   env = {
     npm_config_registry = "https://registry.npmmirror.com";
   };

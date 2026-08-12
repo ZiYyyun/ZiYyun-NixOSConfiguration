@@ -32,11 +32,11 @@ nix develop .#rockchip
 
 | Need | File |
 | --- | --- |
-| Add shared build/flash/serial tools | `dev_toolchains/libs/libs_emb_packages.nix` |
-| Add packages for STM/ESP/Nordic | `dev_toolchains/libs/libs_emb_packages.nix`, matching group |
-| Add Allwinner-specific tools such as `sunxi-tools` | `dev_toolchains/libs/libs_emb_packages.nix`, group `allwinner` |
-| Add Rockchip-specific tools such as `rkdeveloptool` | `dev_toolchains/libs/libs_emb_packages.nix`, group `rockchip` |
-| Change shell variables or messages | `dev_toolchains/dev_embedded/<target>.nix` |
+| Add shared build/flash/serial tools | `dev_toolchains/libs/embedded-packages.nix` |
+| Add packages for STM/ESP/Nordic | `dev_toolchains/libs/embedded-packages.nix`, matching group |
+| Add Allwinner-specific tools such as `sunxi-tools` | `dev_toolchains/libs/embedded-packages.nix`, group `allwinner` |
+| Add Rockchip-specific tools such as `rkdeveloptool` | `dev_toolchains/libs/embedded-packages.nix`, group `rockchip` |
+| Change shell variables or messages | `dev_toolchains/embedded/<target>.nix` |
 | Add a new devShell output | `flake.nix`, `devShells.${system}` |
 
 ## Directory Layout
@@ -44,28 +44,28 @@ nix develop .#rockchip
 ```text
 dev_toolchains/
 |-- libs/
-|   |-- libs_cmp_packages.nix
-|   |-- libs_emb_packages.nix
-|   |-- libs_cmp_shell.nix
-|   |-- libs_emb_mcu_shell.nix
-|   `-- libs_emb_linux_cross_shell.nix
-|-- dev_compliers/
-|   |-- dev_cmp_c-cpp.nix
-|   |-- dev_cmp_rust.nix
-|   |-- dev_cmp_python.nix
-|   |-- dev_cmp_node.nix
-|   |-- dev_cmp_go.nix
-|   |-- dev_cmp_java.nix
-|   `-- dev_cmp_dotnet.nix
-`-- dev_embedded/
-    |-- dev_emb_stm.nix
-    |-- dev_emb_esp.nix
-    |-- dev_emb_nordic.nix
-    |-- dev_emb_segger.nix
-    |-- dev_emb_arm32.nix
-    |-- dev_emb_arm64.nix
-    |-- dev_emb_allwinner.nix
-    `-- dev_emb_rockchip.nix
+|   |-- compiler-packages.nix
+|   |-- embedded-packages.nix
+|   |-- compiler-shell.nix
+|   |-- embedded-mcu-shell.nix
+|   `-- embedded-linux-cross-shell.nix
+|-- compilers/
+|   |-- c-cpp.nix
+|   |-- rust.nix
+|   |-- python.nix
+|   |-- node.nix
+|   |-- go.nix
+|   |-- java.nix
+|   `-- dotnet.nix
+`-- embedded/
+    |-- stm.nix
+    |-- esp.nix
+    |-- nordic.nix
+    |-- segger.nix
+    |-- arm32.nix
+    |-- arm64.nix
+    |-- allwinner.nix
+    `-- rockchip.nix
 ```
 
 ## Current Groups
@@ -151,4 +151,4 @@ Interface/uart.c
 Driver/gpio.c
 ```
 
-The reason is practical: when a single source file is opened, copied, logged by a build system, or shown in an error message, the prefix still tells you which layer owns it. The same rule is used in this repository's toolchain helpers: target files use `dev_cmp_*` or `dev_emb_*`, while shared helper files under `dev_toolchains/libs/` use `libs_*`.
+The reason is practical: when a single source file is opened, copied, logged by a build system, or shown in an error message, the prefix still tells you which layer owns it. The same rule is used in this repository's toolchain helpers: target files use `compiler files` or `embedded files`, while shared helper files under `dev_toolchains/libs/` use `shared helper files`.

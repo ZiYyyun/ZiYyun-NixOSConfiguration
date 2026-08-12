@@ -1,12 +1,12 @@
 { pkgs, ... }:
 let
-  devEmbPackages = import ../libs/libs_emb_packages.nix { inherit pkgs; };
-  mkDevEmbMcuShell = import ../libs/libs_emb_mcu_shell.nix;
+  embeddedPackages = import ../libs/embedded-packages.nix { inherit pkgs; };
+  mkEmbeddedMcuShell = import ../libs/embedded-mcu-shell.nix;
 in
-mkDevEmbMcuShell {
+mkEmbeddedMcuShell {
   inherit pkgs;
   name = "stm";
-  packages = devEmbPackages.stm;
+  packages = embeddedPackages.stm;
   env = {
     CHIP_VENDOR = "STMicroelectronics";
     TARGET_ARCH = "arm-none-eabi";

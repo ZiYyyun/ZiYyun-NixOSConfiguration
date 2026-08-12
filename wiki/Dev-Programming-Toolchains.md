@@ -1,7 +1,7 @@
 # Programming Toolchains
 
-This repository keeps project-oriented programming environments in `dev_toolchains/dev_compliers/`.
-Reusable programming package groups are centralized in `dev_toolchains/libs/libs_cmp_packages.nix`.
+This repository keeps project-oriented programming environments in `dev_toolchains/compilers/`.
+Reusable programming package groups are centralized in `dev_toolchains/libs/compiler-packages.nix`.
 
 ## Entrypoints
 
@@ -24,10 +24,10 @@ nix develop .#dotnet
 
 | Need | File |
 | --- | --- |
-| Add a package shared by every programming shell | `dev_toolchains/libs/libs_cmp_packages.nix`, group `programmingCommon` |
-| Add a C/C++ library or tool | `dev_toolchains/libs/libs_cmp_packages.nix`, group `cFamily` |
-| Add a Rust/Python/Node/Go/Java/.NET tool | `dev_toolchains/libs/libs_cmp_packages.nix`, matching programming group |
-| Change shell variables or the welcome message | `dev_toolchains/dev_compliers/<name>.nix` |
+| Add a package shared by every programming shell | `dev_toolchains/libs/compiler-packages.nix`, group `programmingCommon` |
+| Add a C/C++ library or tool | `dev_toolchains/libs/compiler-packages.nix`, group `cFamily` |
+| Add a Rust/Python/Node/Go/Java/.NET tool | `dev_toolchains/libs/compiler-packages.nix`, matching programming group |
+| Change shell variables or the welcome message | `dev_toolchains/compilers/<name>.nix` |
 | Add a new flake shell output | `flake.nix`, `devShells.${system}` |
 
 ## C / C++ / pthread / clangd
@@ -35,13 +35,13 @@ nix develop .#dotnet
 The C/C++ shell lives in:
 
 ```text
-dev_toolchains/dev_compliers/dev_cmp_c-cpp.nix
+dev_toolchains/compilers/c-cpp.nix
 ```
 
 It uses package group:
 
 ```text
-dev_toolchains/libs/libs_cmp_packages.nix -> cFamily
+dev_toolchains/libs/compiler-packages.nix -> cFamily
 ```
 
 Included tools and libraries:
@@ -97,7 +97,7 @@ bear -- make
 programming package groups are intentionally collected in one file:
 
 ```text
-dev_toolchains/libs/libs_cmp_packages.nix
+dev_toolchains/libs/compiler-packages.nix
 ```
 
 Current groups:

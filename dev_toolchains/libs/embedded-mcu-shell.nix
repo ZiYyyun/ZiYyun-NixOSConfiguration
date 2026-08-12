@@ -1,5 +1,5 @@
 /**
- * File: libs_emb_mcu_shell.nix
+ * File: embedded-mcu-shell.nix
  * Author: ziyun
  * Date: 2026-07-31
  * Description: Helper for MCU-oriented native devShells.

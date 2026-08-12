@@ -1,12 +1,12 @@
 /**
- * File: dev_emb_segger.nix
+ * File: segger.nix
  * Author: ziyun
  * Date: 2026-08-11
  * Description: SEGGER helper shell for manually installed J-Link tools.
  */
 { pkgs, ... }:
 let
-  devEmbPackages = import ../libs/libs_emb_packages.nix { inherit pkgs; };
+  embeddedPackages = import ../libs/embedded-packages.nix { inherit pkgs; };
   jlinkLauncher = pkgs.writeShellScriptBin "jlink-exe" ''
     set -e
 
@@ -33,7 +33,7 @@ in
 pkgs.mkShell {
   name = "segger";
 
-  packages = devEmbPackages.segger ++ [
+  packages = embeddedPackages.segger ++ [
     jlinkLauncher
   ];
 

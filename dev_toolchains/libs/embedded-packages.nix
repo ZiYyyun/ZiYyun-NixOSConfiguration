@@ -1,5 +1,5 @@
 /**
- * File: libs_emb_packages.nix
+ * File: embedded-packages.nix
  * Author: ziyun
  * Date: 2026-08-07
  * Description: Reusable package groups for Embedded Toolchains.
