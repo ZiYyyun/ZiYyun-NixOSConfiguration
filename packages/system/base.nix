@@ -10,5 +10,6 @@
     vim
     wget
     git
+    curl
   ];
 }
