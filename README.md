@@ -22,6 +22,7 @@ Current target release: **NixOS 26.05**.
 | WinBoat/Windows VM | ThinkPad-P14s enables Docker, KVM/libvirt, and WinBoat prerequisites; the WinBoat GUI owns the Windows container |
 | Home Manager | Git identity, user apps, VS Code Server, Ghostty config, KDE dotfiles, Niri config, nixvim |
 | Editors | Nixvim/Neovim, VS Code, CLion, Eclipse Embedded CDT, Code::Blocks |
+| Embedded IDEs | STM32CubeMX is kept out of the global system closure because it is a large vendor download that can fail during rebuild; install it only when needed |
 | Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |

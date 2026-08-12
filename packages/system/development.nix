@@ -11,7 +11,6 @@
     vscode
     jetbrains.clion
     eclipses.eclipse-embedcpp
-    stm32cubemx
     kicad
     codeblocks
     # claude-code
