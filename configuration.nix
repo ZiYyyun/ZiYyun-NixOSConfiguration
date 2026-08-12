@@ -5,12 +5,13 @@
 { pkgs, ... }:
 
 {
-  # Use the USTC mirror first and keep the official cache as a fallback.
+  # Prefer the official cache for completeness, with domestic mirrors as
+  # fallbacks when cache.nixos.org is slow from the current network.
   nix.settings.substituters = [
+    "https://cache.nixos.org/"
     "https://mirror.sjtu.edu.cn/nix-channels/store"
     "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
-    "https://cache.nixos.org/"
   ];
   nix.settings.connect-timeout = 30;
   nix.settings.download-attempts = 10;
