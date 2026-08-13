@@ -11,7 +11,7 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 
     ../common/hardware-configuration.nix
-    ../common/boot/legacy.nix
+    ../common/boot/uefi.nix
     ./hardware-configuration.nix
     ../../modules/system/profiles/kde.nix
     ../../packages/system/hardware/thinkpad.nix
