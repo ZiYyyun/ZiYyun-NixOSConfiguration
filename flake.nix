@@ -2,8 +2,10 @@
   description = "ZiYyun NixOS configuration";
 
   inputs = {
-    # Nixpkgs mirror.
-    nixpkgs.url = "https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz";
+    # Keep nixpkgs pinned by Git revision. Do not use channel tarballs here:
+    # mirror tarballs can be re-packed and then fail narHash verification during
+    # installation.
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     # System integration modules.
     flake-parts.url = "git+https://gh.llkk.cc/https://github.com/hercules-ci/flake-parts.git";

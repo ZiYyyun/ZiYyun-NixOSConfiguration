@@ -8,8 +8,8 @@ Current target release: **NixOS 26.05**.
 
 | Area | Current State |
 | --- | --- |
-| Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to `nixos-26.05` through the USTC channel mirror |
-| Binary cache | USTC Nix binary cache first, official `cache.nixos.org` as fallback |
+| Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to the `nixos-26.05` Git branch |
+| Binary cache | Official `cache.nixos.org` first, domestic mirrors as fallback |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
 | Network | NetworkManager, OpenSSH |
@@ -33,7 +33,7 @@ Current target release: **NixOS 26.05**.
 
 | Input | Purpose |
 | --- | --- |
-| `nixpkgs` | Main package set, pinned to `nixos-26.05` through the USTC `nixexprs.tar.xz` channel tarball |
+| `nixpkgs` | Main package set, pinned to the `nixos-26.05` Git branch |
 | `flake-parts` | Shared transitive input for nixvim and VS Code Server, fetched through the GitHub mirror |
 | `nixpkgs-lib` | Shared flake-parts library input, fetched through the GitHub mirror |
 | `systems` | Shared systems list for nixvim, fetched through the GitHub mirror |
@@ -61,7 +61,7 @@ does not need a separate `git.lix.systems` flake input.
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `lenovo-thinkpad-p14s-intel-gen5` | current test layout: GRUB on `/dev/sda`, root `/dev/sda1`, no swap device declared; WinBoat state is managed by the WinBoat app |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -530,22 +530,21 @@ normal nixpkgs update path.
 
 | Component | Mirror |
 | --- | --- |
-| nixpkgs input | USTC channel tarball, `https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz` |
+| nixpkgs input | Git-pinned `github:NixOS/nixpkgs/nixos-26.05` |
 | GitHub flake inputs | `https://gh.llkk.cc/https://github.com/...` |
-| Lix | from nixpkgs, therefore through the nixpkgs mirror |
-| Nix binary cache | USTC, `https://mirrors.ustc.edu.cn/nix-channels/store` |
-| Nix official fallback | `https://cache.nixos.org/` |
+| Lix | from nixpkgs |
+| Nix binary cache | official `https://cache.nixos.org/` first |
+| Domestic cache fallback | SJTU, TUNA, USTC Nix channel stores |
 | Flatpak | SJTU Flathub mirror |
 
 Temporary rebuild with explicit substituters:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
 ```
 
-`nixpkgs` uses the channel tarball mirror instead of a Git mirror because the
-Git repository is large and domestic Git mirrors can reset the connection during
-`nix flake update`.
+Do not pin `nixpkgs` to a channel tarball mirror. Mirrors may repack tarballs,
+which changes the `narHash` and breaks fresh installations.
 
 ## Updating Packages And Modules
 
