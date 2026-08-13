@@ -8,11 +8,17 @@
 {
   boot.initrd.availableKernelModules = [
     "xhci_pci"
+    "ehci_pci"
     "ahci"
+    "ata_piix"
+    "vmd"
     "nvme"
     "usb_storage"
     "uas"
     "sd_mod"
+    "virtio_pci"
+    "virtio_scsi"
+    "virtio_blk"
   ];
 
   fileSystems."/" = {
