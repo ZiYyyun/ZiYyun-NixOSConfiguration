@@ -6,21 +6,26 @@
  */
 { lib, ... }:
 {
-  boot.initrd.availableKernelModules = [ "uas" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "ahci"
+    "nvme"
+    "usb_storage"
+    "uas"
+    "sd_mod"
+  ];
 
   fileSystems."/" = {
-    # Replace with /dev/disk/by-uuid/... after the UEFI installation finishes.
-    device = lib.mkDefault "/dev/sda2";
+    device = lib.mkDefault "/dev/disk/by-uuid/01c7eef3-3d1c-40c2-bcb2-300bd82e4c73";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    # UEFI system partition created by the installer.
-    device = lib.mkDefault "/dev/sda1";
+    device = lib.mkDefault "/dev/disk/by-uuid/4025-3FB4";
     fsType = "vfat";
   };
 
   swapDevices = lib.mkDefault [
-    { device = "/dev/sda3"; }
+    { device = "/dev/disk/by-uuid/21cb3e46-4e54-4758-afa0-6d7e4ec6c818"; }
   ];
 }
