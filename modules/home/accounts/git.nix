@@ -11,7 +11,6 @@
     settings = {
       user.name = "ziyun";
       user.email = "1583931339@qq.com";
-      http.version = "HTTP/1.1";
     };
   };
 }

@@ -20,14 +20,6 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.package = pkgs.lix;
 
-  # GitHub and Git mirrors can occasionally drop HTTP/2 TLS connections in
-  # mainland networks. Nix invokes Git while fetching flake inputs, including
-  # during sudo nixos-rebuild, so keep a system-level Git fallback here.
-  environment.etc."gitconfig".text = ''
-    [http]
-      version = HTTP/1.1
-  '';
-
   networking.hostName = "nixos";
   # networking.wireless.enable = true;
 
