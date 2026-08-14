@@ -11,20 +11,14 @@
     "ehci_pci"
     "ahci"
     "ata_piix"
-    "vmd"
-    "nvme"
     "usb_storage"
     "uas"
     "sd_mod"
-    "virtio_pci"
-    "virtio_scsi"
-    "virtio_blk"
   ];
 
   fileSystems."/" = {
-    # This machine currently exposes the installed disk consistently as sda
-    # during early boot. UUID lookup timed out in initrd, so keep the direct
-    # root device path until the initrd device discovery issue is isolated.
+    # Physical install target: the dedicated SATA disk is expected to appear as
+    # /dev/sda, so use direct device paths instead of UUIDs for this profile.
     device = lib.mkDefault "/dev/sda2";
     fsType = "ext4";
   };

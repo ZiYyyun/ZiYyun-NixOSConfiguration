@@ -56,7 +56,7 @@ does not need a separate `git.lix.systems` flake input.
 | Flake output | Desktop/session | Hardware profile | Storage notes |
 | --- | --- | --- | --- |
 | `kde-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | none | default KDE layout, root `/dev/sda1` |
-| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1`, VMware graphics workaround kept here |
+| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1` |
 | `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | default GNOME layout, root `/dev/sda1` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
