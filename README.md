@@ -9,7 +9,7 @@ Current target release: **NixOS 26.05**.
 | Area | Current State |
 | --- | --- |
 | Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to the `nixos-26.05` Git branch |
-| Binary cache | Official `cache.nixos.org` first, domestic mirrors as fallback |
+| Binary cache | Official `cache.nixos.org` only |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
 | Network | NetworkManager, OpenSSH |
@@ -34,19 +34,18 @@ Current target release: **NixOS 26.05**.
 | Input | Purpose |
 | --- | --- |
 | `nixpkgs` | Main package set, pinned to the `nixos-26.05` Git branch |
-| `flake-parts` | Shared transitive input for nixvim and VS Code Server, fetched through the GitHub mirror |
-| `nixpkgs-lib` | Shared flake-parts library input, fetched through the GitHub mirror |
-| `systems` | Shared systems list for nixvim, fetched through the GitHub mirror |
-| `home-manager` | Home Manager release `26.05`, fetched through the GitHub mirror |
-| `nix-flatpak` | Declarative Flatpak remote and package management, fetched through the GitHub mirror |
-| `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults, fetched through the GitHub mirror |
-| `nixos-vscode-server` | VS Code Remote server support through Home Manager, fetched through the GitHub mirror |
-| `noctalia` | Noctalia shell NixOS module, fetched through the GitHub mirror |
-| `nixvim` | Flake-based Neovim configuration, fetched through the GitHub mirror |
+| `flake-parts` | Shared transitive input for nixvim and VS Code Server |
+| `nixpkgs-lib` | Shared flake-parts library input |
+| `systems` | Shared systems list for nixvim |
+| `home-manager` | Home Manager release `26.05` |
+| `nix-flatpak` | Declarative Flatpak remote and package management |
+| `nixos-hardware` | Official hardware profiles for ThinkPads and desktop PC defaults |
+| `nixos-vscode-server` | VS Code Remote server support through Home Manager |
+| `noctalia` | Noctalia shell NixOS module |
+| `nixvim` | Flake-based Neovim configuration |
 
-GitHub-backed inputs use `git+https://gh.llkk.cc/https://github.com/...`
-instead of the GitHub flake shorthand. This avoids GitHub API rate-limit pain
-and keeps updates usable on domestic networks.
+GitHub-backed inputs use the official `github:owner/repository` flake
+references. No third-party GitHub proxy is configured by this repository.
 
 Lix is enabled with `nix.package = pkgs.lix`, so it is fetched from nixpkgs and
 does not need a separate `git.lix.systems` flake input.
@@ -531,17 +530,10 @@ normal nixpkgs update path.
 | Component | Mirror |
 | --- | --- |
 | nixpkgs input | Git-pinned `github:NixOS/nixpkgs/nixos-26.05` |
-| GitHub flake inputs | `https://gh.llkk.cc/https://github.com/...` |
+| GitHub flake inputs | Official `github:owner/repository` references |
 | Lix | from nixpkgs |
-| Nix binary cache | official `https://cache.nixos.org/` first |
-| Domestic cache fallback | SJTU, TUNA, USTC Nix channel stores |
+| Nix binary cache | official `https://cache.nixos.org/` only |
 | Flatpak | SJTU Flathub mirror |
-
-Temporary rebuild with explicit substituters:
-
-```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
-```
 
 Do not pin `nixpkgs` to a channel tarball mirror. Mirrors may repack tarballs,
 which changes the `narHash` and breaks fresh installations.
@@ -556,6 +548,13 @@ Update every flake input:
 
 ```bash
 nix flake update
+```
+
+After migrating from an old repository revision that used a mirror tarball for
+`nixpkgs`, regenerate that input from the official GitHub branch once:
+
+```bash
+nix flake lock --update-input nixpkgs
 ```
 
 Update one input only:

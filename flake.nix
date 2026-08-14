@@ -8,22 +8,22 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     # System integration modules.
-    flake-parts.url = "git+https://gh.llkk.cc/https://github.com/hercules-ci/flake-parts.git";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
-    nixpkgs-lib.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixpkgs.lib.git";
-    systems.url = "git+https://gh.llkk.cc/https://github.com/nix-systems/default.git";
-    nix-flatpak.url = "git+https://gh.llkk.cc/https://github.com/gmodena/nix-flatpak.git?ref=latest";
-    vscode-server.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixos-vscode-server.git";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
+    systems.url = "github:nix-systems/default";
+    nix-flatpak.url = "github:gmodena/nix-flatpak?ref=latest";
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
     vscode-server.inputs.flake-parts.follows = "flake-parts";
-    nixos-hardware.url = "git+https://gh.llkk.cc/https://github.com/NixOS/nixos-hardware.git?ref=master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware?ref=master";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
-    noctalia.url = "git+https://gh.llkk.cc/https://github.com/noctalia-dev/noctalia.git";
+    noctalia.url = "github:noctalia-dev/noctalia";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
     # Home Manager.
-    home-manager.url = "git+https://gh.llkk.cc/https://github.com/nix-community/home-manager.git?ref=release-26.05";
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixvim.url = "git+https://gh.llkk.cc/https://github.com/nix-community/nixvim.git?ref=nixos-26.05";
+    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
     nixvim.inputs.flake-parts.follows = "flake-parts";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
     nixvim.inputs.systems.follows = "systems";

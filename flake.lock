@@ -13,11 +13,11 @@
         "rev": "427bf4bd9435fdf21321c8cc628c24efc14c0f7a",
         "revCount": 483,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/hercules-ci/flake-parts.git"
+        "url": "https://github.com/hercules-ci/flake-parts.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/hercules-ci/flake-parts.git"
+        "url": "https://github.com/hercules-ci/flake-parts.git"
       }
     },
     "home-manager": {
@@ -33,12 +33,12 @@
         "rev": "d4fd24667c8cbef124bb70a20380cab75ec8474d",
         "revCount": 6823,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/home-manager.git"
+        "url": "https://github.com/nix-community/home-manager.git"
       },
       "original": {
         "ref": "release-26.05",
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/home-manager.git"
+        "url": "https://github.com/nix-community/home-manager.git"
       }
     },
     "nix-flatpak": {
@@ -49,12 +49,12 @@
         "rev": "440818969ac2cbd77bfe025e884d0aa528991374",
         "revCount": 108,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/gmodena/nix-flatpak.git"
+        "url": "https://github.com/gmodena/nix-flatpak.git"
       },
       "original": {
         "ref": "latest",
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/gmodena/nix-flatpak.git"
+        "url": "https://github.com/gmodena/nix-flatpak.git"
       }
     },
     "nixos-hardware": {
@@ -70,24 +70,12 @@
         "rev": "2e790b0a6be8ec2b76174ac0931b8ff11919ec98",
         "revCount": 2826,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/NixOS/nixos-hardware.git"
+        "url": "https://github.com/NixOS/nixos-hardware.git"
       },
       "original": {
         "ref": "master",
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/NixOS/nixos-hardware.git"
-      }
-    },
-    "nixpkgs": {
-      "locked": {
-        "lastModified": 315532800,
-        "narHash": "sha256-F5163SsL9xqCLcx8CS2Y5MeLA5z6mfgXGDiCBEqSnbo=",
-        "type": "tarball",
-        "url": "https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://mirrors.ustc.edu.cn/nix-channels/nixos-26.05/nixexprs.tar.xz"
+        "url": "https://github.com/NixOS/nixos-hardware.git"
       }
     },
     "nixpkgs-lib": {
@@ -98,11 +86,11 @@
         "rev": "92590dc744108b058000deae4b734f0aa5c33f50",
         "revCount": 22452,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixpkgs.lib.git"
+        "url": "https://github.com/nix-community/nixpkgs.lib.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixpkgs.lib.git"
+        "url": "https://github.com/nix-community/nixpkgs.lib.git"
       }
     },
     "nixvim": {
@@ -124,12 +112,12 @@
         "rev": "667c8471f4a0fb24d702d1a61af8609f1a5f1ba6",
         "revCount": 4584,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixvim.git"
+        "url": "https://github.com/nix-community/nixvim.git"
       },
       "original": {
         "ref": "nixos-26.05",
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixvim.git"
+        "url": "https://github.com/nix-community/nixvim.git"
       }
     },
     "noctalia": {
@@ -145,11 +133,11 @@
         "rev": "2c0bb1d341193845576da39057c49d2a507afc41",
         "revCount": 5156,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/noctalia-dev/noctalia.git"
+        "url": "https://github.com/noctalia-dev/noctalia.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/noctalia-dev/noctalia.git"
+        "url": "https://github.com/noctalia-dev/noctalia.git"
       }
     },
     "root": {
@@ -174,11 +162,11 @@
         "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
         "revCount": 3,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-systems/default.git"
+        "url": "https://github.com/nix-systems/default.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-systems/default.git"
+        "url": "https://github.com/nix-systems/default.git"
       }
     },
     "vscode-server": {
@@ -194,11 +182,11 @@
         "rev": "2f984dfbe7e5271b5c413d3e734374cc1306c921",
         "revCount": 93,
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixos-vscode-server.git"
+        "url": "https://github.com/nix-community/nixos-vscode-server.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gh.llkk.cc/https://github.com/nix-community/nixos-vscode-server.git"
+        "url": "https://github.com/nix-community/nixos-vscode-server.git"
       }
     }
   },
