@@ -5,9 +5,14 @@
 { pkgs, ... }:
 
 {
-  # Use the official cache only. Domestic mirrors previously returned missing
-  # or truncated NAR files during rebuilds.
-  nix.settings.substituters = [ "https://cache.nixos.org/" ];
+  # Prefer the official cache, with domestic university mirrors as fallbacks
+  # when cache.nixos.org is slow from the current network.
+  nix.settings.substituters = [
+    "https://cache.nixos.org/"
+    "https://mirror.sjtu.edu.cn/nix-channels/store"
+    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+    "https://mirrors.ustc.edu.cn/nix-channels/store"
+  ];
   nix.settings.connect-timeout = 30;
   nix.settings.download-attempts = 10;
   nix.settings.http-connections = 4;

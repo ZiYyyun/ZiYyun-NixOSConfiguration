@@ -9,7 +9,7 @@ Current target release: **NixOS 26.05**.
 | Area | Current State |
 | --- | --- |
 | Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to the `nixos-26.05` Git branch |
-| Binary cache | Official `cache.nixos.org` only |
+| Binary cache | Official `cache.nixos.org` first, domestic university mirrors as fallback |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
 | Network | NetworkManager, OpenSSH |
@@ -532,11 +532,18 @@ normal nixpkgs update path.
 | nixpkgs input | Git-pinned `github:NixOS/nixpkgs/nixos-26.05` |
 | GitHub flake inputs | Official `github:owner/repository` references |
 | Lix | from nixpkgs |
-| Nix binary cache | official `https://cache.nixos.org/` only |
+| Nix binary cache | official `https://cache.nixos.org/` first |
+| Domestic cache fallback | SJTU, TUNA, USTC Nix channel stores |
 | Flatpak | SJTU Flathub mirror |
 
 Do not pin `nixpkgs` to a channel tarball mirror. Mirrors may repack tarballs,
 which changes the `narHash` and breaks fresh installations.
+
+Temporary rebuild with explicit substituters:
+
+```bash
+sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
+```
 
 ## Updating Packages And Modules
 
