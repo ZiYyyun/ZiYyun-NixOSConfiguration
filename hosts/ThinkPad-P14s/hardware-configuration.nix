@@ -22,16 +22,19 @@
   ];
 
   fileSystems."/" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/01c7eef3-3d1c-40c2-bcb2-300bd82e4c73";
+    # This machine currently exposes the installed disk consistently as sda
+    # during early boot. UUID lookup timed out in initrd, so keep the direct
+    # root device path until the initrd device discovery issue is isolated.
+    device = lib.mkDefault "/dev/sda2";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = lib.mkDefault "/dev/disk/by-uuid/4025-3FB4";
+    device = lib.mkDefault "/dev/sda1";
     fsType = "vfat";
   };
 
   swapDevices = lib.mkDefault [
-    { device = "/dev/disk/by-uuid/21cb3e46-4e54-4758-afa0-6d7e4ec6c818"; }
+    { device = "/dev/sda3"; }
   ];
 }
