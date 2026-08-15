@@ -10,11 +10,13 @@
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 
+
     ../common/hardware-configuration.nix
     ../common/boot/uefi.nix
     ./hardware-configuration.nix
     ../../modules/system/profiles/kde.nix
     ../../packages/system/hardware/thinkpad.nix
+    ../../modules/system/profiles/niri.nix
     ../../modules/system/services/flatpak.nix
     ../../modules/system/services/winboat.nix
   ];
