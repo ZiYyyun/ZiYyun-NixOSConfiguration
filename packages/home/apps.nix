@@ -18,5 +18,7 @@
     eudic
     libreoffice
     wine
+    #openclaw
+    codex
   ];
 }
