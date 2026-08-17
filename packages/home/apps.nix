@@ -20,5 +20,8 @@
     wine
     #openclaw
     codex
+    #cc-switch
+    #wechat
+    notepad-next
   ];
 }

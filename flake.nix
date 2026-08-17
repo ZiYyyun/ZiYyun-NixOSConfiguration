@@ -7,6 +7,13 @@
     # installation.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    # Unstable channel for packages that haven't been backported to the stable
+    # branch yet (e.g. cc-switch). Exposed to modules as the `unstable` argument.
+    # Pinned to a specific revision via a GitHub proxy because github.com is
+    # unreachable from this network. To bump it, replace the rev below with the
+    # current `nixos-unstable` HEAD (see `git ls-remote` on the proxy).
+    nixpkgs-unstable.url = "https://ghfast.top/https://github.com/NixOS/nixpkgs/archive/e5bdc4a41d4c072fe1e3787eaa0320a384741d44.tar.gz";
+
     # System integration modules.
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
@@ -30,10 +37,14 @@
   };
 
   outputs =
-    { nixpkgs, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
+    { nixpkgs, nixpkgs-unstable, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      unstable = import nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
       };
@@ -42,6 +53,7 @@
         home-manager.backupFileExtension = "hm-backup";
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
+        home-manager.extraSpecialArgs = { inherit unstable; };
         home-manager.users.ziyun = { ... }: {
           imports = [
             vscode-server.homeModules.default
@@ -69,11 +81,11 @@
 
       mkSystem = extraModules: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs unstable; };
         modules = commonModules ++ extraModules;
       };
 
-      mkDevShell = path: import path { inherit pkgs; };
+      mkDevShell = path: import path { inherit pkgs unstable; };
     in
     {
       nixosConfigurations.kde-default = mkSystem [

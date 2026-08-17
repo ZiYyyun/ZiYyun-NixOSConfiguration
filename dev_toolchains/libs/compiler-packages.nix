@@ -64,6 +64,7 @@ rec {
     typescript-language-server
     prettier
     eslint
+    
   ];
 
   go = [

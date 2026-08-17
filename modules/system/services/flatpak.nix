@@ -18,6 +18,7 @@
       # "com.spotify.Client"
       # "org.mozilla.firefox"
       "com.qq.QQ"
+      "com.tencent.WeChat"
       "org.torproject.torbrowser-launcher"
       "com.github.tchx84.Flatseal"
       "com.cherry_ai.CherryStudio"
@@ -25,10 +26,10 @@
       "com.valvesoftware.Steam"
       "com.discordapp.Discord"
       "com.serial_studio.Serial-Studio"
-      "flathub com.tencent.WeChat"
       "com.baidu.NetDisk"
       "com.wps.Office"
       "org.freedownloadmanager.Manager"
+
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.

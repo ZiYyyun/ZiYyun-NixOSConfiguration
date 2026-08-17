@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
-  mkCompilerShell = import ../libs/compiler-shell.nix;
+compilerPackages = import ../libs/compiler-packages.nix { inherit pkgs; };
+mkCompilerShell = import ../libs/compiler-shell.nix;
 in
 mkCompilerShell {
   inherit pkgs;

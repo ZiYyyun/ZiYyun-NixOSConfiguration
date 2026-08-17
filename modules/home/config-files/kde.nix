@@ -13,9 +13,10 @@
  * This module only links files that exist, so it is safe to enable while the
  * dotfiles directory is still being populated.
  *
- * The old plasma-org.kde.plasma.desktop-appletsrc layout is kept under
- * dotfiles/kde/config/ as a reference only. It contains Plasma 5-era applet
- * IDs that Plasma 6.6 reports as missing packages.
+ * plasma-org.kde.plasma.desktop-appletsrc restores the panel + desktop widget
+ * layout exported from the previous Arch Linux setup (bottom panel with
+ * kickoff/icon tasks, top panel with CPU/memory monitors, desktop disk-activity
+ * widget). Wallpaper paths inside it point at dotfiles/kde/wallpapers.
  */
 { lib, pkgs, ... }:
 let
@@ -76,6 +77,7 @@ in
     (configFile "KDE" "KDE")
     (configFile "kde.org" "kde.org")
     (configFile "kdedefaults" "kdedefaults")
+    (configFile "plasma-org.kde.plasma.desktop-appletsrc" "plasma-org.kde.plasma.desktop-appletsrc")
   ];
 
   xdg.dataFile = lib.mkMerge [

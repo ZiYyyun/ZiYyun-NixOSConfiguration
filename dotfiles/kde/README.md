@@ -10,20 +10,32 @@ Imported from the old Arch KDE config:
 - Plasma locale/network/welcome/discover config
 - KDE defaults
 - KDE user feedback config
+- Panel + desktop widget layout
+  (`plasma-org.kde.plasma.desktop-appletsrc`): bottom panel with kickoff /
+  icon tasks, top panel with window list + CPU/memory monitors, desktop
+  disk-activity widget, system tray items
 - A repository-local wallpaper image
 
 Intentionally not imported:
 
-- `plasma-org.kde.plasma.desktop-appletsrc`, because the old layout contains Plasma 5-era applet IDs that Plasma 6.6 reports as missing packages. It remains in `config/` only as a reference.
-- `kdeconnect/`, because it contains private keys, certificates, and trusted-device state
+- `kdeconnect/`, because it contains private keys, certificates, and
+  trusted-device state. Re-pair devices on each machine instead.
 - `.git/` and old repository metadata
-- absolute wallpaper references under `/home/ziyun/Downloads/`
+- The `mkos-BigSur` Plasma theme: only the config reference was backed up,
+  the theme package itself was not, so `plasmarc` keeps the default theme.
+- absolute wallpaper references under `/home/ziyun/Downloads/` (klm.jpg /
+  ygg.jpg were never in the backup, only the paths were)
 
-The old wallpaper references are rewritten to:
+Old wallpaper references are rewritten to:
 
 ```text
 /home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png
 ```
+
+Note: `plasma-org.kde.plasma.desktop-appletsrc` is written back by Plasma
+when you move widgets, so expect it to diverge from this file after you
+customize the desktop. Re-export it with `shells/export-kde-dotfiles.sh`
+if you want to keep changes.
 
 Home Manager links these files through:
 

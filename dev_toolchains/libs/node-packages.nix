@@ -28,6 +28,16 @@ let
       cp ${./deepseek-harness/package-lock.json} package-lock.json
     '';
 
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+
+    # The HMR service in the web profile needs Node's internal modules, so
+    # re-wrap the generated `dsh` bin to start node with --expose-internals.
+    postInstall = ''
+      makeWrapper ${pkgs.nodejs}/bin/node "$out/bin/dsh" \
+        --add-flags "--expose-internals" \
+        --add-flags "$out/lib/node_modules/@deepseek-ai/dsh/lib/bin.js"
+    '';
+
     meta = {
       description = "DeepSeek Harness CLI (dsh)";
       homepage = "https://github.com/deepseek-ai/deepseek-harness";
