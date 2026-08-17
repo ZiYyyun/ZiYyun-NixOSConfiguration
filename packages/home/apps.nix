@@ -7,11 +7,11 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    honeyfetch
     github-desktop
     spotify
     winboat
     clash-verge-rev
+    mihomo
     obsidian
     koodo-reader
     microsoft-edge

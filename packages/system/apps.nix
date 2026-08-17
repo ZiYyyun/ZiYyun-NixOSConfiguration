@@ -14,6 +14,7 @@
     warehouse
     docker
     filezilla
+    honeyfetch
     # LM Studio is a large AppImage fetched from the vendor CDN. Keep it out of
     # the default rebuild path until we move heavyweight GUI apps to an optional
     # package profile.

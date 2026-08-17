@@ -29,7 +29,6 @@
       "com.baidu.NetDisk"
       "com.wps.Office"
       "org.freedownloadmanager.Manager"
-
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.
