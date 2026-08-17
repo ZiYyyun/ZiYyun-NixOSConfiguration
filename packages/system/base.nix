@@ -13,5 +13,6 @@
     curl
     usbutils   # lsusb
     pciutils   # lspci
+    unzip      # waydroid-init.sh 解压镜像等
   ];
 }

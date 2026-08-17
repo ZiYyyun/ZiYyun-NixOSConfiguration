@@ -60,7 +60,7 @@ does not need a separate `git.lix.systems` flake input.
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd` |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -105,7 +105,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |       |-- sddm.nix
 |   |       |-- flatpak.nix
 |   |       |-- winboat.nix
-|   |       `-- fprintd.nix
+|   |       |-- fprintd.nix
+|   |       `-- waydroid.nix
 |   `-- home/
 |       |-- accounts/
 |       |-- config-files/
@@ -193,6 +194,12 @@ PAM login integration is automatic (`fprintAuth` defaults to
 `services.fprintd.enable`): login/SDDM, KDE lock screen (`kde-fingerprint`
 service), swaylock, and sudo all accept a fingerprint, falling back to
 password. Enroll with `fprintd-enroll` and check with `fprintd-list`.
+
+`waydroid.nix` is imported by `ThinkPad-P14s` only. It enables the WayDroid
+runtime (`virtualisation.waydroid.enable`). The Android system image is not
+part of the Nix closure; download and initialize it with
+`shells/waydroid-init.sh` (supports `--proxy` and `--mirror` for faster
+downloads). See the "WayDroid" section below.
 
 ### Desktop Profiles
 
@@ -450,6 +457,40 @@ Backup these paths:
 The Docker image can be pulled again. The installed Windows disk, UEFI/NVRAM
 state, and installation progress are app-managed state, so do not rely on
 `docker save` alone as a Windows backup.
+
+## WayDroid
+
+`ThinkPad-P14s` enables the WayDroid runtime (`virtualisation.waydroid.enable`).
+The default nixpkgs kernel already ships the required `ANDROID_BINDER_IPC`,
+`ANDROID_BINDERFS`, `MEMFD_CREATE`, and PSI support, so no custom kernel is
+needed.
+
+The Android image is a ~1.4 GB download that does not belong in the Nix store.
+Fetch and initialize it with:
+
+```bash
+# direct sourceforge (slow), or use your clash proxy (fast):
+sudo bash shells/waydroid-init.sh --proxy http://127.0.0.1:7897
+
+# or a custom mirror prefix (needs vendor/ and system/lineage/ layout):
+sudo bash shells/waydroid-init.sh --mirror https://your-mirror.example/waydroid
+```
+
+The script downloads the GApps variant of LineageOS 20.0 (Android 13) by
+default, extracts `system.img`/`vendor.img` into `/var/lib/waydroid/images/`,
+and runs `waydroid init -f -s GAPPS`.
+
+After init, run inside a Wayland session (KDE Plasma 6 or Niri):
+
+```bash
+sudo waydroid container start
+waydroid show-full-ui
+waydroid app list
+```
+
+GApps note: logging into Google requires device certification first, otherwise
+the Play Store reports an uncertified device. See the [WayDroid Google Play
+certification FAQ](https://docs.waydro.id/faq/google-play-certification).
 
 ## Install From Live ISO
 

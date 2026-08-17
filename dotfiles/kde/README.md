@@ -1,41 +1,40 @@
 # KDE Dotfiles
 
-Source: https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
+This directory stores the small amount of KDE configuration that Home Manager
+manages. It is deliberately minimal.
 
-This directory stores the repository-managed KDE configuration used by Home Manager.
+Original source (old Arch backup):
+https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
 
-Imported from the old Arch KDE config:
+## What Is Kept
 
-- Plasma shell config
-- Plasma locale/network/welcome/discover config
-- KDE defaults
-- KDE user feedback config
-- Panel + desktop widget layout
-  (`plasma-org.kde.plasma.desktop-appletsrc`): bottom panel with kickoff /
-  icon tasks, top panel with window list + CPU/memory monitors, desktop
-  disk-activity widget, system tray items
-- A repository-local wallpaper image
+- `config/plasma-org.kde.plasma.desktop-appletsrc` — the two-panel layout:
+  - bottom panel: kickoff (start menu) + task manager + clock + system tray
+  - top panel: window list + network / volume / battery / bluetooth
+  Everything else (desktop, wallpaper, widgets) is left at Plasma defaults.
+- `config/plasma-localerc` — Chinese locale for Plasma.
+- `wallpapers/ZiYyun_KDE_DesktopShort.png` — optional wallpaper, available in
+  `~/.local/share/wallpapers/`; the layout does not force it.
 
-Intentionally not imported:
+## What Was Removed And Why
 
-- `kdeconnect/`, because it contains private keys, certificates, and
-  trusted-device state. Re-pair devices on each machine instead.
-- `.git/` and old repository metadata
-- The `mkos-BigSur` Plasma theme: only the config reference was backed up,
-  the theme package itself was not, so `plasmarc` keeps the default theme.
-- absolute wallpaper references under `/home/ziyun/Downloads/` (klm.jpg /
-  ygg.jpg were never in the backup, only the paths were)
+The previous version imported most of the Arch backup (kdeglobals, kwinrc,
+plasmarc, plasmashellrc, kdedefaults, user-feedback config, plasma-nm, ...).
+That caused repeated load failures in Plasma 6.6:
 
-Old wallpaper references are rewritten to:
+- `org.kde.plasma.manage-inputmethod` tray item: plasmoid not shipped by the
+  nixpkgs fcitx5 package.
+- `org.kde.plasma.icontasks` task bar: its QML lives under
+  `org.kde.plasma.taskmanager` (X-Plasma-RootPath), and the nixpkgs
+  plasma-desktop build ships no applet QML at all (fixed separately by
+  `packages/custom/plasma-desktop-qml`).
+- system-monitor widgets: they work, but were dropped to keep the layout
+  minimal.
 
-```text
-/home/ziyun/.local/share/wallpapers/ZiYyun_KDE_DesktopShort.png
-```
-
-Note: `plasma-org.kde.plasma.desktop-appletsrc` is written back by Plasma
-when you move widgets, so expect it to diverge from this file after you
-customize the desktop. Re-export it with `shells/export-kde-dotfiles.sh`
-if you want to keep changes.
+If you want more Plasma customizations, configure them in the running session
+and export with `shells/export-kde-dotfiles.sh`, or hand-edit the appletsrc
+above. Note that Home Manager links are read-only; Plasma cannot persist
+widget moves back into the store path.
 
 Home Manager links these files through:
 

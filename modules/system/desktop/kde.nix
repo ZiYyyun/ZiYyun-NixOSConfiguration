@@ -5,6 +5,11 @@
  * Description: KDE desktop enablement, session configuration, and desktop-specific packages.
  */
 { pkgs, ... }:
+let
+  # nixpkgs 26.05 的 plasma-desktop 构建漏装 applet QML，用补丁包补上
+  # （taskmanager/icontasks/kickoff/windowlist 等小部件缺 contents/ui）。
+  plasmaDesktopQml = pkgs.callPackage ../../../packages/custom/plasma-desktop-qml { };
+in
 {
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
@@ -28,5 +33,6 @@
     kdePackages.okular
     kdePackages.breeze-icons
     oreo-cursors-plus
+    plasmaDesktopQml
   ];
 }

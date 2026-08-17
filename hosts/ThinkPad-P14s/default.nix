@@ -20,5 +20,6 @@
     ../../modules/system/services/flatpak.nix
     ../../modules/system/services/winboat.nix
     ../../modules/system/services/fprintd.nix
+    ../../modules/system/services/waydroid.nix
   ];
 }
