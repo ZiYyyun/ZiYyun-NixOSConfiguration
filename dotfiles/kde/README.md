@@ -32,7 +32,7 @@ That caused repeated load failures in Plasma 6.6:
   minimal.
 
 If you want more Plasma customizations, configure them in the running session
-and export with `shells/export-kde-dotfiles.sh`, or hand-edit the appletsrc
+and export with `shells/export-dotfiles.sh`, or hand-edit the appletsrc
 above. Note that Home Manager links are read-only; Plasma cannot persist
 widget moves back into the store path.
 

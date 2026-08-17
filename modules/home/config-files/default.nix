@@ -10,5 +10,6 @@
     ./ghostty.nix
     ./kde.nix
     ./niri.nix
+    ./noctalia.nix
   ];
 }

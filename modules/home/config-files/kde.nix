@@ -2,13 +2,16 @@
  * File: kde.nix
  * Author: ziyun
  * Date: 2026-08-01
- * Description: Minimal Home Manager integration for KDE.
+ * Description: Home Manager integration for KDE.
  *
- * Deliberately minimal: only the two-panel layout
- * (plasma-org.kde.plasma.desktop-appletsrc) and the locale file
- * (plasma-localerc) are linked. All other KDE state is left to Plasma
- * defaults. The old Arch-exported dotfiles (kdeglobals, kwinrc, plasmashellrc,
- * user feedback config, kdedefaults, ...) were removed on purpose.
+ * Links the two-panel layout (plasma-org.kde.plasma.desktop-appletsrc), the
+ * locale file (plasma-localerc), and the appearance/behavior settings that
+ * were tuned in the running session and exported with
+ * `shells/export-dotfiles.sh` (kdeglobals, kwinrc, plasmashellrc).
+ *
+ * Note: Home Manager links are read-only. If you tune Plasma again, Plasma
+ * cannot persist changes into the store path; re-run the export script and
+ * rebuild to pick them up.
  */
 { lib, pkgs, ... }:
 let
@@ -43,6 +46,9 @@ in
   xdg.configFile = lib.mkMerge [
     (configFile "plasma-org.kde.plasma.desktop-appletsrc" "plasma-org.kde.plasma.desktop-appletsrc")
     (configFile "plasma-localerc" "plasma-localerc")
+    (configFile "kdeglobals" "kdeglobals")
+    (configFile "kwinrc" "kwinrc")
+    (configFile "plasmashellrc" "plasmashellrc")
   ];
 
   xdg.dataFile = lib.mkMerge [

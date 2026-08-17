@@ -130,7 +130,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |-- shells/
 |   |-- bootstrap.sh
 |   |-- install.sh
-|   `-- export-kde-dotfiles.sh
+|   `-- export-dotfiles.sh
 |-- wiki/
 |   |-- Dev-Embedded-Toolchains.md
 |   |-- Dev-Programming-Toolchains.md
