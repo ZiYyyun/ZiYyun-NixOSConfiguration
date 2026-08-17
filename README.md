@@ -60,7 +60,7 @@ does not need a separate `git.lix.systems` flake input.
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app |
+| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd` |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -103,7 +103,9 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |       |-- dbus.nix
 |   |       |-- input-method.nix
 |   |       |-- sddm.nix
-|   |       `-- flatpak.nix
+|   |       |-- flatpak.nix
+|   |       |-- winboat.nix
+|   |       `-- fprintd.nix
 |   `-- home/
 |       |-- accounts/
 |       |-- config-files/
@@ -184,6 +186,10 @@ System packages now live in `packages/system/base.nix`, `packages/system/apps.ni
 KVM/libvirt, the `docker`/`kvm`/`libvirtd` user groups, and supporting CLI
 tools. It does not start a separate `dockurr/windows` container; the WinBoat GUI
 manages its own container and state.
+
+`fprintd.nix` is imported by `ThinkPad-P14s` only. It enables `fprintd` for
+the Synaptics `06cb:00f9` fingerprint reader (supported by libfprint 1.94.10).
+After rebuild, enroll with `fprintd-enroll` and check with `fprintd-list`.
 
 ### Desktop Profiles
 

@@ -19,5 +19,6 @@
     ../../modules/system/profiles/niri.nix
     ../../modules/system/services/flatpak.nix
     ../../modules/system/services/winboat.nix
+    ../../modules/system/services/fprintd.nix
   ];
 }

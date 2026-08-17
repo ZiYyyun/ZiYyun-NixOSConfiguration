@@ -11,5 +11,7 @@
     wget
     git
     curl
+    usbutils   # lsusb
+    pciutils   # lspci
   ];
 }
