@@ -22,5 +22,6 @@
     #cc-switch
     #wechat
     notepad-next
+    vlc
   ];
 }
