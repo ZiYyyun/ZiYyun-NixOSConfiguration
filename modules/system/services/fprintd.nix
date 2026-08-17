@@ -9,10 +9,22 @@
  * version pinned in nixos-26.05. nixos-hardware deliberately leaves
  * `services.fprintd.enable` commented out, so each machine opts in here.
  *
- * After rebuild, enroll a finger with:
- *   fprintd-enroll
- * and verify with:
- *   fprintd-list <user>
+ * PAM / login integration is automatic: `security.pam.services.*.fprintAuth`
+ * defaults to `services.fprintd.enable`, so enabling fprintd adds the
+ * fingerprint module to every PAM service unless explicitly disabled:
+ *   - login / sddm (sddm substacks login) : TTY and SDDM login
+ *   - kde-fingerprint                    : KDE Plasma lock screen
+ *                                          (kscreenlocker uses
+ *                                          KSCREENLOCKER_PAM_FINGERPRINT_SERVICE
+ *                                          = "kde-fingerprint"; the plain
+ *                                          `kde` service stays password-only)
+ *   - swaylock                           : Niri lock screen
+ *   - sudo / su                          : privilege escalation
+ * All use `sufficient` control, so a failed scan falls back to password.
+ *
+ * Commands after rebuild:
+ *   fprintd-enroll    # enroll a finger (run 3 scans)
+ *   fprintd-list ziyun
  */
 { ... }:
 {

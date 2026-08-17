@@ -189,7 +189,10 @@ manages its own container and state.
 
 `fprintd.nix` is imported by `ThinkPad-P14s` only. It enables `fprintd` for
 the Synaptics `06cb:00f9` fingerprint reader (supported by libfprint 1.94.10).
-After rebuild, enroll with `fprintd-enroll` and check with `fprintd-list`.
+PAM login integration is automatic (`fprintAuth` defaults to
+`services.fprintd.enable`): login/SDDM, KDE lock screen (`kde-fingerprint`
+service), swaylock, and sudo all accept a fingerprint, falling back to
+password. Enroll with `fprintd-enroll` and check with `fprintd-list`.
 
 ### Desktop Profiles
 
