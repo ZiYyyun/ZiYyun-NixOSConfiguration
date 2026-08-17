@@ -7,7 +7,6 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    github-desktop
     spotify
     winboat
     clash-verge-rev

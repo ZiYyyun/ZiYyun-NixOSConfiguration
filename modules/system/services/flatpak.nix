@@ -29,6 +29,8 @@
       "com.baidu.NetDisk"
       "com.wps.Office"
       "org.freedownloadmanager.Manager"
+      "org.dupot.easyflatpak"
+      "org.desktop_plus.desktop-plus"
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.
