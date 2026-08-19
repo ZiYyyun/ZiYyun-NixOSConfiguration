@@ -369,7 +369,41 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
+`nix develop .#esp` and `nix develop .#esp-idf` enter the same unified ESP32
+shell (see below).
+
 `devShells.default`, `.#c`, `.#cpp`, and `.#c-cpp` point to the same C/C++ shell, so plain `nix develop` is useful for clangd/pthread/libmodbus/Paho MQTT C/CMake projects.
+
+### ESP-IDF (VSCode + idf.py)
+
+The Espressif VSCode extension is only officially supported on Debian/Ubuntu
+(it downloads its own Python env and toolchain into `~/.espressif`). On NixOS,
+the unified `esp` shell provides the complete ESP-IDF framework plus toolchains
+for all ESP32 targets (from
+[mirrexagon/nixpkgs-esp-dev](https://github.com/mirrexagon/nixpkgs-esp-dev)),
+merged with the flashing/serial tools (`esptool`, `espflash`, `platformio`,
+`openocd`, serial tools). `esp` and `esp-idf` are the same shell.
+
+```bash
+nix develop .#esp        # == nix develop .#esp-idf
+```
+
+Inside the shell, `idf.py` is ready:
+
+```bash
+idf.py set-target esp32s3
+idf.py build
+idf.py -p /dev/ttyACM0 flash monitor
+```
+
+For VSCode: put `use flake <path-to-this-repo>#esp` in the project's
+`.envrc` (direnv is already enabled), open the project in Code, and run
+`idf.py` from the integrated terminal. `idf.py` generates
+`compile_commands.json`, so clangd works too. Do not use the Espressif
+extension's setup wizard on NixOS.
+
+Note: esp-dev is built against nixpkgs 25.11 (it needs `python310`, which
+26.05 dropped), so the shell uses a separate `nixpkgs-esp` input.
 
 Home Manager enables `direnv` with `nix-direnv`, so VS Code can load a project's `.envrc` and expose the devShell environment to clangd.
 

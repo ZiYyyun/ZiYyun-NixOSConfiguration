@@ -34,10 +34,25 @@
     nixvim.inputs.flake-parts.follows = "flake-parts";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
     nixvim.inputs.systems.follows = "systems";
+
+    # ESP-IDF development (VSCode + idf.py). github.com is unreachable from
+    # this network, so inputs are pinned via the ghfast.top proxy like
+    # nixpkgs-unstable. esp-dev is written against nixpkgs 25.11 (needs
+    # python310, which 26.05 dropped), so it gets its own nixpkgs-esp input
+    # instead of following our 26.05. To bump, replace the revs with current
+    # HEADs of:
+    #   github:mirrexagon/nixpkgs-esp-dev
+    #   github:numtide/flake-utils
+    #   NixOS/nixpkgs branch nixos-25.11
+    nixpkgs-esp.url = "https://ghfast.top/https://github.com/NixOS/nixpkgs/archive/b6018f87da91d19d0ab4cf979885689b469cdd41.tar.gz";
+    nixpkgs-esp-dev.url = "https://ghfast.top/https://github.com/mirrexagon/nixpkgs-esp-dev/archive/5287d6e1ca9e15ebd5113c41b9590c468e1e001b.tar.gz";
+    nixpkgs-esp-dev.inputs.nixpkgs.follows = "nixpkgs-esp";
+    nixpkgs-esp-dev.inputs.flake-utils.follows = "flake-utils";
+    flake-utils.url = "https://ghfast.top/https://github.com/numtide/flake-utils/archive/11707dc2f618dd54ca8739b309ec4fc024de578b.tar.gz";
   };
 
   outputs =
-    { nixpkgs, nixpkgs-unstable, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
+    { nixpkgs, nixpkgs-unstable, nixpkgs-esp, nixpkgs-esp-dev, home-manager, nix-flatpak, vscode-server, nixos-hardware, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -86,6 +101,30 @@
       };
 
       mkDevShell = path: import path { inherit pkgs unstable; };
+
+      # ===== ESP32 unified shell =====
+      # esp-idf-full (framework + all toolchains, from mirrexagon/nixpkgs-esp-dev)
+      # merged with the flashing/serial tools of the old `esp` shell.
+      # Built against nixpkgs 25.11 (nixpkgs-esp): esp-dev needs python310,
+      # which 26.05 dropped; its own ecdsa 0.19.1 whitelist matches 25.11 too.
+      espPkgs = import nixpkgs-esp {
+        inherit system;
+        overlays = [ inputs.nixpkgs-esp-dev.overlays.default ];
+        config.permittedInsecurePackages = [
+          "python3.13-ecdsa-0.19.1"
+        ];
+      };
+      espTools = (import ./dev_toolchains/libs/embedded-packages.nix { pkgs = espPkgs; }).esp;
+      espShell = espPkgs.mkShell {
+        name = "esp";
+        packages = with espPkgs; [
+          esp-idf-full
+        ] ++ espTools;
+        shellHook = ''
+          echo "ESP unified shell: esp-idf ${espPkgs.esp-idf-full.version} + esptool/espflash/platformio + serial/flash tools"
+          echo "  idf.py (framework)   esptool / espflash / platformio (flashing)"
+        '';
+      };
     in
     {
       nixosConfigurations.kde-default = mkSystem [
@@ -136,7 +175,10 @@
         dotnet = mkDevShell ./dev_toolchains/compilers/dotnet.nix;
 
         stm = mkDevShell ./dev_toolchains/embedded/stm.nix;
-        esp = mkDevShell ./dev_toolchains/embedded/esp.nix;
+        # Unified ESP32 shell: ESP-IDF + flashing/serial tools (see let above).
+        esp = espShell;
+        # Backwards-compatible alias for the same shell.
+        esp-idf = espShell;
         nordic = mkDevShell ./dev_toolchains/embedded/nordic.nix;
         segger = mkDevShell ./dev_toolchains/embedded/segger.nix;
 

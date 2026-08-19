@@ -31,6 +31,7 @@
       "org.freedownloadmanager.Manager"
       "org.dupot.easyflatpak"
       "org.desktop_plus.desktop-plus"
+      "org.telegram.desktop"
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.

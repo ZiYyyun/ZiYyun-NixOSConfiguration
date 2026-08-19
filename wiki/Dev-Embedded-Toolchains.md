@@ -14,10 +14,20 @@ MCU/vendor environments:
 
 ```bash
 nix develop .#stm
-nix develop .#esp
+nix develop .#esp          # unified ESP32 shell: ESP-IDF + flashing/serial tools
+nix develop .#esp-idf      # same shell as .#esp (alias)
 nix develop .#nordic
 nix develop .#segger
 ```
+
+The `esp` shell merges the ESP-IDF framework (from
+[mirrexagon/nixpkgs-esp-dev](https://github.com/mirrexagon/nixpkgs-esp-dev),
+see the [NixOS Wiki ESP-IDF page](https://wiki.nixos.org/wiki/ESP-IDF)) with the
+old flashing/serial tools: `idf.py`, `esptool`, `espflash`, `platformio`,
+`openocd`, `probe-rs`. It is built against nixpkgs 25.11 (`nixpkgs-esp`
+input), because esp-dev needs `python310` which 26.05 dropped. The Espressif
+VSCode extension only supports Debian/Ubuntu; on NixOS run `idf.py` from a
+terminal inside the shell (direnv handles this in VSCode).
 
 Linux SoC / cross-compilation environments:
 
