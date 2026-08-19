@@ -23,5 +23,6 @@
     #wechat
     notepad-next
     vlc
+    baidupcs-go
   ];
 }
