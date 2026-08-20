@@ -13,7 +13,7 @@
     ../common/boot/legacy.nix
     ./hardware-configuration.nix
     ../../modules/system/profiles/niri.nix
-    ../../modules/system/services/flatpak.nix
+    ../../modules/system/services/flatpak
   ];
 
   services.displayManager.defaultSession = "niri";

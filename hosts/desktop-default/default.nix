@@ -15,6 +15,6 @@
     ../common/boot/uefi.nix
     ./hardware-configuration.nix
     ../../modules/system/profiles/kde.nix
-    ../../modules/system/services/flatpak.nix
+    ../../modules/system/services/flatpak
   ];
 }

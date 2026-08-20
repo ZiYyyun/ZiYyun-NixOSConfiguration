@@ -10,7 +10,9 @@
     ghostty
     gnome-software
     kdePackages.flatpak-kcm
-    nix-search-tv
+    nix-search-tv     # Nix 包搜索（终端 TUI）
+    nix-search        # Nix 包搜索（CLI）
+    nixos-option      # 查询 NixOS 配置选项
     warehouse
     docker
     filezilla

@@ -17,7 +17,7 @@
     ./hardware-configuration.nix
     ../../modules/system/profiles/gnome.nix
     ../../packages/system/hardware/thinkpad.nix
-    ../../modules/system/services/flatpak.nix
+    ../../modules/system/services/flatpak
   ];
 
   # Keep GNOME installed, but use SDDM as the session picker so Niri is

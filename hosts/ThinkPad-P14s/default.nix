@@ -17,7 +17,7 @@
     ../../modules/system/profiles/kde.nix
     ../../packages/system/hardware/thinkpad.nix
     ../../modules/system/profiles/niri.nix
-    ../../modules/system/services/flatpak.nix
+    ../../modules/system/services/flatpak
     ../../modules/system/services/winboat.nix
     ../../modules/system/services/fprintd.nix
     ../../modules/system/services/waydroid.nix
