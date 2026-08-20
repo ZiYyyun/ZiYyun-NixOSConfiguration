@@ -264,10 +264,28 @@ Real dotfiles live in `dotfiles/`:
 dotfiles/
 |-- ghostty/
 |-- kde/
+|   `-- config/
+|-- noctalia/
 `-- niri/
 ```
 
-`modules/home/config-files/*.nix` links those files into XDG paths.
+`modules/home/config-files/*.nix` hot-links those files into their XDG
+paths using Home Manager's `config.lib.file.mkOutOfStoreSymlink`: the
+managed files are symlinked **directly to this repository** (not copied
+into the Nix store), so editing `dotfiles/...` takes effect immediately —
+no rebuild needed. The repo is the single source of truth.
+
+Caveats:
+
+- KDE apps save config atomically (temp file + rename), which replaces the
+  symlink with a regular file. After changing a setting inside a KDE app,
+  the link is broken; restore it with `home-manager switch` (your manual
+  changes are kept as `*.hm-backup`), or copy the file back into the repo
+  first if you want to keep the new values.
+- Text editors that write in place (VS Code, vim, nano) keep the symlink
+  intact.
+- `shells/export-dotfiles.sh` is kept as a one-shot export for one-time
+  migrations (e.g. first import of a running session's config).
 
 ## Nixvim
 
@@ -326,6 +344,7 @@ Embedded packages are not installed globally. Use devShells for vendor SDKs, fla
 - Espressif: `nix develop .#esp`
 - Nordic: `nix develop .#nordic`
 - SEGGER: `nix develop .#segger`
+- LuatOS (合宙): `nix develop .#luatos`
 - ARM32 Linux SoC/i.MX6ULL: `nix develop .#arm32`
 - ARM64 Linux SoC: `nix develop .#arm64`
 - Allwinner: `nix develop .#allwinner`
@@ -525,6 +544,36 @@ waydroid app list
 GApps note: logging into Google requires device certification first, otherwise
 the Play Store reports an uncertified device. See the [WayDroid Google Play
 certification FAQ](https://docs.waydro.id/faq/google-play-certification).
+
+## Windows Apps via Wine (WinApps)
+
+For Windows-only LAN software (飞秋 FeiQ, 红蜘蛛 Red Spider) that cannot use
+the WinBoat container network, `packages/custom/winapps/` packages them with
+Wine, Nix-reproducibly:
+
+```bash
+nix run .#feiq                 # 飞秋 LAN messenger (official green exe, pinned hash)
+nix run .#redspider-student    # 红蜘蛛学生端 (official InstallShield zip, silent install)
+```
+
+Both apps get KDE menu entries, use per-app Wine prefixes under
+`~/.local/share/winapps/`, and run directly on the host network (LAN UDP
+broadcast works — no container isolation). CJK fonts (`wqy-zenhei`,
+`noto-fonts-cjk-sans`) are enabled system-wide in `configuration.nix`.
+Details: `packages/custom/winapps/README.md`.
+
+## Embedded Toolchains (No Keil)
+
+Keil (MDK/C51) was evaluated under Wine but its InstallShield installer
+reliably reports "installation is occupied" inside Wine (a stub-level
+incompatibility), so Keil is intentionally **not** packaged. Use the dev
+shells instead:
+
+- **8051**: `sdcc` compiler + `stcflash` flashing (add to a devShell as needed)
+- **STM32**: `gcc-arm-none-eabi` cross toolchain via `nix develop .#arm32`,
+  CMake/Makefile projects (STM32CubeMX can export Makefiles), flashing with
+  `stm32flash` / `openocd`
+- ESP32: `nix develop .#esp` (ESP-IDF + esptool/espflash/platformio)
 
 ## Install From Live ISO
 

@@ -13,10 +13,17 @@
 
     # Add application IDs here when system-wide Flatpak apps are needed.
     packages = [
-
       # "org.blender.Blender"
       # "com.spotify.Client"
       # "org.mozilla.firefox"
+      "com.st.STM32CubeMX"
+      "org.gnome.SoundRecorder"
+      "cn.lceda.LCEDAPro"
+      "org.onlyoffice.desktopeditors"
+      "org.mozilla.thunderbird"
+      "com.spotify.Client"
+      "io.github.qier222.YesPlayMusic"
+      # "com.usebottles.bottles"
       "com.qq.QQ"
       "com.tencent.WeChat"
       "org.torproject.torbrowser-launcher"
@@ -32,6 +39,8 @@
       "org.dupot.easyflatpak"
       "org.desktop_plus.desktop-plus"
       "org.telegram.desktop"
+      "md.obsidian.Obsidian"
+      "org.wireshark.Wireshark"
     ];
 
     # This replaces the default remote, so keep the name flathub explicit.

@@ -181,11 +181,18 @@
         esp-idf = espShell;
         nordic = mkDevShell ./dev_toolchains/embedded/nordic.nix;
         segger = mkDevShell ./dev_toolchains/embedded/segger.nix;
+        # 合宙 LuatOS（Air101/Air103/ESP32C3/Air32F103 等）开发环境。
+        luatos = mkDevShell ./dev_toolchains/embedded/luatos.nix;
 
         arm32 = mkDevShell ./dev_toolchains/embedded/arm32.nix;
         arm64 = mkDevShell ./dev_toolchains/embedded/arm64.nix;
         allwinner = mkDevShell ./dev_toolchains/embedded/allwinner.nix;
         rockchip = mkDevShell ./dev_toolchains/embedded/rockchip.nix;
+      };
+
+      # Windows apps packaged with Wine (FeiQ, Red Spider, ...).
+      packages.${system} = import ./packages/custom/winapps {
+        inherit (pkgs) callPackage;
       };
     };
 }

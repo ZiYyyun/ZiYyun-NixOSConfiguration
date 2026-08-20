@@ -2,37 +2,26 @@
  * File: kde.nix
  * Author: ziyun
  * Date: 2026-08-01
- * Description: Home Manager integration for KDE.
+ * Description: Home Manager integration for KDE via out-of-store symlinks.
  *
- * Links the two-panel layout (plasma-org.kde.plasma.desktop-appletsrc), the
- * locale file (plasma-localerc), and the appearance/behavior settings that
- * were tuned in the running session and exported with
- * `shells/export-dotfiles.sh` (kdeglobals, kwinrc, plasmashellrc).
+ * Uses config.lib.file.mkOutOfStoreSymlink so the managed files are symlinked
+ * directly to the repository dotfiles (NOT copied into the Nix store):
+ * editing the repo file takes effect immediately, no rebuild needed.
  *
- * Note: Home Manager links are read-only. If you tune Plasma again, Plasma
- * cannot persist changes into the store path; re-run the export script and
- * rebuild to pick them up.
+ * Caveat: KDE apps save config atomically (temp file + rename), which replaces
+ * the symlink with a regular file. After changing settings inside a KDE app,
+ * the link is broken; restore it with `home-manager switch` (your manual
+ * changes are kept next to it as *.hm-backup) or copy the file back into the
+ * repo first if you want to keep the new values.
  */
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
-  dotfilesRoot = ../../../dotfiles/kde;
-  configRoot = dotfilesRoot + "/config";
-  wallpapersRoot = dotfilesRoot + "/wallpapers";
+  # Absolute path to this repository's KDE dotfiles (out-of-store link target).
+  dotfilesRoot = "/home/ziyun/文档/GitHub/ZiYyun-NixOSConfiguration/dotfiles";
+  configRoot = "${dotfilesRoot}/kde/config";
+  wallpapersRoot = "${dotfilesRoot}/kde/wallpapers";
 
-  configFile = name: target:
-    let
-      source = configRoot + "/${name}";
-    in
-    lib.optionalAttrs (builtins.pathExists source) {
-      "${target}" = {
-        inherit source;
-      };
-    };
-  wallpaperDir = lib.optionalAttrs (builtins.pathExists wallpapersRoot) {
-    "wallpapers" = {
-      source = wallpapersRoot;
-    };
-  };
+  link = config.lib.file.mkOutOfStoreSymlink;
 in
 {
   home.pointerCursor = {
@@ -44,14 +33,18 @@ in
   };
 
   xdg.configFile = lib.mkMerge [
-    (configFile "plasma-org.kde.plasma.desktop-appletsrc" "plasma-org.kde.plasma.desktop-appletsrc")
-    (configFile "plasma-localerc" "plasma-localerc")
-    (configFile "kdeglobals" "kdeglobals")
-    (configFile "kwinrc" "kwinrc")
-    (configFile "plasmashellrc" "plasmashellrc")
+    {
+      "plasma-org.kde.plasma.desktop-appletsrc".source = link "${configRoot}/plasma-org.kde.plasma.desktop-appletsrc";
+      "plasma-localerc".source = link "${configRoot}/plasma-localerc";
+      "kdeglobals".source = link "${configRoot}/kdeglobals";
+      "kwinrc".source = link "${configRoot}/kwinrc";
+      "plasmashellrc".source = link "${configRoot}/plasmashellrc";
+    }
   ];
 
   xdg.dataFile = lib.mkMerge [
-    wallpaperDir
+    {
+      "wallpapers".source = link wallpapersRoot;
+    }
   ];
 }

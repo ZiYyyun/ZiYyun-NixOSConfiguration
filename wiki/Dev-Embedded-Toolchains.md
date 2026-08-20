@@ -162,3 +162,29 @@ Driver/gpio.c
 ```
 
 The reason is practical: when a single source file is opened, copied, logged by a build system, or shown in an error message, the prefix still tells you which layer owns it. The same rule is used in this repository's toolchain helpers: target files use `compiler files` or `embedded files`, while shared helper files under `dev_toolchains/libs/` use `shared helper files`.
+
+## LuatOS (合宙)
+
+`nix develop .#luatos` 提供 CSDK 编译与烧录环境（复用 `mkEmbeddedMcuShell` +
+`embedded-packages.nix` 的 `luatos` 组）。包含：
+
+- 工具链：`riscv64-none-elf-gcc`（Air101/Air103 C906，带
+  `riscv64-unknown-elf-*` 兼容别名）、`riscv32-none-elf-gcc`（ESP32-C3）、
+  `arm-none-eabi-gcc`（Air32F103）
+- 烧录/脚本：`luatool`（加载 init.lua）、`luatos-utils`/`mkscriptbin`
+  （生成/烧录 script.img）、`esptool`（ESP32 系）、串口工具
+- 通用：`gpsbabel`（GPS 纠偏/转换）、`mqttx`（MQTT 客户端，home 包）
+
+### 合宙专用软件与在线服务
+
+| 工具 | 类型 | 位置/说明 |
+| --- | --- | --- |
+| LuaTools | Windows 软件 | 官方烧录/调试 GUI；Linux 下用 `luatool`+`esptool` 替代（或 wine 运行） |
+| LuatOS PC 模拟器 | 源码工程 | `openLuat/luatos-soc-pc`，clone 后按仓库说明编译运行 |
+| 量产烧录工具 | LuaTools 功能 | 用 `luatos-utils`（多模组量产烧录脚本）替代 |
+| TCP/UDP/FTP/HTTP/RTMP/MQTT 测试服务器 | 在线服务 | 见 docs.openluat.com 各芯片「外设测试」文档，提供现成测试地址 |
+| MQTTX | 通用软件 | `nix` 安装（`packages/home/apps.nix`），连测试服务器调试 |
+| LuatIO 配置 / USB 摄像头参数 / GPS 纠偏展示 / json / 加解密 | 在线工具 | docs.openluat.com 工具页（web 端） |
+| SSCOM / LLCOM | Windows 串口工具 | Linux 用 `picocom` / `minicom` / `screen`（shell 内） |
+
+合宙工具与文档入口：<https://docs.openluat.com/>、<https://wiki.luatos.com/>

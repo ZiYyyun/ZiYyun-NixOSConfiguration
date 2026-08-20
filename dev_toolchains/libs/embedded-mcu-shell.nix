@@ -13,6 +13,7 @@
   libraries ? [ ],
   versionCommands ? [ ],
   message ? "",
+  extraShellHook ? "",   # extra shell code appended to the standard shellHook
 }:
 
 let
@@ -53,5 +54,6 @@ pkgs.mkShell {
     ${pkgs.lib.optionalString (message != "") ''echo "${message}"''}
     echo "========================================="
     echo ""
+    ${extraShellHook}
   '';
 }

@@ -8,10 +8,10 @@
   # Prefer the official cache, with domestic university mirrors as fallbacks
   # when cache.nixos.org is slow from the current network.
   nix.settings.substituters = [
-    "https://cache.nixos.org/"
     "https://mirror.sjtu.edu.cn/nix-channels/store"
     "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
+    "https://cache.nixos.org/"
   ];
   nix.settings.connect-timeout = 30;
   nix.settings.download-attempts = 10;
@@ -44,6 +44,13 @@
     LC_TELEPHONE = "zh_CN.UTF-8";
     LC_TIME = "zh_CN.UTF-8";
   };
+
+  # CJK fonts: required for Chinese text in Wine apps (FeiQ, 红蜘蛛) and
+  # generally for correct Chinese rendering.
+  fonts.packages = with pkgs; [
+    wqy_zenhei
+    noto-fonts-cjk-sans
+  ];
 
   services.xserver.xkb = {
     layout = "cn";
@@ -87,6 +94,12 @@
   # };
 
   services.openssh.enable = true;
+
+  # FeiQ (飞秋) LAN discovery uses UDP 2425 (IPMSG-compatible protocol) with
+  # subnet broadcasts; allow inbound so classmates' replies reach us. TCP 2425
+  # is used for file transfer.
+  networking.firewall.allowedUDPPorts = [ 2425 ];
+  networking.firewall.allowedTCPPorts = [ 2425 ];
 
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];

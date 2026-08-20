@@ -7,11 +7,9 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    spotify
     winboat
     clash-verge-rev
     mihomo
-    obsidian
     koodo-reader
     microsoft-edge
     eudic
@@ -24,5 +22,6 @@
     notepad-next
     vlc
     baidupcs-go
+    mqttx            # MQTT 客户端（LuatOS/物联网调试通用）
   ];
 }
