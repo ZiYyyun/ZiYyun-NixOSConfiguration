@@ -39,6 +39,7 @@
                              #  InstallShield response files)
   preInstall ? "",           # extra shell after files are copied to $out/lib/<pname>
   unpackPhase ? null,        # custom unpack (needed when the archive has no top dir)
+  extraNativeBuildInputs ? [ ],  # extra build tools (e.g. unshield)
   exeSearchDir ? "Program Files",  # firstrun-install: dir under drive_c to find the app exe
   desktopName ? pname,
   description ? "",
@@ -99,7 +100,7 @@ in
 stdenv.mkDerivation {
   inherit pname version src;
 
-  nativeBuildInputs = [ pkgs.unzip ];
+  nativeBuildInputs = [ pkgs.unzip ] ++ extraNativeBuildInputs;
   unpackPhase = if unpackPhase != null then unpackPhase else null;
 
   buildPhase = "true";
