@@ -334,7 +334,7 @@ User packages:
 
 Local derivations:
 
-- `packages/custom/trae/default.nix`
+- `packages/custom/trae-code/default.nix`
 
 ## Embedded Development
 

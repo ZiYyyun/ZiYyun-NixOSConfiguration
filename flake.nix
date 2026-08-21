@@ -194,8 +194,8 @@
       packages.${system} = (import ./packages/custom/winapps {
         inherit (pkgs) callPackage;
       }) // {
-        # Trae AI IDE (local deb packaging).
-        trae = pkgs.callPackage ./packages/custom/trae { };
+        # TraeCode — TRAE AI IDE (GUI, deb packaging).
+        trae-code = pkgs.callPackage ./packages/custom/trae-code { };
       };
     };
 }
