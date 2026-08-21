@@ -51,6 +51,20 @@ copy_if_exists "${HOME}/.config/niri/config.kdl" "${niri_file}"
 echo "==> Noctalia"
 copy_if_exists "${HOME}/.local/state/noctalia/settings.toml" "${noctalia_dir}/settings.toml"
 
+echo "==> 重建热链接（KDE 原子保存会替换符号链接，这里恢复指向仓库）"
+repo="${repo_root}/dotfiles"
+relink() { # source target
+  rm -f "$2" && ln -s "$1" "$2" && echo "  relinked: $2"
+}
+relink "${repo}/kde/config/kdeglobals" "${HOME}/.config/kdeglobals"
+relink "${repo}/kde/config/kwinrc" "${HOME}/.config/kwinrc"
+relink "${repo}/kde/config/plasmashellrc" "${HOME}/.config/plasmashellrc"
+relink "${repo}/kde/config/plasma-org.kde.plasma.desktop-appletsrc" "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+relink "${repo}/kde/config/plasma-localerc" "${HOME}/.config/plasma-localerc"
+relink "${repo}/niri/config.kdl" "${HOME}/.config/niri/config.kdl"
+relink "${repo}/ghostty/config" "${HOME}/.config/ghostty/config.ghostty"
+relink "${repo}/noctalia/settings.toml" "${HOME}/.local/state/noctalia/settings.toml"
+
 cat <<EOF
 
 导出完成。把改动提交并 rebuild 后，配置即固化进 flake：

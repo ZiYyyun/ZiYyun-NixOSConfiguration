@@ -98,8 +98,10 @@
   # FeiQ (飞秋) LAN discovery uses UDP 2425 (IPMSG-compatible protocol) with
   # subnet broadcasts; allow inbound so classmates' replies reach us. TCP 2425
   # is used for file transfer.
-  networking.firewall.allowedUDPPorts = [ 2425 ];
-  networking.firewall.allowedTCPPorts = [ 2425 ];
+  # 红蜘蛛 (Red Spider) 教师端广播：默认频道 1 使用 TCP 1688 + UDP 1688-1691
+  # （见 www.3000soft.net/products/redspider-firewall.htm）。
+  networking.firewall.allowedUDPPorts = [ 2425 1688 1689 1690 1691 ];
+  networking.firewall.allowedTCPPorts = [ 2425 1688 ];
 
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
