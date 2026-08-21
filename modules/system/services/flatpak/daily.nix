@@ -24,5 +24,7 @@
     "com.baidu.NetDisk"
     "org.freedownloadmanager.Manager"
     "org.desktop_plus.desktop-plus"
+
+    "org.gnome.Snapshot"
   ];
 }
