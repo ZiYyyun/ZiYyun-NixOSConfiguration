@@ -1,8 +1,12 @@
+[PlasmaTransientsConfig]
+popupHeight=432
+popupWidth=432
+
 [PlasmaViews][Panel 2]
 floating=1
 
 [PlasmaViews][Panel 2][Defaults]
-thickness=35
+thickness=45
 
 [PlasmaViews][Panel 30]
 floating=1

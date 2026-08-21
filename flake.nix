@@ -191,8 +191,11 @@
       };
 
       # Windows apps packaged with Wine (FeiQ, Red Spider, ...).
-      packages.${system} = import ./packages/custom/winapps {
+      packages.${system} = (import ./packages/custom/winapps {
         inherit (pkgs) callPackage;
+      }) // {
+        # Trae AI IDE (local deb packaging).
+        trae = pkgs.callPackage ./packages/custom/trae { };
       };
     };
 }

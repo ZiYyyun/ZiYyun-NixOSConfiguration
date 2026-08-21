@@ -41,6 +41,9 @@ mkWineApp {
   '';
   mode = "extract";
   mainExe = "app/REDAgent.exe";
+  # 广播窗口在原生 Wayland 驱动下无法点击/拖动（Windows 下正常），
+  # 强制 X11 (XWayland) 驱动修复窗口交互。
+  forceX11 = true;
   desktopName = "红蜘蛛学生端";
   description = "红蜘蛛多媒体网络教室 学生端（教师版，加密狗授权）";
   categories = "Education";

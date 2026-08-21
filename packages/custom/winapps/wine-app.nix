@@ -46,6 +46,10 @@
   categories ? "Network;",
   winePkg ? pkgs.wineWowPackages.wayland,
   cjkFont ? pkgs.wqy_zenhei,
+  forceX11 ? false,          # force the X11 driver (XWayland): fixes window
+                             # interaction for apps whose windows misbehave
+                             # under the native Wayland driver (e.g. Red Spider
+                             # broadcast window cannot be clicked/dragged)
 }:
 
 assert mode == "extract" -> mainExe != null;
@@ -65,7 +69,7 @@ let
       wine reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /v "WenQuanYi Zen Hei (TrueType)" /d "wqy-zenhei.ttc" /f >/dev/null 2>&1 || true
       # Map every common CJK font name to WenQuanYi so GBK-era apps (FeiQ,
       # Red Spider) render Chinese even when they request 宋体/黑体/雅黑 etc.
-      for SUB in SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线"; do
+      for SUB in SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线" "MS Shell Dlg" "MS Shell Dlg 2"; do
         wine reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes" /v "$SUB" /d "WenQuanYi Zen Hei" /f >/dev/null 2>&1 || true
       done
       touch "$WINEPREFIX/.cjk-fonts-installed"
@@ -127,6 +131,11 @@ stdenv.mkDerivation {
     export WINEFSYNC=1
     export WINEDEBUG=-all
     mkdir -p "$WINEPREFIX"
+    ${lib.optionalString forceX11 ''
+      # Force the X11 (XWayland) display driver for this prefix.
+      wine reg add "HKCU\\Software\\Wine\\Drivers" /v Graphics /d "x11" /f >/dev/null 2>&1 || true
+      wineserver -w 2>/dev/null || true
+    ''}
 
     APP_DIR="${placeholder "out"}/lib/${pname}"
     ${fontInitBlock}

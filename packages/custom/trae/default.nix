@@ -109,9 +109,11 @@ stdenv.mkDerivation rec {
   autoPatchelfIgnoreMissingDeps = [ "libc.musl-x86_64.so.1" ];
 
   unpackPhase = ''
-  runHook preUnpack
-  dpkg-deb --extract $src .
-  runHook postUnpack
+    runHook preUnpack
+    # dpkg-deb -x 会尝试设置 chrome-sandbox 的 setuid 位，Nix 沙箱不允许；
+    # 改用 tar 流解压并忽略原权限（installPhase 里再统一 chmod）。
+    dpkg-deb --fsys-tarfile $src | tar -x --no-same-owner --no-same-permissions
+    runHook postUnpack
   '';
 
   installPhase = ''
