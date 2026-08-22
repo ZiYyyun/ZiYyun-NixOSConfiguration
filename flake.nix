@@ -64,11 +64,22 @@
         config.allowUnfree = true;
       };
 
+      # Custom-packaged GUI apps (Wine apps + TraeCode) shared between the
+      # flake `packages` output and Home Manager (home.packages → desktop menu).
+      customPackages = (import ./packages/custom/winapps {
+        inherit (pkgs) callPackage;
+      }) // {
+        # TraeCode — TRAE AI IDE (GUI, deb packaging).
+        trae-code = pkgs.callPackage ./packages/custom/trae-code { };
+        # DeepSeek Harness CLI (`dsh`) — standalone, kept out of dev shells.
+        dsh = pkgs.callPackage ./packages/custom/deepseek-harness { };
+      };
+
       homeManagerModule = {
         home-manager.backupFileExtension = "hm-backup";
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.extraSpecialArgs = { inherit unstable; };
+        home-manager.extraSpecialArgs = { inherit unstable customPackages; };
         home-manager.users.ziyun = { ... }: {
           imports = [
             vscode-server.homeModules.default
@@ -190,12 +201,7 @@
         rockchip = mkDevShell ./dev_toolchains/embedded/rockchip.nix;
       };
 
-      # Windows apps packaged with Wine (FeiQ, Red Spider, ...).
-      packages.${system} = (import ./packages/custom/winapps {
-        inherit (pkgs) callPackage;
-      }) // {
-        # TraeCode — TRAE AI IDE (GUI, deb packaging).
-        trae-code = pkgs.callPackage ./packages/custom/trae-code { };
-      };
+      # Windows apps packaged with Wine (FeiQ, Red Spider, ...) + TraeCode + dsh.
+      packages.${system} = customPackages;
     };
 }
