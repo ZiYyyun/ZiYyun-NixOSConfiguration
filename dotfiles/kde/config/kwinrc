@@ -1,8 +1,8 @@
 [Desktops]
 Id_1=db15090c-1a95-4b57-8397-ad4cf1c5992d
-Id_2=daa3f7a5-c681-45eb-877b-43c247052a1e
-Id_3=53052fc8-d617-4152-bb5a-8e0dbfc04750
-Number=3
+Id_2=53052fc8-d617-4152-bb5a-8e0dbfc04750
+Name_2=桌面 3
+Number=2
 Rows=1
 
 [Plugins]

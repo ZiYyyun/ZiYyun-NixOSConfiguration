@@ -15,5 +15,9 @@
     "org.mozilla.thunderbird"
     # 笔记/知识管理
     "md.obsidian.Obsidian"
+
+    "com.dingtalk.DingTalk"
+
+    "com.tencent.wemeet"
   ];
 }

@@ -34,5 +34,6 @@ in
     kdePackages.breeze-icons
     oreo-cursors-plus
     plasmaDesktopQml
+    kdePackages.yakuake
   ];
 }
