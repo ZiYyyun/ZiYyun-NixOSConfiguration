@@ -53,10 +53,12 @@ rec {
     esptool
     espflash
     platformio
+    clang-tools   # clangd：VSCode 的 C/C++ 智能补全/跳转（需在 dev shell 内启动 code）
   ]);
 
   nordic = buildCore ++ debugAndFlash ++ serialTools ++ (with pkgs; [
     nrfutil
+    pkgsCross.arm-embedded.stdenv.cc   # arm-none-eabi：nRF SDK 固件编译必需
   ]);
 
   segger = buildCore ++ serialTools ++ (with pkgs; [

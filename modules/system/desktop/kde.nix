@@ -45,6 +45,7 @@ in
     plasmaDesktopQml
     plasmaWorkspaceQml
     plasmoidOnlyrics
+    plasma-panel-colorizer   # 社区插件：面板着色（顶栏右上角，替代歌词）
     kdePackages.yakuake
   ];
 }

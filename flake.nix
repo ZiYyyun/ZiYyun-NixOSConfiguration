@@ -138,16 +138,11 @@
           "python3.13-ecdsa-0.19.1"
         ];
       };
-      espTools = (import ./dev_toolchains/libs/embedded-packages.nix { pkgs = espPkgs; }).esp;
-      espShell = espPkgs.mkShell {
-        name = "esp";
-        packages = with espPkgs; [
-          esp-idf-full
-        ] ++ espTools;
-        shellHook = ''
-          echo "ESP unified shell: esp-idf ${espPkgs.esp-idf-full.version} + esptool/espflash/platformio + serial/flash tools"
-          echo "  idf.py (framework)   esptool / espflash / platformio (flashing)"
-        '';
+      # esp 定义在独立文件 dev_toolchains/embedded/esp.nix（与 stm/nordic 同构）。
+      # 它需要 espPkgs（25.11 + esp-dev overlay），见该文件头注释。
+      espShell = import ./dev_toolchains/embedded/esp.nix {
+        pkgs = espPkgs;
+        mkEmbeddedMcuShell = import ./dev_toolchains/libs/embedded-mcu-shell.nix;
       };
     in
     {
@@ -201,8 +196,6 @@
         stm = mkDevShell ./dev_toolchains/embedded/stm.nix;
         # Unified ESP32 shell: ESP-IDF + flashing/serial tools (see let above).
         esp = espShell;
-        # Backwards-compatible alias for the same shell.
-        esp-idf = espShell;
         nordic = mkDevShell ./dev_toolchains/embedded/nordic.nix;
         segger = mkDevShell ./dev_toolchains/embedded/segger.nix;
         # 合宙 LuatOS（Air101/Air103/ESP32C3/Air32F103 等）开发环境。

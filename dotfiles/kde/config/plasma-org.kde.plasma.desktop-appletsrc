@@ -1,12 +1,10 @@
-# Two-panel layout:
-#   bottom (Containment 2): kickoff (normal popup, NOT fullscreen) + icon-only
-#     task manager (org.kde.plasma.icontasks, Win11 style) + edge separator.
-#     No clock / no tray here.
-#   top (Containment 30): window list (unchanged top-left) | spacer | lyrics
-#     (com.github.illuminate-dev.onlyrics) + net speed + CPU + system tray +
-#     clock, all grouped on the middle-right.
-# Tray items (Containment 8): clipboard, notifications, volume, network,
-# bluetooth, battery, brightness, kimpanel (fcitx5), ...
+# Two-panel layout (declarative):
+#   bottom (Containment 2): kickoff + icon-only task manager (Win11 style) +
+#     pager (virtual desktop switcher, bottom-right) + edge separator.
+#   top (Containment 30): window list (top-left) | spacer | panel colorizer
+#     + net speed + CPU + system tray + clock (middle-right).
+# Tray items live on the systemtray applet itself (Plasma 6 native; no
+# private.systemtray containment — that was a Plasma 5 construct).
 [ActionPlugins][0]
 RightButton;NoModifier=org.kde.contextmenu
 
@@ -63,12 +61,17 @@ launchers=applications:systemsettings.desktop,applications:org.kde.discover.desk
 immutability=1
 plugin=org.kde.plasma.panelspacer
 
+# virtual desktop switcher (bottom-right)
+[Containments][2][Applets][53]
+immutability=1
+plugin=org.kde.plasma.pager
+
 [Containments][2][Applets][6]
 immutability=1
 plugin=org.kde.plasma.marginsseparator
 
 [Containments][2][General]
-AppletOrder=3;52;5;51;6
+AppletOrder=3;52;5;51;53;6
 
 # ============================ top panel ============================
 [Containments][30]
@@ -90,13 +93,10 @@ plugin=org.kde.plasma.windowlist
 immutability=1
 plugin=org.kde.plasma.panelspacer
 
-# lyrics display (Onlyrics, LRCLIB)
-[Containments][30][Applets][47]
+# community plugin: panel colorizer (replaces the lyrics widget)
+[Containments][30][Applets][46]
 immutability=1
-plugin=com.github.illuminate-dev.onlyrics
-
-[Containments][30][Applets][47][Configuration][General]
-apiURL=none
+plugin=luisbocanegra.panel.colorizer
 
 # net speed (text-only system monitor)
 [Containments][30][Applets][40]
@@ -168,7 +168,7 @@ plugin=org.kde.plasma.digitalclock
 showSeconds=true
 
 [Containments][30][General]
-AppletOrder=34;42;47;40;49;7;8
+AppletOrder=34;42;46;40;49;7;8
 
 [ScreenMapping]
 itemsOnDisabledScreens=

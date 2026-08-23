@@ -31,6 +31,9 @@ let
       "dsh-dream-skin" = "^0.4.4";
       "dshmarket" = "^1.0.0";
       "@dsh-external/dsh-client-ui-skin-maid-atelier" = "0.0.1";
+      "dsh-coding-subscription-oauth" = "0.6.0";
+      "dsh-coding-oauth-core" = "0.1.0";
+      "undici" = "7.29.0";
     };
     dsh.profile.bundles = [
       "@deepseek-ai/dsh-base"
@@ -40,6 +43,7 @@ let
       "dsh-context-compass"
       "dshmarket"
       "@dsh-external/dsh-client-ui-skin-maid-atelier"
+      "dsh-coding-subscription-oauth"
     ];
   } + "\n";
 in
@@ -56,6 +60,9 @@ in
     ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-tools".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-tools";
     ".dsh/profiles/web/node_modules/@standard-schema/spec".source = "${dshPlugins}/node_modules/@standard-schema/spec";
     ".dsh/profiles/web/node_modules/zod".source = "${dshPlugins}/node_modules/zod";
+    ".dsh/profiles/web/node_modules/dsh-coding-subscription-oauth".source = "${dshPlugins}/node_modules/dsh-coding-subscription-oauth";
+    ".dsh/profiles/web/node_modules/dsh-coding-oauth-core".source = "${dshPlugins}/node_modules/dsh-coding-oauth-core";
+    ".dsh/profiles/web/node_modules/undici".source = "${dshPlugins}/node_modules/undici";
     ".dsh/profiles/web/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier".source = "${dshPlugins}/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier";
     ".dsh/profiles/web/package.json".text = profilePackageJson;
   };

@@ -72,6 +72,21 @@ let
   deepWhale = tgz "dsh-deep-whale"
     "https://ghfast.top/https://github.com/Small-tailqwq/dsh-deep-whale/archive/refs/heads/main.tar.gz"
     "sha256-P1K/NDcpC/PGbo9/jqFXP1hucVvxKxuoEyozeMXm3wA=";
+
+  # 多平台订阅/API 接入：SuperGrok/Grok Build、ChatGPT Plus Codex、Kimi Code、
+  # Claude Code 订阅 OAuth + OpenAI/Anthropic API-key 网关共存。
+  codingOauth = tgz "dsh-coding-subscription-oauth"
+    "https://registry.npmjs.org/dsh-coding-subscription-oauth/-/dsh-coding-subscription-oauth-0.6.0.tgz"
+    "sha256-DxTFx6fDTNTIpNcvJulLgS7xJuw+J/Nt13ZkkmyfGx0=";
+
+  codingOauthCore = tgz "dsh-coding-oauth-core"
+    "https://registry.npmjs.org/dsh-coding-oauth-core/-/dsh-coding-oauth-core-0.1.0.tgz"
+    "sha256-3GlRBvSztzlUU1DNqqyhzZezVkJLostpYTRm1bm6qj8=";
+
+  # undici 7.x（插件声明 ^7.24.8，8.x 不兼容）
+  undici7 = tgz "undici"
+    "https://registry.npmjs.org/undici/-/undici-7.29.0.tgz"
+    "sha256-7CAF2CJzR2X8CMPuXVCx9yC/HD/GI1qwKOXMYchaOnA=";
 in
 stdenv.mkDerivation {
   pname = "dsh-plugins";
@@ -97,6 +112,9 @@ stdenv.mkDerivation {
     unpackOne ${cosmokit}    "$out/node_modules/@deepseek-ai/cosmokit"
     unpackOne ${spec}        "$out/node_modules/@standard-schema/spec"
     unpackOne ${zod}         "$out/node_modules/zod"
+    unpackOne ${codingOauth}     "$out/node_modules/dsh-coding-subscription-oauth"
+    unpackOne ${codingOauthCore} "$out/node_modules/dsh-coding-oauth-core"
+    unpackOne ${undici7}         "$out/node_modules/undici"
 
     # 鲸鱼娘皮肤：仓库含多个皮肤，只提取 maid-atelier 子目录
     mkdir -p /tmp/deep-whale "$out/node_modules/@dsh-external"

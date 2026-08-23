@@ -11,7 +11,7 @@
 */
 { config, ... }:
 let
-  repoFile = "/home/ziyun/文档/GitHub/ZiYyun-NixOSConfiguration/dotfiles/ghostty/config";
+  repoFile = "/home/ziyun/Documents/GitHub/ZiYyun-NixOSConfiguration/dotfiles/ghostty/config";
 in
 {
   xdg.configFile."ghostty/config.ghostty".source = config.lib.file.mkOutOfStoreSymlink repoFile;

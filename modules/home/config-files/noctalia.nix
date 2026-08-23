@@ -12,7 +12,7 @@
  */
 { config, ... }:
 let
-  repoFile = "/home/ziyun/文档/GitHub/ZiYyun-NixOSConfiguration/dotfiles/noctalia/settings.toml";
+  repoFile = "/home/ziyun/Documents/GitHub/ZiYyun-NixOSConfiguration/dotfiles/noctalia/settings.toml";
 in
 {
   home.file.".local/state/noctalia/settings.toml".source = config.lib.file.mkOutOfStoreSymlink repoFile;

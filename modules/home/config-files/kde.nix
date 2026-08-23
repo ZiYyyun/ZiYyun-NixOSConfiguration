@@ -1,27 +1,39 @@
 /**
  * File: kde.nix
  * Author: ziyun
- * Date: 2026-08-01
- * Description: Home Manager integration for KDE via out-of-store symlinks.
+ * Date: 2026-08-23
+ * Description: KDE dotfiles 集成 —— activation 强制覆盖模式（v2）。
  *
- * Uses config.lib.file.mkOutOfStoreSymlink so the managed files are symlinked
- * directly to the repository dotfiles (NOT copied into the Nix store):
- * editing the repo file takes effect immediately, no rebuild needed.
+ * v1 用 home.file/xdg.configFile 链接，但 KDE 保存设置时原子替换（temp+rename）
+ * 会把链接换成普通文件 → 下次 rebuild home-manager 报 "would be clobbered"
+ * → 配置更新失败 → "一 rebuild KDE 就坏" 的恶性循环。
  *
- * Caveat: KDE apps save config atomically (temp file + rename), which replaces
- * the symlink with a regular file. After changing settings inside a KDE app,
- * the link is broken; restore it with `home-manager switch` (your manual
- * changes are kept next to it as *.hm-backup) or copy the file back into the
- * repo first if you want to keep the new values.
+ * v2 改为 activation 脚本：每次 switch 把仓库 dotfiles 强制 cp 到 ~/.config，
+ * 不依赖链接、不检查目标类型，KDE 随便保存，下次 switch 自动恢复声明配置。
+ * 代价：KDE 里手动改的设置会在下次 switch 被重置（声明式的本质）。
  */
 { config, lib, pkgs, ... }:
+
 let
-  # Absolute path to this repository's KDE dotfiles (out-of-store link target).
-  dotfilesRoot = "/home/ziyun/文档/GitHub/ZiYyun-NixOSConfiguration/dotfiles";
+  # 仓库实际位置（注意：xdg-user-dirs 可能把「文档」改成 Documents，
+  # 这里必须与真实仓库路径一致，否则 activation 会拷错文件）。
+  dotfilesRoot = "/home/ziyun/Documents/GitHub/ZiYyun-NixOSConfiguration/dotfiles";
   configRoot = "${dotfilesRoot}/kde/config";
   wallpapersRoot = "${dotfilesRoot}/kde/wallpapers";
 
   link = config.lib.file.mkOutOfStoreSymlink;
+
+  # 每次 switch 强制覆盖的 KDE 配置文件（仓库 → ~/.config）
+  managedFiles = [
+    "plasma-org.kde.plasma.desktop-appletsrc"
+    "plasma-localerc"
+    "kdeglobals"
+    "kwinrc"
+    "plasmashellrc"
+  ];
+
+  copyOne = f: "${pkgs.coreutils}/bin/cp -f \"${configRoot}/${f}\" \"$HOME/.config/${f}\"";
+  copyCmds = lib.concatStringsSep "\n" (map copyOne managedFiles);
 in
 {
   home.pointerCursor = {
@@ -32,19 +44,14 @@ in
     x11.enable = true;
   };
 
-  xdg.configFile = lib.mkMerge [
-    {
-      "plasma-org.kde.plasma.desktop-appletsrc".source = link "${configRoot}/plasma-org.kde.plasma.desktop-appletsrc";
-      "plasma-localerc".source = link "${configRoot}/plasma-localerc";
-      "kdeglobals".source = link "${configRoot}/kdeglobals";
-      "kwinrc".source = link "${configRoot}/kwinrc";
-      "plasmashellrc".source = link "${configRoot}/plasmashellrc";
-    }
-  ];
-
+  # 壁纸目录 KDE 不会写，用普通链接即可。
   xdg.dataFile = lib.mkMerge [
     {
       "wallpapers".source = link wallpapersRoot;
     }
   ];
+
+  home.activation.kdeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${copyCmds}
+  '';
 }

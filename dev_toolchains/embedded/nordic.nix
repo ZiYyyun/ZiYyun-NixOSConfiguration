@@ -10,8 +10,9 @@ mkEmbeddedMcuShell {
   env = {
     CHIP_VENDOR = "Nordic";
   };
-  tools = [ "nrfutil" "probe-rs-tools" "openocd" "dfu-util" "serial tools" ];
+  tools = [ "arm-none-eabi gcc" "nrfutil" "probe-rs-tools" "openocd" "dfu-util" "serial tools" ];
   versionCommands = [
+    { name = "arm-none-eabi-gcc"; bin = "arm-none-eabi-gcc"; command = "arm-none-eabi-gcc --version"; }
     { name = "nrfutil"; bin = "nrfutil"; command = "nrfutil --version"; }
     { name = "probe-rs"; bin = "probe-rs"; command = "probe-rs --version"; }
     { name = "openocd"; bin = "openocd"; command = "openocd --version"; }
