@@ -8,6 +8,7 @@
 {
   environment.systemPackages = with pkgs; [
     ghostty
+    zed-editor       # 高性能代码编辑器（Zed）
     gnome-software
     kdePackages.flatpak-kcm
     nix-search-tv     # Nix 包搜索（终端 TUI）

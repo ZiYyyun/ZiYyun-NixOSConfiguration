@@ -28,5 +28,7 @@
     customPackages.trae-code
     customPackages.feiq
     customPackages.redspider-student
+    customPackages.qoder-cn
+    customPackages.qoder-wake
   ];
 }

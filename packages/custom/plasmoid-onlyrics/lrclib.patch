@@ -1,0 +1,116 @@
+diff --git a/package/contents/ui/LyricsDisplay.qml b/package/contents/ui/LyricsDisplay.qml
+index e98845b..54c827c 100644
+--- a/package/contents/ui/LyricsDisplay.qml
++++ b/package/contents/ui/LyricsDisplay.qml
+@@ -68,31 +68,95 @@ Components.Label {
+         onTriggered: update()
+     }
+ 
++    // Parse LRC text ("[mm:ss.xx] line") into time/words arrays.
++    function parseLrc(lrc) {
++        var outLyrics = []
++        var outTimes = []
++        var lines = lrc.split("\n")
++        for (var i = 0; i < lines.length; i++) {
++            var m = lines[i].match(/\[(\d+):(\d+(?:[.:]\d+)?)\]\s*(.*)/)
++            if (m && m[3]) {
++                outTimes.push(parseInt(m[1]) * 60 + parseFloat(m[2].replace(":", ".")))
++                outLyrics.push(m[3])
++            }
++        }
++        return { lyrics: outLyrics, times: outTimes }
++    }
++
+     function getLyrics() {
+         if (!root.track) { return }
+-        if (plasmoid.configuration.apiURL == "none") { return }
+-        var query = root.track + " " + root.artist
+-        var url = plasmoid.configuration.apiURL + "?name=" + encodeURIComponent(query)
++        // Legacy {time,words} API (self-hosted services), if configured
++        if (plasmoid.configuration.apiURL != "none") {
++            var query = root.track + " " + root.artist
++            var url = plasmoid.configuration.apiURL + "?name=" + encodeURIComponent(query)
++            var xhrLegacy = new XMLHttpRequest()
++            xhrLegacy.onreadystatechange = function() {
++                if (xhrLegacy.readyState === XMLHttpRequest.DONE) {
++                    var response = JSON.parse(xhrLegacy.responseText)
++
++                    if (response.length == 0) {
++                        foundLyrics = false
++                        return
++                    } else {
++                        foundLyrics = true
++                    }
++
++                    lyrics = []
++                    timestamps = []
++                    for (let i = 0; i < response.length; i++) {
++                        lyrics.push(response[i].words)
++                        timestamps.push(response[i].time)
++                    }
++                }
++            }
++            xhrLegacy.open("GET", url)
++            xhrLegacy.send()
++            return
++        }
++
++        // Default: LRCLIB (https://lrclib.net) — free, no key, CORS enabled.
++        // Exact match first, then fall back to a search result with lyrics.
++        var exactUrl = "https://lrclib.net/api/get?artist_name=" + encodeURIComponent(root.artist) + "&track_name=" + encodeURIComponent(root.track)
+         var xhr = new XMLHttpRequest()
+         xhr.onreadystatechange = function() {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+-                var response = JSON.parse(xhr.responseText)
+-
+-                if (response.length == 0) {
+-                    foundLyrics = false
+-                    return
+-                } else {
+-                    foundLyrics = true
++                var parsed = null
++                try { parsed = JSON.parse(xhr.responseText) } catch (e) { parsed = null }
++                if (xhr.status == 200 && parsed && parsed.syncedLyrics) {
++                    var res = parseLrc(parsed.syncedLyrics)
++                    if (res.lyrics.length > 0) {
++                        foundLyrics = true
++                        lyrics = res.lyrics
++                        timestamps = res.times
++                        return
++                    }
+                 }
+-
+-                lyrics = []
+-                for (let i = 0; i < response.length; i++) {
+-                    lyrics.push(response[i].words)
+-                    timestamps.push(response[i].time)
++                // Fallback: search LRCLIB
++                var searchUrl = "https://lrclib.net/api/search?q=" + encodeURIComponent(root.track + " " + root.artist)
++                var xhr2 = new XMLHttpRequest()
++                xhr2.onreadystatechange = function() {
++                    if (xhr2.readyState === XMLHttpRequest.DONE) {
++                        var resp = []
++                        try { resp = JSON.parse(xhr2.responseText) } catch (e) { resp = [] }
++                        for (var i = 0; i < resp.length; i++) {
++                            if (resp[i].syncedLyrics) {
++                                var res = parseLrc(resp[i].syncedLyrics)
++                                if (res.lyrics.length > 0) {
++                                    foundLyrics = true
++                                    lyrics = res.lyrics
++                                    timestamps = res.times
++                                    return
++                                }
++                            }
++                        }
++                        foundLyrics = false
++                    }
+                 }
++                xhr2.open("GET", searchUrl)
++                xhr2.send()
+             }
+         }
+-        xhr.open("GET", url)
++        xhr.open("GET", exactUrl)
+         xhr.send()
+     }
+ 

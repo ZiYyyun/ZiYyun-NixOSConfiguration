@@ -8,7 +8,9 @@
 {
   imports = [
     ./direnv.nix
+    ./dsh.nix
     ./nixvim.nix
     ./vscode-server.nix
+    ./yakuake.nix
   ];
 }

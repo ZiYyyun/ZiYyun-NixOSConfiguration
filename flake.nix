@@ -66,13 +66,26 @@
 
       # Custom-packaged GUI apps (Wine apps + TraeCode) shared between the
       # flake `packages` output and Home Manager (home.packages → desktop menu).
-      customPackages = (import ./packages/custom/winapps {
+      customPackages = let
+        # DeepSeek Harness CLI (`dsh`) — standalone, kept out of dev shells.
+        # Built first so dsh-plugins can symlink @deepseek-ai/dsh-tools from
+        # the dsh host's node_modules (plugins import it as a peerDep).
+        dsh = pkgs.callPackage ./packages/custom/deepseek-harness { };
+      in
+      (import ./packages/custom/winapps {
         inherit (pkgs) callPackage;
       }) // {
         # TraeCode — TRAE AI IDE (GUI, deb packaging).
         trae-code = pkgs.callPackage ./packages/custom/trae-code { };
-        # DeepSeek Harness CLI (`dsh`) — standalone, kept out of dev shells.
-        dsh = pkgs.callPackage ./packages/custom/deepseek-harness { };
+        inherit dsh;
+        # dsh 社区插件集（dshmarket 市场 / context-doctor / context-compass / dream-skin）。
+        dsh-plugins = pkgs.callPackage ./packages/custom/deepseek-harness/plugins.nix { inherit dsh; };
+        # Yakuake 下拉终端皮肤集（商店排名高的皮肤 + GitHub 官方皮肤）。
+        yakuake-skins = pkgs.callPackage ./packages/custom/yakuake-skins { };
+        # Qoder CN IDE — 阿里云通义 AI 编程 IDE（Electron，deb 提取）。
+        qoder-cn = pkgs.callPackage ./packages/custom/qoder { };
+        # Qoder Wake — 语音唤醒/智能体服务（linux 二进制 + qodercli）。
+        qoder-wake = pkgs.callPackage ./packages/custom/qoder-wake { };
       };
 
       homeManagerModule = {

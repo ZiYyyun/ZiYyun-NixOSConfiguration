@@ -9,6 +9,9 @@ let
   # nixpkgs 26.05 的 plasma-desktop 构建漏装 applet QML，用补丁包补上
   # （taskmanager/icontasks/kickoff/windowlist 等小部件缺 contents/ui）。
   plasmaDesktopQml = pkgs.callPackage ../../../packages/custom/plasma-desktop-qml { };
+
+  # 面板歌词小部件（LRCLIB 数据源），配合顶部面板「歌词显示」使用。
+  plasmoidOnlyrics = pkgs.callPackage ../../../packages/custom/plasmoid-onlyrics { };
 in
 {
   services.xserver.enable = true;
@@ -17,6 +20,7 @@ in
 
   environment.systemPackages = with pkgs; [
     (fluent-icon-theme.override { colorVariants = [ "purple" ]; })
+    candy-icons                # 二次元渐变彩色图标主题（kdeglobals 里切换）
     hicolor-icon-theme
     kdePackages.bluedevil
     kdePackages.kdeconnect-kde
@@ -34,6 +38,7 @@ in
     kdePackages.breeze-icons
     oreo-cursors-plus
     plasmaDesktopQml
+    plasmoidOnlyrics
     kdePackages.yakuake
   ];
 }

@@ -1,0 +1,13 @@
+diff --git a/package/contents/config/main.xml b/package/contents/config/main.xml
+index 1d65fbf..4d61049 100644
+--- a/package/contents/config/main.xml
++++ b/package/contents/config/main.xml
+@@ -7,7 +7,7 @@
+             <default>none</default>
+         </entry>
+         <entry name="rounding" type="int">
+-            <default>100<default>
++            <default>100</default>
+         </entry>
+     </group>
+ </kcfg>

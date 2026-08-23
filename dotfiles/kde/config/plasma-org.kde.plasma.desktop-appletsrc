@@ -1,6 +1,19 @@
-# Minimal two-panel layout: bottom = kickoff + task manager + tray,
-# top = window list + network/volume/battery/bluetooth.
-# Everything else is left at Plasma defaults.
+# Two-panel layout:
+#   bottom (Containment 2): kickoff (normal popup, NOT fullscreen) + icon-only
+#     task manager (org.kde.plasma.icontasks, Win11 style) + edge separator.
+#     No clock / no tray here.
+#   top (Containment 30): window list (unchanged top-left) | spacer | lyrics
+#     (com.github.illuminate-dev.onlyrics) + net speed + CPU + system tray +
+#     clock, all grouped on the middle-right.
+# Tray items (Containment 8): clipboard, notifications, volume, network,
+# bluetooth, battery, brightness, kimpanel (fcitx5), ...
+[ActionPlugins][0]
+RightButton;NoModifier=org.kde.contextmenu
+
+[ActionPlugins][1]
+RightButton;NoModifier=org.kde.contextmenu
+
+# ============================ bottom panel ============================
 [Containments][2]
 activityId=
 formfactor=2
@@ -14,25 +27,50 @@ wallpaperplugin=org.kde.image
 immutability=1
 plugin=org.kde.plasma.kickoff
 
+[Containments][2][Applets][3][Configuration]
+PreloadWeight=100
+popupHeight=507
+popupWidth=639
+
+[Containments][2][Applets][3][Configuration][ConfigDialog]
+DialogHeight=540
+DialogWidth=720
+
+[Containments][2][Applets][3][Configuration][General]
+applicationsDisplay=0
+favoritesPortedToKAstats=true
+primaryActions=3
+systemFavorites=lock-screen\,logout\,save-session\,switch-user\,suspend\,hibernate\,reboot\,shutdown
+
+[Containments][2][Applets][3][Configuration][Shortcuts]
+global=Alt+F1
+
+[Containments][2][Applets][3][Shortcuts]
+global=Alt+F1
+
+[Containments][2][Applets][52]
+immutability=1
+plugin=org.kde.plasma.panelspacer
+
 [Containments][2][Applets][5]
 immutability=1
-plugin=org.kde.plasma.taskmanager
+plugin=org.kde.plasma.icontasks
+
+[Containments][2][Applets][5][Configuration][General]
+launchers=applications:systemsettings.desktop,applications:org.kde.discover.desktop,preferred://filemanager,preferred://browser
 
 [Containments][2][Applets][51]
 immutability=1
 plugin=org.kde.plasma.panelspacer
 
-[Containments][2][Applets][8]
+[Containments][2][Applets][6]
 immutability=1
-plugin=org.kde.plasma.digitalclock
-
-[Containments][2][Applets][7]
-immutability=1
-plugin=org.kde.plasma.systemtray
+plugin=org.kde.plasma.marginsseparator
 
 [Containments][2][General]
-AppletOrder=3;5;51;8;7
+AppletOrder=3;52;5;51;6
 
+# ============================ top panel ============================
 [Containments][30]
 activityId=
 formfactor=2
@@ -42,32 +80,215 @@ location=3
 plugin=org.kde.panel
 wallpaperplugin=org.kde.image
 
+# top-left, unchanged: window list
 [Containments][30][Applets][34]
 immutability=1
 plugin=org.kde.plasma.windowlist
 
+# flexible spacer pushing the right group to the middle-right
 [Containments][30][Applets][42]
 immutability=1
 plugin=org.kde.plasma.panelspacer
 
-[Containments][30][Applets][58]
+# lyrics display (Onlyrics, LRCLIB)
+[Containments][30][Applets][47]
 immutability=1
-plugin=org.kde.plasma.networkmanagement
+plugin=com.github.illuminate-dev.onlyrics
 
-[Containments][30][Applets][17]
+[Containments][30][Applets][47][Configuration][General]
+apiURL=none
+
+# net speed (text-only system monitor)
+[Containments][30][Applets][40]
+immutability=1
+plugin=org.kde.plasma.systemmonitor.net
+
+[Containments][30][Applets][40][Configuration]
+CurrentPreset=org.kde.plasma.systemmonitor
+
+[Containments][30][Applets][40][Configuration][Appearance]
+chartFace=org.kde.ksysguard.textonly
+showTitle=true
+title=网速
+
+[Containments][30][Applets][40][Configuration][ConfigDialog]
+DialogHeight=540
+DialogWidth=720
+
+[Containments][30][Applets][40][Configuration][SensorColors]
+network/all/download=0,229,255
+network/all/upload=255,46,136
+
+[Containments][30][Applets][40][Configuration][Sensors]
+highPrioritySensorIds=["network/all/download","network/all/upload"]
+lowPrioritySensorIds=[]
+totalSensors=["network/all/download","network/all/upload"]
+
+# CPU usage (text-only system monitor)
+[Containments][30][Applets][49]
+immutability=1
+plugin=org.kde.plasma.systemmonitor.cpu
+
+[Containments][30][Applets][49][Configuration]
+CurrentPreset=org.kde.plasma.systemmonitor
+
+[Containments][30][Applets][49][Configuration][Appearance]
+chartFace=org.kde.ksysguard.textonly
+showTitle=true
+title=CPU
+
+[Containments][30][Applets][49][Configuration][ConfigDialog]
+DialogHeight=540
+DialogWidth=720
+
+[Containments][30][Applets][49][Configuration][SensorColors]
+cpu/all/usage=255,46,136
+
+[Containments][30][Applets][49][Configuration][Sensors]
+highPrioritySensorIds=["cpu/all/usage"]
+lowPrioritySensorIds=["cpu/all/cpuCount","cpu/all/coreCount"]
+totalSensors=["cpu/all/usage"]
+
+# system tray (status bar)
+[Containments][30][Applets][7]
+immutability=1
+plugin=org.kde.plasma.systemtray
+
+[Containments][30][Applets][7][Configuration]
+PreloadWeight=75
+SystrayContainmentId=8
+
+# clock with date
+[Containments][30][Applets][8]
+immutability=1
+plugin=org.kde.plasma.digitalclock
+
+[Containments][30][Applets][8][Configuration][General]
+showSeconds=true
+
+[Containments][30][General]
+AppletOrder=34;42;47;40;49;7;8
+
+# ===================== system tray private containment =====================
+[Containments][8]
+activityId=
+formfactor=2
+immutability=1
+lastScreen=0
+location=0
+plugin=org.kde.plasma.private.systemtray
+popupHeight=512
+popupWidth=432
+wallpaperplugin=org.kde.image
+
+[Containments][8][Applets][9]
+immutability=1
+plugin=org.kde.plasma.cameraindicator
+
+[Containments][8][Applets][10]
+immutability=1
+plugin=org.kde.plasma.clipboard
+
+[Containments][8][Applets][11]
+immutability=1
+plugin=org.kde.plasma.devicenotifier
+
+[Containments][8][Applets][11][Configuration]
+PreloadWeight=60
+
+[Containments][8][Applets][13]
+immutability=1
+plugin=org.kde.plasma.notifications
+
+[Containments][8][Applets][13][Configuration]
+PreloadWeight=55
+
+[Containments][8][Applets][14]
+immutability=1
+plugin=org.kde.plasma.keyboardindicator
+
+[Containments][8][Applets][15]
+immutability=1
+plugin=org.kde.kscreen
+
+[Containments][8][Applets][15][Configuration]
+PreloadWeight=55
+
+[Containments][8][Applets][16]
+immutability=1
+plugin=org.kde.plasma.keyboardlayout
+
+[Containments][8][Applets][17]
 immutability=1
 plugin=org.kde.plasma.volume
 
-[Containments][30][Applets][50]
-immutability=1
-plugin=org.kde.plasma.battery
+[Containments][8][Applets][17][Configuration][General]
+migrated=true
 
-[Containments][30][Applets][59]
+[Containments][8][Applets][18]
+immutability=1
+plugin=org.kde.plasma.vault
+
+[Containments][8][Applets][19]
+immutability=1
+plugin=org.kde.plasma.printmanager
+
+[Containments][8][Applets][20]
+immutability=1
+plugin=org.kde.kdeconnect
+
+[Containments][8][Applets][20][Configuration]
+PreloadWeight=60
+
+[Containments][8][Applets][23]
 immutability=1
 plugin=org.kde.plasma.bluetooth
 
-[Containments][30][General]
-AppletOrder=34;42;58;17;50;59
+[Containments][8][Applets][23][Configuration]
+PreloadWeight=33
+
+[Containments][8][Applets][24]
+immutability=1
+plugin=org.kde.plasma.networkmanagement
+
+[Containments][8][Applets][24][Configuration]
+PreloadWeight=75
+
+[Containments][8][Applets][24][Configuration][General]
+currentDetailsTab=details
+
+[Containments][8][Applets][25]
+immutability=1
+plugin=org.kde.plasma.brightness
+
+[Containments][8][Applets][25][Configuration]
+PreloadWeight=7
+
+[Containments][8][Applets][26]
+immutability=1
+plugin=org.kde.plasma.battery
+
+[Containments][8][Applets][26][Configuration]
+PreloadWeight=22
+
+[Containments][8][Applets][27]
+immutability=1
+plugin=org.kde.plasma.mediacontroller
+
+[Containments][8][Applets][27][Configuration]
+PreloadWeight=7
+
+[Containments][8][Applets][28]
+immutability=1
+plugin=org.kde.plasma.kimpanel
+
+[Containments][8][ConfigDialog]
+DialogHeight=540
+DialogWidth=720
+
+[Containments][8][General]
+extraItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
+knownItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
 
 [ScreenMapping]
 itemsOnDisabledScreens=

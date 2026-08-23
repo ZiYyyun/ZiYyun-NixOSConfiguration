@@ -47,6 +47,14 @@ stdenv.mkDerivation {
       mkdir -p "$target/contents/ui"
       cp "$dir/metadata.json" "$target/"
 
+      # 上游 tarball 的 metadata.json 没有 KPackageStructure 字段（nixpkgs
+      # 构建时会注入 "Plasma/Applet"），plasmashell 会因此拒绝加载该 applet
+      # （"KPackageStructure ... does not match requested format"）。这里补上，
+      # 与 nixpkgs 构建的 metadata 保持一致。
+      if ! grep -q '"KPackageStructure"' "$target/metadata.json"; then
+        sed -i '1s/^{/{\n    "KPackageStructure": "Plasma\/Applet",/' "$target/metadata.json"
+      fi
+
       if [ -d "$dir/qml" ]; then
         # qml/ 子目录形式：taskmanager pager showdesktop keyboardlayout ...
         cp -r "$dir/qml/." "$target/contents/ui/"
