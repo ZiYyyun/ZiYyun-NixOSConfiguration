@@ -12,6 +12,11 @@ let
 
   # 面板歌词小部件（LRCLIB 数据源），配合顶部面板「歌词显示」使用。
   plasmoidOnlyrics = pkgs.callPackage ../../../packages/custom/plasmoid-onlyrics { };
+
+  # plasma-workspace/plasma-nm/plasma-pa 的 applet QML 同样被 nixpkgs 26.05
+  # 漏装（digitalclock/systemtray/panelspacer/networkmanagement/volume...），
+  # 与 plasma-desktop-qml 互补，缺了它们 plasmashell 会大面积报「软件包不存在」。
+  plasmaWorkspaceQml = pkgs.callPackage ../../../packages/custom/plasma-workspace-qml { };
 in
 {
   services.xserver.enable = true;
@@ -38,6 +43,7 @@ in
     kdePackages.breeze-icons
     oreo-cursors-plus
     plasmaDesktopQml
+    plasmaWorkspaceQml
     plasmoidOnlyrics
     kdePackages.yakuake
   ];

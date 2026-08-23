@@ -47,7 +47,19 @@
   udev,
   wayland,
   webkitgtk_4_1,
-  xorg,
+  libxcb,
+  libx11,
+  libxcomposite,
+  libxdamage,
+  libxext,
+  libxfixes,
+  libxi,
+  libxinerama,
+  libxrandr,
+  libxscrnsaver,
+  libxcursor,
+  libxkbfile,
+
 }:
 
 stdenv.mkDerivation rec {
@@ -97,18 +109,18 @@ stdenv.mkDerivation rec {
     udev
     wayland
     webkitgtk_4_1
-    xorg.libxcb
-    xorg.libX11
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXext
-    xorg.libXfixes
-    xorg.libXi
-    xorg.libXinerama
-    xorg.libXrandr
-    xorg.libXScrnSaver
-    xorg.libXcursor
-    xorg.libxkbfile
+    libxcb
+    libx11
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxi
+    libxinerama
+    libxrandr
+    libxscrnsaver
+    libxcursor
+    libxkbfile
   ];
 
   autoPatchelfIgnoreMissingDeps = [ "libc.musl-x86_64.so.1" ];

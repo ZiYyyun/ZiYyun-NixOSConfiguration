@@ -14,6 +14,7 @@
  *   dsh-context-doctor   0.6.1   上下文注入审计（context_audit 工具 + 面板）
  *   dsh-context-compass  0.7.14  上下文成本自查（/compass）
  *   dsh-dream-skin       0.4.4   换肤
+ *   @dsh-external/dsh-client-ui-skin-maid-atelier  鲸鱼娘皮肤（深海女仆工坊）
  *   传递依赖：@deepseek-ai/schemastery、@deepseek-ai/cosmokit、
  *             @standard-schema/spec、zod
  *
@@ -64,6 +65,13 @@ let
   zod = tgz "zod"
     "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz"
     "sha256-7jjxf1M/1QBhBoWkg64vQTwm9OszpRaEMUVjyNYPJ5w=";
+
+  # 鲸鱼娘皮肤（深海女仆工坊）—— Small-tailqwq/dsh-deep-whale 仓库的
+  # maid-atelier 子目录即完整皮肤包（自带构建产物），包名
+  # @dsh-external/dsh-client-ui-skin-maid-atelier。
+  deepWhale = tgz "dsh-deep-whale"
+    "https://ghfast.top/https://github.com/Small-tailqwq/dsh-deep-whale/archive/refs/heads/main.tar.gz"
+    "sha256-P1K/NDcpC/PGbo9/jqFXP1hucVvxKxuoEyozeMXm3wA=";
 in
 stdenv.mkDerivation {
   pname = "dsh-plugins";
@@ -89,6 +97,12 @@ stdenv.mkDerivation {
     unpackOne ${cosmokit}    "$out/node_modules/@deepseek-ai/cosmokit"
     unpackOne ${spec}        "$out/node_modules/@standard-schema/spec"
     unpackOne ${zod}         "$out/node_modules/zod"
+
+    # 鲸鱼娘皮肤：仓库含多个皮肤，只提取 maid-atelier 子目录
+    mkdir -p /tmp/deep-whale "$out/node_modules/@dsh-external"
+    tar xzf ${deepWhale} -C /tmp/deep-whale --strip-components=1
+    cp -r /tmp/deep-whale/maid-atelier \
+      "$out/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier"
 
     # dsh-context-doctor / dsh-context-compass import @deepseek-ai/dsh-tools
     # at runtime.  dsh-tools is a dsh core package shipped inside the dsh

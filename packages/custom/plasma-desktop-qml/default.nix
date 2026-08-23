@@ -82,6 +82,23 @@ stdenv.mkDerivation {
     install_applet org.kde.plasma.windowlist "$srcApplets/window-list"
     install_applet org.kde.plasma.trash "$srcApplets/trash"
 
+    # containments：org.kde.panel（面板容器）—— nixpkgs 同样漏装，
+    # 缺了它 plasmashell 无法创建任何面板（桌面/任务栏全挂）。
+    # org.kde.desktop 是 C++ 内置 containment，无需 QML。
+    install_containment() {
+      local id="$1" dir="$2"
+      local target="$out/share/plasma/containments/$id"
+      mkdir -p "$target/contents/ui"
+      cp "$dir/metadata.json" "$target/"
+      cp "$dir"/*.qml "$target/contents/ui/" 2>/dev/null || true
+      cp "$dir"/*.js "$target/contents/ui/" 2>/dev/null || true
+      if [ -f "$dir/main.xml" ]; then
+        mkdir -p "$target/contents/config"
+        cp "$dir/main.xml" "$target/contents/config/main.xml"
+      fi
+    }
+    install_containment org.kde.panel "$srcApplets/../containments/panel"
+
     runHook postInstall
   '';
 

@@ -11,5 +11,6 @@
     ./kde.nix
     ./niri.nix
     ./noctalia.nix
+    ./user-dirs.nix
   ];
 }

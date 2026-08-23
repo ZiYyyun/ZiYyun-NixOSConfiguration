@@ -30,6 +30,7 @@ let
       "dsh-context-doctor" = "0.6.1";
       "dsh-dream-skin" = "^0.4.4";
       "dshmarket" = "^1.0.0";
+      "@dsh-external/dsh-client-ui-skin-maid-atelier" = "0.0.1";
     };
     dsh.profile.bundles = [
       "@deepseek-ai/dsh-base"
@@ -38,6 +39,7 @@ let
       "dsh-dream-skin"
       "dsh-context-compass"
       "dshmarket"
+      "@dsh-external/dsh-client-ui-skin-maid-atelier"
     ];
   } + "\n";
 in
@@ -49,8 +51,12 @@ in
     ".dsh/profiles/web/node_modules/dsh-dream-skin".source = "${dshPlugins}/node_modules/dsh-dream-skin";
     ".dsh/profiles/web/node_modules/@deepseek-ai/schemastery".source = "${dshPlugins}/node_modules/@deepseek-ai/schemastery";
     ".dsh/profiles/web/node_modules/@deepseek-ai/cosmokit".source = "${dshPlugins}/node_modules/@deepseek-ai/cosmokit";
+    # dsh-tools 由 dsh 宿主提供，plugins.nix 里已从宿主 node_modules 软链进产物；
+    # context-doctor / context-compass 运行时 import 它，必须链接到 profile。
+    ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-tools".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-tools";
     ".dsh/profiles/web/node_modules/@standard-schema/spec".source = "${dshPlugins}/node_modules/@standard-schema/spec";
     ".dsh/profiles/web/node_modules/zod".source = "${dshPlugins}/node_modules/zod";
+    ".dsh/profiles/web/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier".source = "${dshPlugins}/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier";
     ".dsh/profiles/web/package.json".text = profilePackageJson;
   };
 }
