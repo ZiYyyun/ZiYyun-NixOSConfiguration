@@ -1,12 +1,16 @@
 /**
  * File: default.nix
  * Author: ziyun
- * Date: 2026-08-21
+ * Date: 2026-08-24
  * Description: 合宙 (OpenLuat) 烧录与脚本工具。
  *
  * - luatool        : kicer/luatool — Python 脚本，向 LuatOS 固件加载 init.lua/main.lua
+ *                    （注意：仅 ESP8266/NodeMCU 协议，Cat.1 如 Air780EPM 不适用）
  * - luatos-utils   : cjacker/luatos-utils — Linux 下生成/烧录 script.img
  *                    （Air101/Air103/ESP32S3/ESP32C3），含 mkscriptbin 工具
+ * - luatos-cli     : openLuat/luatos-cli — 纯 Rust 命令行工具，支持多芯片刷机
+ *                    （Air780EPM/EC718、Air8101/BK7258、Air101/103 等），
+ *                    Cat.1 模组（如 Air780EPM）必须用它而非 luatool
  */
 { lib, pkgs, fetchFromGitHub, python3 }:
 
@@ -52,7 +56,28 @@ let
       cp mkscriptbin $out/bin/
     '';
   };
+  # 合宙官方纯 Rust CLI：Air780EPM(EC718)/Air8101/Air101 等多芯片刷机、日志、
+  # 项目/固件构建。Cat.1 模组（Air780EPM 等）必须用它刷机。
+  luatosCli = pkgs.rustPlatform.buildRustPackage {
+    pname = "luatos-cli";
+    version = "unstable-2026-08-24";
+    src = pkgs.fetchgit {
+      url = "https://gitee.com/openLuat/luatos-cli.git";
+      rev = "55fa339cc61c94968de5f33d6c12cb0b13f19cdd";
+      hash = "sha256-PYURrZA0Xp8L25wPBZun7RbRmcvXVKt2dxVSYhArUT4=";
+    };
+    # serialport 依赖 libudev；cargoHash 由首次构建报错给出。
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    buildInputs = [ pkgs.udev ];
+    cargoHash = "";
+    meta = with lib; {
+      description = "LuatOS CLI - multi-chip flashing/log/project tool (Air780EPM etc.)";
+      homepage = "https://gitee.com/openLuat/luatos-cli";
+      license = licenses.mit;
+      platforms = platforms.linux;
+    };
+  };
 in
 {
-  inherit luatool luatosUtils;
+  inherit luatool luatosUtils luatosCli;
 }
