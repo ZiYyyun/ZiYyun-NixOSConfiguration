@@ -11,7 +11,9 @@ https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
 - `config/plasma-org.kde.plasma.desktop-appletsrc` — the two-panel layout:
 
   **bottom panel** (Containment 2, floating, 45px):
-  - kickoff (start menu, normal popup — not fullscreen) + panel spacer
+  - kickerdash (`org.kde.plasma.kickerdash`, Application Dashboard — the
+    fullscreen app launcher; click the bottom-left button to get a full-screen
+    app menu) + panel spacer
   - icon-only task manager (`org.kde.plasma.icontasks`, Win11 style:
     open windows collapse to icons, no long strips) + panel spacer
   - margins separator (right edge)
@@ -20,14 +22,14 @@ https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
   **top panel** (Containment 30, floating, 36px), left → right:
   - window list (unchanged, top-left)
   - flexible spacer
-  - lyrics display (`com.github.illuminate-dev.onlyrics`, middle-right)
-  - net speed (system monitor, text-only) → CPU usage (text-only)
+  - panel colorizer + net speed (system monitor, text-only) → CPU (text-only)
   - system tray (status bar) → digital clock (time + date, with seconds)
 
-  **system tray** (private containment 8): clipboard, notifications,
-  volume, network, bluetooth, battery, brightness, kimpanel (fcitx5),
-  keyboard layout, kscreen, media controller, vault, print manager,
-  kdeconnect, device notifier, camera indicator.
+  **system tray** (`[Containments][30][Applets][7]`): network, screen
+  (kscreen) and bluetooth are pinned via `shownItems` so they always show;
+  the rest (clipboard, notifications, volume, brightness, battery, kimpanel,
+  keyboard layout, media controller, vault, print manager, kdeconnect, device
+  notifier, camera indicator) auto-hide into the overflow popup.
 
 - `config/kdeglobals` — the "Sakura Neon" (樱花霓虹) anime scheme:
   dark violet base, neon pink/cyan accents, `candy-icons` gradient icon
@@ -45,8 +47,16 @@ https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
 ## Related Packages
 
 - `packages/custom/plasma-desktop-qml` — QML applet frontends missing from
-  the nixpkgs plasma-desktop build (kickoff, icontasks/taskmanager,
-  windowlist, kimpanel, ...).
+  the nixpkgs plasma-desktop build (kickoff, kicker, icontasks/taskmanager,
+  windowlist, kimpanel, ...). kicker's QML also powers the fullscreen
+  Application Dashboard (kickerdash) via `X-Plasma-RootPath`.
+- `packages/custom/plasma-workspace-qml` — same fix for
+  plasma-workspace/plasma-nm/plasma-pa applets (systemtray, digitalclock,
+  networkmanagement, volume, ...).
+- `packages/custom/bluedevil-qml` — QML frontend for the bluetooth tray
+  applet (`org.kde.plasma.bluetooth`; C++ plugin already built by nixpkgs).
+- `packages/custom/kscreen-qml` — QML frontend for the screen/display tray
+  applet (`org.kde.kscreen`; C++ plugin already built by nixpkgs).
 - `packages/custom/plasmoid-onlyrics` — the panel lyrics widget
   (`com.github.illuminate-dev.onlyrics`), patched to use LRCLIB
   (https://lrclib.net) as default lyrics source. Works with any

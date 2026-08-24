@@ -180,6 +180,11 @@
         ./hosts/ThinkPad-P14s
       ];
 
+      # 云服务器（headless，x86_64，UEFI）。
+      nixosConfigurations.cloud-server = mkSystem [
+        ./hosts/cloud-server
+      ];
+
       devShells.${system} = {
         default = mkDevShell ./dev_toolchains/compilers/c-cpp.nix;
 

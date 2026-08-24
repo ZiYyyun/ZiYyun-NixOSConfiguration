@@ -1,6 +1,7 @@
 # Two-panel layout (declarative):
-#   bottom (Containment 2): kickoff + icon-only task manager (Win11 style) +
-#     pager (virtual desktop switcher, bottom-right) + edge separator.
+#   bottom (Containment 2): kickerdash (fullscreen Application Dashboard) +
+#     icon-only task manager (Win11 style) + pager (virtual desktop switcher,
+#     bottom-right) + edge separator.
 #   top (Containment 30): window list (top-left) | spacer | panel colorizer
 #     + net speed + CPU + system tray + clock (middle-right).
 # Tray items live on the systemtray applet itself (Plasma 6 native; no
@@ -21,9 +22,12 @@ location=4
 plugin=org.kde.panel
 wallpaperplugin=org.kde.image
 
+# 左下角全屏启动器：org.kde.plasma.kickerdash（Application Dashboard），
+# 其 metadata 通过 X-Plasma-RootPath 复用 kicker 的 QML（含 isDash 全屏分支），
+# 点击后弹出覆盖全屏的应用菜单。Alt+F1 快捷键保持。
 [Containments][2][Applets][3]
 immutability=1
-plugin=org.kde.plasma.kickoff
+plugin=org.kde.plasma.kickerdash
 
 [Containments][2][Applets][3][Configuration]
 PreloadWeight=100
@@ -150,12 +154,16 @@ lowPrioritySensorIds=["cpu/all/cpuCount","cpu/all/coreCount"]
 totalSensors=["cpu/all/usage"]
 
 # system tray (status bar)
+# shownItems = Plasma 6 托盘的「始终显示」列表；这里固定网络/屏幕/蓝牙常驻
+# 托盘（不带则它们只在「显示隐藏图标」折叠区里）。extraItems 里的其余项保持
+# 「相关时显示」。
 [Containments][30][Applets][7]
 immutability=1
 plugin=org.kde.plasma.systemtray
 
 [Containments][30][Applets][7][Configuration]
 PreloadWeight=75
+shownItems=org.kde.plasma.networkmanagement,org.kde.kscreen,org.kde.plasma.bluetooth
 extraItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
 knownItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
 

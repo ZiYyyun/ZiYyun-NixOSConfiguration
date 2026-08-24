@@ -17,6 +17,11 @@ let
   # 漏装（digitalclock/systemtray/panelspacer/networkmanagement/volume...），
   # 与 plasma-desktop-qml 互补，缺了它们 plasmashell 会大面积报「软件包不存在」。
   plasmaWorkspaceQml = pkgs.callPackage ../../../packages/custom/plasma-workspace-qml { };
+
+  # bluedevil / kscreen 的托盘 applet QML 前端也被 26.05 漏装（C++ 插件
+  # 已构建），补上后系统托盘才有蓝牙 / 屏幕(显示设置)图标。
+  bluedevilQml = pkgs.callPackage ../../../packages/custom/bluedevil-qml { };
+  kscreenQml = pkgs.callPackage ../../../packages/custom/kscreen-qml { };
 in
 {
   services.xserver.enable = true;
@@ -44,6 +49,8 @@ in
     oreo-cursors-plus
     plasmaDesktopQml
     plasmaWorkspaceQml
+    bluedevilQml
+    kscreenQml
     plasmoidOnlyrics
     plasma-panel-colorizer   # 社区插件：面板着色（顶栏右上角，替代歌词）
     kdePackages.yakuake

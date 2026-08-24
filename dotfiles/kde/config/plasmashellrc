@@ -1,10 +1,18 @@
 [PlasmaTransientsConfig]
-popupHeight=400
-popupWidth=560
+popupHeight[$d]
+popupWidth[$d]
+
+[PlasmaTransientsConfig][Applets][75]
+immutability=1
+plugin=metadata
+
+[PlasmaTransientsConfig][Applets][93]
+immutability=1
+plugin=metadata
 
 [PlasmaTransientsConfig][ConfigDialog]
-DialogHeight=630
-DialogWidth=810
+DialogHeight[$d]
+DialogWidth[$d]
 
 [PlasmaViews][Panel 2]
 floating=1

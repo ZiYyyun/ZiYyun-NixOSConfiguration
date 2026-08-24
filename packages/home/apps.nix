@@ -24,6 +24,7 @@
     baidupcs-go
     mqttx            # MQTT 客户端（LuatOS/物联网调试通用）
     postman
+    gerbv
     # Custom-packaged desktop apps (appear in the KDE application menu).
     customPackages.trae-code
     customPackages.feiq
