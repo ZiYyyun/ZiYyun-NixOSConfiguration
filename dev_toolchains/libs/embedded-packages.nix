@@ -25,6 +25,7 @@ rec {
     dosfstools
     e2fsprogs
     mtools
+    dotnet-runtime_6
   ];
 
   debugAndFlash = with pkgs; [

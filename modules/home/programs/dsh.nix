@@ -58,6 +58,14 @@ in
     # dsh-tools 由 dsh 宿主提供，plugins.nix 里已从宿主 node_modules 软链进产物；
     # context-doctor / context-compass 运行时 import 它，必须链接到 profile。
     ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-tools".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-tools";
+    # dsh-coding-subscription-oauth 的 peerDeps（dsh-llm / dsh-llm-pi-ai /
+    # dsh-atomic-write / dsh-home-paths / @earendil-works/pi-ai）同样由 dsh
+    # 宿主提供，plugins.nix 已软链进产物；这里链接到 profile 保持一致。
+    ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-llm".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-llm";
+    ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-llm-pi-ai".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-llm-pi-ai";
+    ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-atomic-write".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-atomic-write";
+    ".dsh/profiles/web/node_modules/@deepseek-ai/dsh-home-paths".source = "${dshPlugins}/node_modules/@deepseek-ai/dsh-home-paths";
+    ".dsh/profiles/web/node_modules/@earendil-works/pi-ai".source = "${dshPlugins}/node_modules/@earendil-works/pi-ai";
     ".dsh/profiles/web/node_modules/@standard-schema/spec".source = "${dshPlugins}/node_modules/@standard-schema/spec";
     ".dsh/profiles/web/node_modules/zod".source = "${dshPlugins}/node_modules/zod";
     ".dsh/profiles/web/node_modules/dsh-coding-subscription-oauth".source = "${dshPlugins}/node_modules/dsh-coding-subscription-oauth";

@@ -20,16 +20,24 @@
 { pkgs, callPackage }:
 let
   mkWineApp = callPackage ./wine-app.nix { };
-in
-mkWineApp {
-  pname = "luatools";
-  version = "3.4.6"; # docs 记录的最新版（2026.08.21）；Luatools 首启可自更新
   src = pkgs.fetchurl {
     name = "Luatools_v3.exe";
     url = "https://luatos.com/luatools/download/last";
     sha256 = "sha256-iquekiUinyJeMTnN1PCS+KbNLYtRyBgGKIjUn4MmOzI=";
   };
+in
+mkWineApp {
+  pname = "luatools";
+  version = "3.4.6"; # docs 记录的最新版（2026.08.21）；Luatools 首启可自更新
+  inherit src;
   mode = "firstrun-install";
+  # LuaTools 是 64 位 PE32+ exe，必须用 win64 前缀（win32 前缀会报
+  # "EXE 格式无效"）。wrapper 会用 winePkg（WoW64）并以 WINEARCH=win64
+  # 创建前缀；旧前缀需删除后重建。
+  wineArch = "win64";
+  # PyInstaller onefile 的 PKG 归档追加在 exe 末尾，GNU strip 会把它剥掉，
+  # 只剩引导头（307KB），所以必须跳过 stripPhase。
+  dontStrip = true;
   # 单文件 exe：放进构建目录（默认 unpack 不识别 exe）。
   unpackPhase = "cp ${src} Luatools_v3.exe";
   # 复制到可写前缀（等价官方“放入 LuaTools 文件夹”）。

@@ -18,10 +18,14 @@
  *   传递依赖：@deepseek-ai/schemastery、@deepseek-ai/cosmokit、
  *             @standard-schema/spec、zod
  *
- *   @deepseek-ai/dsh-tools 不在此处独立拉取——它由 dsh 宿主提供，
- *   installPhase 里从 dsh 包的 node_modules 软链接过来。
- *   这样 dsh-tools 自身的 peerDeps（cordis / dsh-scope / dsh-llm /
- *   dsh-session 等）也能从 dsh 宿主的 node_modules 正确解析。
+ *   @deepseek-ai/dsh-tools / dsh-llm / dsh-llm-pi-ai / dsh-atomic-write /
+ *   dsh-home-paths 以及 @earendil-works/pi-ai 不在此处独立拉取——它们由
+ *   dsh 宿主提供，installPhase 里从 dsh 包的 node_modules 软链接过来。
+ *   这些包自身的 peerDeps（cordis / dsh-scope / dsh-session 等）也能从
+ *   dsh 宿主的 node_modules 正确解析。
+ *   注意：插件被 home.file .source 软链进 profile，Node 解析 realpath 后
+ *   会从本产物的 node_modules 向上查找，所以这些 peerDeps 必须出现在
+ *   本产物的 node_modules 里（仅放在 profile 里不够）。
  *
  * 更新插件：改版本号与 hash → home-manager switch → 重启 dsh web。
  * github.com 直连不通，doctor 走 ghfast.top 代理（与本仓库其他 input 一致）。
@@ -122,13 +126,47 @@ stdenv.mkDerivation {
     cp -r /tmp/deep-whale/maid-atelier \
       "$out/node_modules/@dsh-external/dsh-client-ui-skin-maid-atelier"
 
-    # dsh-context-doctor / dsh-context-compass import @deepseek-ai/dsh-tools
-    # at runtime.  dsh-tools is a dsh core package shipped inside the dsh
-    # host's own node_modules, so symlink it from there rather than fetching
-    # a separate copy — dsh-tools' own peerDeps (cordis, dsh-scope, dsh-llm,
+    # dsh-coding-subscription-oauth / dsh-context-doctor / dsh-context-compass
+    # import @deepseek-ai/dsh-* and @earendil-works/pi-ai at runtime as
+    # peerDependencies.  These are dsh core packages shipped inside the dsh
+    # host's own node_modules, so symlink them from there rather than fetching
+    # separate copies — their own transitive peerDeps (cordis, dsh-scope,
     # dsh-session …) resolve correctly from the dsh host's node_modules tree.
-    ln -s "${dsh}/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-tools" \
-      "$out/node_modules/@deepseek-ai/dsh-tools"
+    linkFromHost() { # $1 = package path under host node_modules (e.g. @deepseek-ai/dsh-llm)
+      mkdir -p "$out/node_modules/$(dirname "$1")"
+      ln -s "${dsh}/lib/node_modules/@deepseek-ai/dsh/node_modules/$1" \
+        "$out/node_modules/$1"
+    }
+    for pkg in \
+      @deepseek-ai/dsh-tools \
+      @deepseek-ai/dsh-llm \
+      @deepseek-ai/dsh-llm-pi-ai \
+      @deepseek-ai/dsh-atomic-write \
+      @deepseek-ai/dsh-home-paths \
+      @earendil-works/pi-ai
+    do
+      linkFromHost "$pkg"
+    done
+
+    # dsh-coding-subscription-oauth's client bundle calls ctx.slots, but the
+    # published package ships an incomplete client injection setup, so the
+    # cordis context proxy throws "cannot get property 'slots' without inject"
+    # and the whole plugin fails to load in the web UI.  Two places need the
+    # slots service wired up (dsh-context-doctor, which works, does both):
+    #   1. package.json dsh.client.inject must load @deepseek-ai/dsh-client-ui-slots
+    #      (the package that provides the slots service)
+    #   2. client.js' inject export must request "slots" (service name) —
+    #      the bundle currently only declares ["locale"]
+    # NB: the npm tarball's package.json uses CRLF line endings, so strip the
+    # \r first or the anchored sed match never fires.
+    codingOauthPj="$out/node_modules/dsh-coding-subscription-oauth/package.json"
+    tr -d '\r' < "$codingOauthPj" > "$codingOauthPj.lf"
+    mv "$codingOauthPj.lf" "$codingOauthPj"
+    sed -i \
+      '/^        "@deepseek-ai\/dsh-client-ui-settings",$/a\        "@deepseek-ai/dsh-client-ui-slots",' \
+      "$codingOauthPj"
+    sed -i 's/Yo=\["locale"\]/Yo=["locale","slots"]/' \
+      "$out/node_modules/dsh-coding-subscription-oauth/lib/client.js"
 
     # dshmarket's author used 'dsh-market' (with dash) as the internal id
     # but published the npm package as 'dshmarket' (no dash).  This causes

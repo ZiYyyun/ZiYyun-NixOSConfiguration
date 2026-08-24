@@ -192,6 +192,8 @@
         go = mkDevShell ./dev_toolchains/compilers/go.nix;
         java = mkDevShell ./dev_toolchains/compilers/java.nix;
         dotnet = mkDevShell ./dev_toolchains/compilers/dotnet.nix;
+        # Lua 语言开发（含 C 工具链；LuatOS 脚本/原生模块）。
+        lua = mkDevShell ./dev_toolchains/compilers/lua.nix;
 
         stm = mkDevShell ./dev_toolchains/embedded/stm.nix;
         # Unified ESP32 shell: ESP-IDF + flashing/serial tools (see let above).

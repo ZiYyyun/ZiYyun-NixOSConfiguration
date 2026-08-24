@@ -30,5 +30,6 @@
     customPackages.redspider-student
     customPackages.qoder-cn
     customPackages.qoder-wake
+    customPackages.luatools  # 合宙 LuatOS 官方调试/烧录工具（Wine）
   ];
 }

@@ -45,32 +45,66 @@
   description ? "",
   categories ? "Network;",
   winePkg ? pkgs.wineWowPackages.wayland,
-  cjkFont ? pkgs.wqy_zenhei,
+  # CJK font for Wine. NB: must be a font Wine's text engine can actually
+  # rasterise — wqy-zenhei/wqy-microhei (TrueType collections) hit Wine's
+  # "unsupported font format" path and render every CJK glyph as a box;
+  # Noto Sans CJK parses cleanly and renders. Register it under its REAL
+  # family name ("Noto Sans CJK SC"), otherwise font substitution can't
+  # resolve it and Wine falls back to the bitmap "System" font (boxes).
+  cjkFont ? pkgs.noto-fonts-cjk-sans,
   forceX11 ? false,          # force the X11 driver (XWayland): fixes window
                              # interaction for apps whose windows misbehave
                              # under the native Wayland driver (e.g. Red Spider
                              # broadcast window cannot be clicked/dragged)
+  dontStrip ? false,         # skip stdenv's stripPhase. PE binaries must not
+                             # be processed by GNU strip: for PyInstaller
+                             # onefile apps (e.g. LuaTools) strip removes the
+                             # PKG archive appended after the bootloader,
+                             # leaving a broken bootloader-only exe.
+  wineArch ? null,           # WINEPREFIX architecture: "win32" | "win64" |
+                             # null = keep the prefix's existing arch. 64-bit
+                             # apps (e.g. LuaTools, a PE32+ x86-64 exe) MUST
+                             # use a win64 prefix, which needs winePkg (WoW64)
+                             # and WINEARCH=win64 at prefix creation time.
 }:
 
 assert mode == "extract" -> mainExe != null;
 assert mode == "firstrun-install" -> (installer != null || installCmd != null);
 
 let
-  fontFile = "${cjkFont}/share/fonts/wqy-zenhei.ttc";
+  fontFile = "${cjkFont}/share/fonts/opentype/noto-cjk/NotoSansCJK-VF.otf.ttc";
 
   # CJK font injection: runs on every launch until the marker exists, so it
   # also repairs prefixes created before this feature.
+  #
+  # The recipe below is the one that actually works under Wine (verified with
+  # LuaTools, a wxPython app that draws its UI with the bitmap "System" font):
+  #   - copy Noto Sans CJK into the prefix (the file name is irrelevant, the
+  #     REGISTRY name is what matters);
+  #   - register it under its REAL family name "Noto Sans CJK SC" in BOTH the
+  #     64-bit and Wow6432Node registry views (a mismatched family name makes
+  #     Wine fall back to "System Regular", i.e. boxes again);
+  #   - substitute every common CJK / bitmap default font name (宋体, 黑体,
+  #     雅黑, SimSun, Tahoma, System, MS Sans Serif, MS Shell Dlg, ...) to it.
+  #   - add a FontLink (SystemLink) for "System" as a secondary fallback.
   fontInitBlock = ''
     if [ ! -f "$WINEPREFIX/.cjk-fonts-installed" ]; then
       wineboot -u >/dev/null 2>&1 || true
       FONTS_DIR="$WINEPREFIX/drive_c/windows/Fonts"
       mkdir -p "$FONTS_DIR"
-      cp "${fontFile}" "$FONTS_DIR/wqy-zenhei.ttc"
-      wine reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /v "WenQuanYi Zen Hei (TrueType)" /d "wqy-zenhei.ttc" /f >/dev/null 2>&1 || true
-      # Map every common CJK font name to WenQuanYi so GBK-era apps (FeiQ,
-      # Red Spider) render Chinese even when they request 宋体/黑体/雅黑 etc.
-      for SUB in SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线" "MS Shell Dlg" "MS Shell Dlg 2"; do
-        wine reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\FontSubstitutes" /v "$SUB" /d "WenQuanYi Zen Hei" /f >/dev/null 2>&1 || true
+      cp "${fontFile}" "$FONTS_DIR/NotoSansCJK.ttc"
+      for FONTVIEW in "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion" \
+                      "HKLM\\Software\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion"; do
+        wine reg add "$FONTVIEW\\Fonts" /v "Noto Sans CJK SC (TrueType)" /d "C:\\windows\\Fonts\\NotoSansCJK.ttc" /f >/dev/null 2>&1 || true
+        # Keep the bitmap "System" font for Latin (preserves metrics/layout),
+        # but let Chinese glyphs fall back to Noto.
+        wine reg add "$FONTVIEW\\FontLink\\SystemLink" /v "System" /d "NotoSansCJK.ttc,Noto Sans CJK SC\\0" /f >/dev/null 2>&1 || true
+        # Map every common CJK + bitmap/default font name to Noto so GBK-era
+        # apps (FeiQ, Red Spider, LuaTools) render Chinese even when they
+        # request 宋体/黑体/雅黑/System/MS Sans Serif etc.
+        for SUB in System "MS Sans Serif" "MS Serif" Fixedsys Terminal "Small Fonts" Courier Modern Roman Script Tahoma "Tahoma Bold" Arial "Arial Black" "Segoe UI" "Segoe UI Bold" "Courier New" "Times New Roman" "Microsoft Sans Serif" Calibri Consolas Verdana Georgia SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线" "MS Shell Dlg" "MS Shell Dlg 2"; do
+          wine reg add "$FONTVIEW\\FontSubstitutes" /v "$SUB" /d "Noto Sans CJK SC" /f >/dev/null 2>&1 || true
+        done
       done
       touch "$WINEPREFIX/.cjk-fonts-installed"
     fi
@@ -102,7 +136,7 @@ let
   '';
 in
 stdenv.mkDerivation {
-  inherit pname version src;
+  inherit pname version src dontStrip;
 
   nativeBuildInputs = [ pkgs.unzip ] ++ extraNativeBuildInputs;
   unpackPhase = if unpackPhase != null then unpackPhase else null;
@@ -114,12 +148,17 @@ stdenv.mkDerivation {
     mkdir -p $out/lib/${pname} $out/bin $out/share/applications
 
     # Copy unpacked source (zip archives are unpacked by default unpackPhase;
-    # single exe files land in $PWD as-is).
+    # single exe files land in $PWD as-is). NB: `basename $src` is the full
+    # "<hash>-<name>" store path basename, never a file in $PWD, so the else
+    # branch below is the one that actually runs.
     if [ -f "$PWD/$(basename $src)" ] && ! [ -d "$PWD/$(basename $src)" ]; then
       cp "$PWD/$(basename $src)" $out/lib/${pname}/
     else
       cp -rT "$PWD" $out/lib/${pname}/ 2>/dev/null || true
     fi
+    # Drop the stdenv-generated environment dump if it leaked in via the
+    # wholesale copy above; it is never part of the app.
+    rm -f $out/lib/${pname}/env-vars
     ${preInstall}
 
     # Launcher wrapper.
@@ -130,6 +169,11 @@ stdenv.mkDerivation {
     export WINEDLLOVERRIDES="winemenubuilder.exe=d;mscoree,mshtml=d"
     export WINEFSYNC=1
     export WINEDEBUG=-all
+    # Use the packaged WoW64-capable wine (winePkg) instead of whatever `wine`
+    # happens to be on PATH: home-manager installs a wine whose prefixes
+    # default to win32 and that cannot launch 64-bit apps (e.g. LuaTools).
+    export PATH="${winePkg}/bin:$PATH"
+    ${lib.optionalString (wineArch != null) "export WINEARCH=${wineArch}"}
     mkdir -p "$WINEPREFIX"
     ${lib.optionalString forceX11 ''
       # Force the X11 (XWayland) display driver for this prefix.
