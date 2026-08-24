@@ -74,7 +74,9 @@
   users.users."ziyun" = {
     isNormalUser = true;
     description = "ziyun";
-    extraGroups = [ "networkmanager" "wheel" ];
+    # dialout：访问 USB 串口设备（/dev/ttyUSB*、/dev/ttyACM*），
+    # 嵌入式开发（LuatOS/ESP/STM 等）烧录调试需要。
+    extraGroups = [ "networkmanager" "wheel" "dialout" ];
   };
 
   programs.firefox.enable = true;

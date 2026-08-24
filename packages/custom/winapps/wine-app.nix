@@ -93,19 +93,34 @@ let
       FONTS_DIR="$WINEPREFIX/drive_c/windows/Fonts"
       mkdir -p "$FONTS_DIR"
       cp "${fontFile}" "$FONTS_DIR/NotoSansCJK.ttc"
+      # Mono CJK face for the console (cmd.exe): the GUI must use a
+      # proportional font, but console apps need a monospace face or columns
+      # misalign and look terrible ("辣眼睛"). Noto Sans Mono CJK SC covers
+      # both ASCII and CJK at fixed width.
+      cp "${cjkFont}/share/fonts/opentype/noto-cjk/NotoSansMonoCJK-VF.otf.ttc" "$FONTS_DIR/NotoSansMonoCJK.ttc"
       for FONTVIEW in "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion" \
                       "HKLM\\Software\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion"; do
         wine reg add "$FONTVIEW\\Fonts" /v "Noto Sans CJK SC (TrueType)" /d "C:\\windows\\Fonts\\NotoSansCJK.ttc" /f >/dev/null 2>&1 || true
+        wine reg add "$FONTVIEW\\Fonts" /v "Noto Sans Mono CJK SC (TrueType)" /d "C:\\windows\\Fonts\\NotoSansMonoCJK.ttc" /f >/dev/null 2>&1 || true
         # Keep the bitmap "System" font for Latin (preserves metrics/layout),
         # but let Chinese glyphs fall back to Noto.
         wine reg add "$FONTVIEW\\FontLink\\SystemLink" /v "System" /d "NotoSansCJK.ttc,Noto Sans CJK SC\\0" /f >/dev/null 2>&1 || true
         # Map every common CJK + bitmap/default font name to Noto so GBK-era
         # apps (FeiQ, Red Spider, LuaTools) render Chinese even when they
         # request 宋体/黑体/雅黑/System/MS Sans Serif etc.
-        for SUB in System "MS Sans Serif" "MS Serif" Fixedsys Terminal "Small Fonts" Courier Modern Roman Script Tahoma "Tahoma Bold" Arial "Arial Black" "Segoe UI" "Segoe UI Bold" "Courier New" "Times New Roman" "Microsoft Sans Serif" Calibri Consolas Verdana Georgia SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线" "MS Shell Dlg" "MS Shell Dlg 2"; do
+        for SUB in System "MS Sans Serif" "MS Serif" "Small Fonts" Modern Roman Script Tahoma "Tahoma Bold" Arial "Arial Black" "Segoe UI" "Segoe UI Bold" "Times New Roman" "Microsoft Sans Serif" Calibri Verdana Georgia SimSun NSimSun SimSun-ExtB SimSun-18030 "MS Song" "宋体" "新宋体" "宋体-18030" SimHei "黑体" "Microsoft YaHei" "微软雅黑" "Microsoft YaHei UI" KaiTi "楷体" "楷体_GB2312" FangSong "仿宋" "仿宋_GB2312" PMingLiU MingLiU DFKai-SB "MingLiU_HKSCS" "SimSun-PUA" DengXian "等线" "MS Shell Dlg" "MS Shell Dlg 2"; do
           wine reg add "$FONTVIEW\\FontSubstitutes" /v "$SUB" /d "Noto Sans CJK SC" /f >/dev/null 2>&1 || true
         done
+        # Console fonts must stay monospaced -> route them to the Mono face.
+        for SUB in "Courier New" "Courier New Bold" Courier "Terminal" Fixedsys Consolas "Consolas Bold" "Lucida Console" "Lucida Sans Typewriter"; do
+          wine reg add "$FONTVIEW\\FontSubstitutes" /v "$SUB" /d "Noto Sans Mono CJK SC" /f >/dev/null 2>&1 || true
+        done
       done
+      # Make cmd.exe use the mono CJK face (fixed-pitch) instead of the
+      # default Lucida Console (no CJK glyphs).
+      wine reg add "HKCU\\Console" /v FaceName /d "Noto Sans Mono CJK SC" /f >/dev/null 2>&1 || true
+      wine reg add "HKCU\\Console" /v FontFamily /d "0" /t REG_DWORD /f >/dev/null 2>&1 || true
+      wine reg add "HKCU\\Console" /v FontWeight /d "400" /t REG_DWORD /f >/dev/null 2>&1 || true
       touch "$WINEPREFIX/.cjk-fonts-installed"
     fi
   '';
