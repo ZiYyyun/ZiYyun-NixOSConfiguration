@@ -31,13 +31,14 @@ mkEmbeddedMcuShell {
   packages = embeddedPackages.luatos ++ [
     luatosTools.luatool
     luatosTools.luatosUtils
+    luatosTools.luatosCli  # Air780EPM(EC718) 等 Cat.1 模组刷机（luatool 不适用）
   ];
   tools = [
     "riscv64-none-elf-gcc (Air101/Air103)"
     "riscv64-unknown-elf-* 别名"
     "riscv32-none-elf-gcc (ESP32-C3)"
     "arm-none-eabi-gcc (Air32F103)"
-    "luatool / mkscriptbin / esptool"
+    "luatool / mkscriptbin / esptool / luatos-cli"
     "串口: picocom/minicom/screen"
   ];
   libraries = [ ];

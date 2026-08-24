@@ -69,7 +69,14 @@ let
     # serialport 依赖 libudev；cargoHash 由首次构建报错给出。
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.udev ];
-    cargoHash = "";
+    cargoHash = "sha256-APiPBzzC0zBGJnpWN0Q+jiXCxOyTd19hwC+RApBJ84M=";
+    # 仓库自带 .cargo/config.toml 把 crates-io 换成 ustc 镜像，会覆盖 nixpkgs 的
+    # vendored-sources，导致 --offline 构建找不到 crate（报 "no matching package"）。
+    postPatch = ''
+      rm -f .cargo/config.toml
+    '';
+    # 部分测试需要串口/网络设备，构建环境跑不了，跳过。
+    doCheck = false;
     meta = with lib; {
       description = "LuatOS CLI - multi-chip flashing/log/project tool (Air780EPM etc.)";
       homepage = "https://gitee.com/openLuat/luatos-cli";
