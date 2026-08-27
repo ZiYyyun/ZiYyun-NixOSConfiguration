@@ -78,6 +78,13 @@ stdenv.mkDerivation {
         mkdir -p "$target/contents/config"
         cp "$dir/main.xml" "$target/contents/config/main.xml"
       fi
+
+      # 上游源码里的 metadata.json 缺 KPackageStructure 字段（nixpkgs 构建时
+      # 才会注入 "Plasma/Applet"），plasmashell 会因格式不匹配拒绝加载
+      # （日志：does not match requested format "Plasma/Applet"）。
+      if ! grep -q '"KPackageStructure"' "$target/metadata.json"; then
+        sed -i '1s/^{/{\n    "KPackageStructure": "Plasma\/Applet",/' "$target/metadata.json"
+      fi
     }
 
     # plasma-workspace applets
