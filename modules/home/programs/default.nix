@@ -10,6 +10,7 @@
     ./direnv.nix
     ./dsh.nix
     ./nixvim.nix
+    ./qoder-cli.nix
     ./vscode-server.nix
     ./yakuake.nix
   ];

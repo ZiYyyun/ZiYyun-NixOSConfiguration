@@ -71,5 +71,5 @@ cat <<EOF
 
   git add dotfiles
   git commit -m "sync dotfiles"
-  sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+  sudo nixos-rebuild switch --flake .#p14s
 EOF

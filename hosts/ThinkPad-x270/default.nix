@@ -15,6 +15,8 @@
     ./hardware-configuration.nix
     ../../modules/system/profiles/gnome.nix
     ../../packages/system/hardware/thinkpad.nix
+    ../../modules/system/hardware/thinkpad.nix
+    ../../modules/system/hardware/thinkpad-legacy.nix
     ../../modules/system/services/flatpak
   ];
 

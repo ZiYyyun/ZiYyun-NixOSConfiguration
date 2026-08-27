@@ -58,9 +58,9 @@ does not need a separate `git.lix.systems` flake input.
 | `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1` |
 | `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | default GNOME layout, root `/dev/sda1` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
-| `ThinkPad-x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
-| `ThinkPad-x230i` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `ThinkPad-P14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
+| `x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
+| `x230` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
+| `p14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
 | `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
@@ -614,19 +614,19 @@ sudo bash shells/install.sh --mountpoint /mnt --skip-install
 From the repository root:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+sudo nixos-rebuild switch --flake .#p14s
 ```
 
 Safer test command:
 
 ```bash
-sudo nixos-rebuild test --flake .#ThinkPad-P14s
+sudo nixos-rebuild test --flake .#p14s
 ```
 
 Build without switching:
 
 ```bash
-nix build .#nixosConfigurations.ThinkPad-P14s.config.system.build.toplevel
+nix build .#nixosConfigurations.p14s.config.system.build.toplevel
 ```
 
 Useful host commands:
@@ -636,9 +636,9 @@ sudo nixos-rebuild switch --flake .#kde-default
 sudo nixos-rebuild switch --flake .#niri-default
 sudo nixos-rebuild switch --flake .#gnome-default
 sudo nixos-rebuild switch --flake .#desktop-default
-sudo nixos-rebuild switch --flake .#ThinkPad-x270
-sudo nixos-rebuild switch --flake .#ThinkPad-x230i
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+sudo nixos-rebuild switch --flake .#x270
+sudo nixos-rebuild switch --flake .#x230
+sudo nixos-rebuild switch --flake .#p14s
 ```
 
 If you only want a lightweight evaluation target:
@@ -675,7 +675,7 @@ which changes the `narHash` and breaks fresh installations.
 Temporary rebuild with explicit substituters:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
+sudo nixos-rebuild switch --flake .#p14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
 ```
 
 ## Updating Packages And Modules
@@ -708,19 +708,19 @@ nix flake update nixos-hardware
 Build the target host before switching:
 
 ```bash
-nix build .#nixosConfigurations.ThinkPad-P14s.config.system.build.toplevel
+nix build .#nixosConfigurations.p14s.config.system.build.toplevel
 ```
 
 Test activation without making it the boot default:
 
 ```bash
-sudo nixos-rebuild test --flake .#ThinkPad-P14s
+sudo nixos-rebuild test --flake .#p14s
 ```
 
 Switch after the build and test are clean:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ThinkPad-P14s
+sudo nixos-rebuild switch --flake .#p14s
 ```
 
 Commit the updated lock file after a successful test:

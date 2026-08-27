@@ -9,9 +9,9 @@ This repository exposes multiple NixOS host entries from `flake.nix`.
 | `kde-default` | `hosts/kde-default/default.nix` | Default KDE profile for a new/current machine |
 | `gnome-default` | `hosts/gnome-default/default.nix` | Default GNOME profile for a new/current machine |
 | `docker-test` | `hosts/docker-test/default.nix` | Build/evaluation test profile without Flatpak or real bootloader/disk assumptions |
-| `ThinkPad-x270` | `hosts/ThinkPad-x270/default.nix` | Lenovo ThinkPad X270 |
-| `ThinkPad-x230i` | `hosts/ThinkPad-x230i/default.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
-| `ThinkPad-P14s` | `hosts/ThinkPad-P14s/default.nix` | Lenovo ThinkPad P14s Gen 5 Intel |
+| `x270` | `hosts/ThinkPad-x270/default.nix` | Lenovo ThinkPad X270 |
+| `x230` | `hosts/ThinkPad-x230i/default.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
+| `p14s` | `hosts/ThinkPad-P14s/default.nix` | Lenovo ThinkPad P14s Gen 5 Intel |
 | `cloud-server` | `hosts/cloud-server/default.nix` | 云服务器（headless，x86_64，UEFI）；部署前先按 hardware-configuration.nix 注释填好磁盘布局 |
 
 ## Test A Host
@@ -48,8 +48,8 @@ inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x230
 inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 ```
 
-`ThinkPad-x230i` intentionally uses `lenovo-thinkpad-x230`, because `nixos-hardware` does not provide a separate X230i profile.
+`x230` intentionally uses `lenovo-thinkpad-x230`, because `nixos-hardware` does not provide a separate X230i profile.
 
 For the current X230i disk layout, the NTFS disk labeled `系统` is not part of
-the NixOS installation. The `ThinkPad-x230i` profile mounts root and swap by
+the NixOS installation. The `x230` profile mounts root and swap by
 UUID and installs legacy GRUB to `/dev/sdb`.

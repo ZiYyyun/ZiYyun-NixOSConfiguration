@@ -86,6 +86,8 @@
         qoder-cn = pkgs.callPackage ./packages/custom/qoder { };
         # Qoder Wake — 语音唤醒/智能体服务（linux 二进制 + qodercli）。
         qoder-wake = pkgs.callPackage ./packages/custom/qoder-wake { };
+        # Qoder CN CLI — 终端 AI 编程助手（Bun 单文件二进制）。
+        qoder-cli-cn = pkgs.callPackage ./packages/custom/qoder-cli { };
       };
 
       homeManagerModule = {
@@ -168,15 +170,15 @@
         ./hosts/docker-test
       ];
 
-      nixosConfigurations.ThinkPad-x270 = mkSystem [
+      nixosConfigurations.x270 = mkSystem [
         ./hosts/ThinkPad-x270
       ];
 
-      nixosConfigurations.ThinkPad-x230i = mkSystem [
+      nixosConfigurations.x230 = mkSystem [
         ./hosts/ThinkPad-x230i
       ];
 
-      nixosConfigurations.ThinkPad-P14s = mkSystem [
+      nixosConfigurations.p14s = mkSystem [
         ./hosts/ThinkPad-P14s
       ];
 
