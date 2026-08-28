@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
-# jieli-setup.sh: 杰理（Jieli）开发环境自动初始化
+# jieli-setup.sh: 杰理（Jieli）开发环境自动初始化（独立脚本，由 shellHook 以子进程调用）
 #   - 工具链：缺失时自动下载官方 Linux 工具链并解压到 ~/.local/share/jieli
 #   - SDK：缺失时交互选择系列并 git clone 到 ~/dev/jieli
-# 由 dev_toolchains/embedded/jieli.nix 的 extraShellHook 调用（source）。
+#   - 工具链安装成功后写入 $JL_HOME/env.sh（含 PATH），供 shellHook source
 # 说明：工具链闭源、来自官方 pkgman；SDK 来自杰理官方 gitee 仓库。
+# 注意：以子进程运行（不要 source 进交互 shell），否则脚本内容会被折叠进 history。
 
-set -u
-
+# ================= 1. 工具链 =================
 JL_HOME="${JL_HOME:-$HOME/.local/share/jieli}"
 SDK_DIR="${SDK_DIR:-$HOME/dev/jieli}"
 JL_TOOLCHAIN_URL="${JL_TOOLCHAIN_URL:-http://pkgman.jieliapp.com/s/linux-toolchain}"
 
 mkdir -p "$SDK_DIR"
 
-# ================= 1. 工具链 =================
 if [ -x "$JL_HOME/common/bin/clang" ]; then
     export PATH="$JL_HOME/common/bin:$PATH"
     echo "杰理工具链: $JL_HOME/common/bin （已加入 PATH）"
@@ -56,6 +55,11 @@ else
     fi
 fi
 
+# 工具链就绪时写出 env.sh（供 shellHook source 设置 PATH / ulimit）
+if [ -x "$JL_HOME/common/bin/clang" ]; then
+    printf 'export PATH="%s/common/bin:$PATH"\nulimit -n 8096\n' "$JL_HOME" > "$JL_HOME/env.sh"
+fi
+
 # ================= 2. SDK =================
 existing_sdks=()
 for d in "$SDK_DIR"/*/; do
@@ -69,7 +73,7 @@ else
     echo "============================================="
     echo " 选择要克隆的杰理 SDK（到 $SDK_DIR）"
     echo "  1) AC63/AC69  蓝牙音频     https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK"
-    echo "  2) AC79  AIoT (WiFi+BT)    https://gitee.com/fw-AC79_AIoT_SDK"
+    echo "  2) AC79  AIoT (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"
     echo "  3) AC792 双模 (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC792_SDK"
     echo "  4) AC82N 通用 MCU          https://gitee.com/Jieli-Tech/AC82N"
     echo "  5) 自定义 URL"
@@ -79,18 +83,25 @@ else
     repo=""
     case "$choice" in
         1) repo="https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK"; name="fw-AC63_BT_SDK" ;;
-        2) repo="https://gitee.com/fw-AC79_AIoT_SDK";         name="fw-AC79_AIoT_SDK" ;;
+        2) repo="https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"; name="fw-AC79_AIoT_SDK" ;;
         3) repo="https://gitee.com/Jieli-Tech/fw-AC792_SDK";  name="fw-AC792_SDK" ;;
         4) repo="https://gitee.com/Jieli-Tech/AC82N";         name="AC82N" ;;
         5) read -r -p "  输入 git URL: " repo; name="$(basename "$repo" .git)" ;;
         *) repo="" ;;
     esac
     if [ -n "$repo" ]; then
-        echo "克隆 $repo ..."
+        target="$SDK_DIR/$name"
+        # 清理之前 clone 失败残留的空/不完整目录，避免“目标已存在”
+        if [ -e "$target" ] && [ ! -d "$target/.git" ]; then
+            echo "清理不完整的残留目录: $target"
+            rm -rf "$target"
+        fi
+        echo "克隆 $repo -> $target ..."
         if (cd "$SDK_DIR" && git clone "$repo" "$name"); then
-            echo "克隆成功: $SDK_DIR/$name"
+            echo "克隆成功: $target"
         else
-            echo "克隆失败。请手动执行: git clone $repo $SDK_DIR/$name"
+            echo "克隆失败。请手动执行（注意带目标目录）:"
+            echo "  git clone $repo $target"
         fi
     else
         echo "跳过 SDK 克隆。"

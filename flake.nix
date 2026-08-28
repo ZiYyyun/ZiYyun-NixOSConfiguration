@@ -210,6 +210,9 @@
         # 合宙 LuatOS（Air101/Air103/ESP32C3/Air32F103 等）开发环境。
         luatos = mkDevShell ./dev_toolchains/embedded/luatos.nix;
 
+        # 杰理（Jieli）AC69/AC79 蓝牙音频 SoC 开发环境（工具链需手动装到 /opt/jieli）。
+        jieli = mkDevShell ./dev_toolchains/embedded/jieli.nix;
+
         arm32 = mkDevShell ./dev_toolchains/embedded/arm32.nix;
         arm64 = mkDevShell ./dev_toolchains/embedded/arm64.nix;
         allwinner = mkDevShell ./dev_toolchains/embedded/allwinner.nix;

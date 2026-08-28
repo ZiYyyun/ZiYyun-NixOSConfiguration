@@ -28,6 +28,10 @@ in
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # KDE Connect：自动开放防火墙 TCP/UDP 1714-1764（手机配对/发现必需）。
+  # 此前只装了 kdeconnect-kde 包但没启用模块，防火墙默认 drop 入站 → 手机无法发现电脑。
+  programs.kdeconnect.enable = true;
+
   environment.systemPackages = with pkgs; [
     (fluent-icon-theme.override { colorVariants = [ "purple" ]; })
     candy-icons                # 二次元渐变彩色图标主题（kdeglobals 里切换）

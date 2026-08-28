@@ -50,6 +50,8 @@
   fonts.packages = with pkgs; [
     wqy_zenhei
     noto-fonts-cjk-sans
+    # Mononoki：等宽代码字体（eclipse/codeblocks 编辑器字体美化用）
+    mononoki
   ];
 
   services.xserver.xkb = {

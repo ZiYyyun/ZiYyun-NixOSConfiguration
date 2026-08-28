@@ -15,6 +15,7 @@
     eudic
     libreoffice
     wine
+    winetricks  # Wine 图形配置/主题管理（winecfg 之外，可装 win7/win10 视觉样式）
     #openclaw
     codex
     #cc-switch
@@ -33,5 +34,6 @@
     customPackages.qoder-wake
     customPackages.qoder-cli-cn  # Qoder CN 终端 AI 编程助手
     customPackages.luatools  # 合宙 LuatOS 官方调试/烧录工具（Wine）
+    customPackages.workbuddy  # 腾讯 WorkBuddy（Wine，Electron 兼容性差，备选）
   ];
 }

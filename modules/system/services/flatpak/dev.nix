@@ -11,6 +11,7 @@
     # 嵌入式/EDA
     "com.st.STM32CubeMX"
     "cn.lceda.LCEDAPro"
+    "cc.arduino.IDE2"
     # 调试/分析
     "com.serial_studio.Serial-Studio"
     "org.wireshark.Wireshark"

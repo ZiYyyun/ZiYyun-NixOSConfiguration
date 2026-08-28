@@ -66,6 +66,8 @@
                              # apps (e.g. LuaTools, a PE32+ x86-64 exe) MUST
                              # use a win64 prefix, which needs winePkg (WoW64)
                              # and WINEARCH=win64 at prefix creation time.
+  windowsVersion ? "win10",  # wine 模拟的 Windows 版本（默认 win10，替代默认
+                             # WinXP 的简陋视觉/行为风格）。可在 winecfg 改。
 }:
 
 assert mode == "extract" -> mainExe != null;
@@ -190,6 +192,8 @@ stdenv.mkDerivation {
     export PATH="${winePkg}/bin:$PATH"
     ${lib.optionalString (wineArch != null) "export WINEARCH=${wineArch}"}
     mkdir -p "$WINEPREFIX"
+    # 模拟 Windows 版本（默认 win10，替代默认 WinXP 的简陋风格）
+    wine reg add "HKCU\\Software\\Wine" /v Version /d "${windowsVersion}" /f >/dev/null 2>&1 || true
     ${lib.optionalString forceX11 ''
       # Force the X11 (XWayland) display driver for this prefix.
       wine reg add "HKCU\\Software\\Wine\\Drivers" /v Graphics /d "x11" /f >/dev/null 2>&1 || true

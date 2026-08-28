@@ -1,9 +1,10 @@
 # Two-panel layout (declarative):
 #   bottom (Containment 2): kickerdash (fullscreen Application Dashboard) +
-#     icon-only task manager (Win11 style) + pager (virtual desktop switcher,
-#     bottom-right) + edge separator.
-#   top (Containment 30): window list (top-left) | spacer | panel colorizer
-#     + net speed + CPU + system tray + clock (middle-right).
+#     KDE Connect + icon-only task manager + media player controller +
+#     pager (virtual desktop switcher, bottom-right) + edge separator.
+#   top (Containment 30): window list | panel colorizer removed |
+#     net speed + CPU + system tray | network + bluetooth + battery
+#     (independent icons, so tray no longer shows them) + clock.
 # Tray items live on the systemtray applet itself (Plasma 6 native; no
 # private.systemtray containment — that was a Plasma 5 construct).
 [ActionPlugins][0]
@@ -50,6 +51,11 @@ global=Alt+F1
 [Containments][2][Applets][3][Shortcuts]
 global=Alt+F1
 
+# KDE Connect (phone pairing) — left side of the taskbar
+[Containments][2][Applets][74]
+immutability=1
+plugin=org.kde.kdeconnect
+
 [Containments][2][Applets][52]
 immutability=1
 plugin=org.kde.plasma.panelspacer
@@ -60,6 +66,11 @@ plugin=org.kde.plasma.icontasks
 
 [Containments][2][Applets][5][Configuration][General]
 launchers=applications:systemsettings.desktop,applications:org.kde.discover.desktop,preferred://filemanager,preferred://browser
+
+# media player controller (right of the taskbar)
+[Containments][2][Applets][78]
+immutability=1
+plugin=org.kde.plasma.mediacontroller
 
 [Containments][2][Applets][51]
 immutability=1
@@ -75,7 +86,7 @@ immutability=1
 plugin=org.kde.plasma.marginsseparator
 
 [Containments][2][General]
-AppletOrder=3;52;5;51;53;6
+AppletOrder=3;74;52;5;78;51;53;6
 
 # ============================ top panel ============================
 [Containments][30]
@@ -87,7 +98,7 @@ location=3
 plugin=org.kde.panel
 wallpaperplugin=org.kde.image
 
-# top-left, unchanged: window list
+# top-left: window list
 [Containments][30][Applets][34]
 immutability=1
 plugin=org.kde.plasma.windowlist
@@ -96,11 +107,6 @@ plugin=org.kde.plasma.windowlist
 [Containments][30][Applets][42]
 immutability=1
 plugin=org.kde.plasma.panelspacer
-
-# community plugin: panel colorizer (replaces the lyrics widget)
-[Containments][30][Applets][46]
-immutability=1
-plugin=luisbocanegra.panel.colorizer
 
 # net speed (text-only system monitor)
 [Containments][30][Applets][40]
@@ -154,18 +160,32 @@ lowPrioritySensorIds=["cpu/all/cpuCount","cpu/all/coreCount"]
 totalSensors=["cpu/all/usage"]
 
 # system tray (status bar)
-# shownItems = Plasma 6 托盘的「始终显示」列表；这里固定网络/屏幕/蓝牙常驻
-# 托盘（不带则它们只在「显示隐藏图标」折叠区里）。extraItems 里的其余项保持
-# 「相关时显示」。
+# network/bluetooth/battery are shown as independent icons on the panel
+# (applets 75/73/72), so they are removed from the tray's always-shown list.
 [Containments][30][Applets][7]
 immutability=1
 plugin=org.kde.plasma.systemtray
 
 [Containments][30][Applets][7][Configuration]
 PreloadWeight=75
-shownItems=org.kde.plasma.battery,org.kde.plasma.networkmanagement,org.kde.kscreen,org.kde.plasma.bluetooth
+shownItems=org.kde.kscreen
 extraItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
 knownItems=org.kde.plasma.bluetooth,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.kimpanel,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.vault,org.kde.plasma.printmanager,org.kde.kdeconnect
+
+# network — independent icon (right of the tray)
+[Containments][30][Applets][75]
+immutability=1
+plugin=org.kde.plasma.networkmanagement
+
+# bluetooth — independent icon
+[Containments][30][Applets][73]
+immutability=1
+plugin=org.kde.plasma.bluetooth
+
+# battery — independent icon
+[Containments][30][Applets][72]
+immutability=1
+plugin=org.kde.plasma.battery
 
 # clock with date
 [Containments][30][Applets][8]
@@ -176,7 +196,7 @@ plugin=org.kde.plasma.digitalclock
 showSeconds=true
 
 [Containments][30][General]
-AppletOrder=34;42;46;40;49;7;8
+AppletOrder=34;42;40;49;7;75;73;72;8
 
 [ScreenMapping]
 itemsOnDisabledScreens=

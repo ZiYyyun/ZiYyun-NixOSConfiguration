@@ -109,4 +109,17 @@ rec {
     esptool                               # ESP32 系烧录
     gpsbabel                              # GPS 纠偏/转换（通用）
   ]);
+
+  # 杰理（Jieli/zh-jieli）蓝牙音频 SoC：AC69 系列（私有 DSP）、AC79 系列
+  # （Cortex-M33，如 AC791N）。注意：杰理编译工具链为闭源、不在 nixpkgs，
+  # 由 shells/jieli-setup.sh 自动下载到用户目录，本组只提供 SDK 编译/调试
+  # 所需的通用工具（含自动初始化脚本依赖的 curl/unzip/xz）。
+  jieli = buildCore ++ serialTools ++ (with pkgs; [
+    gcc          # host gcc：部分 SDK 需要编译 host 端小工具
+    clang-tools  # clangd：VSCode 的 C/C++ 智能补全/跳转
+    bc
+    curl         # jieli-setup.sh：下载官方工具链
+    unzip        # jieli-setup.sh：解压 zip 格式工具链
+    xz           # jieli-setup.sh：解压 xz 格式工具链
+  ]);
 }

@@ -31,6 +31,8 @@ mkWineApp {
   mode = "firstrun-install";
   installer = "WorkBuddySetup.exe";
   installerArgs = "/S";
+  # 单文件 exe：stdenv 默认 unpack 不识别 .exe，直接复制到构建目录
+  unpackPhase = "cp ${src} WorkBuddySetup.exe";
   # 64 位 Electron 应用：必须 win64 前缀（WoW64 wine）
   wineArch = "win64";
   # PE 文件不可被 GNU strip 处理
