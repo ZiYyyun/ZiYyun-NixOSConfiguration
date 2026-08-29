@@ -12,6 +12,7 @@
     "com.st.STM32CubeMX"
     "cn.lceda.LCEDAPro"
     "cc.arduino.IDE2"
+    "io.qt.QtCreator"
     # 调试/分析
     "com.serial_studio.Serial-Studio"
     "org.wireshark.Wireshark"

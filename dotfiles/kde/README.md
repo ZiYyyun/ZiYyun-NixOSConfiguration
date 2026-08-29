@@ -1,3 +1,11 @@
+<!--
+ * @Author: 紫云 91798577+ZiYyyun@users.noreply.github.com
+ * @Date: 2026-08-22 23:52:27
+ * @LastEditors: 紫云 91798577+ZiYyyun@users.noreply.github.com
+ * @LastEditTime: 2026-08-29 23:50:35
+ * @FilePath: /ZiYyun-NixOSConfiguration/dotfiles/kde/README.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # KDE Dotfiles
 
 This directory stores the small amount of KDE configuration that Home Manager
@@ -46,17 +54,14 @@ https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
 
 ## Related Packages
 
-- `packages/custom/qml-patches/plasma-desktop-qml` — QML applet frontends missing from
-  the nixpkgs plasma-desktop build (kickoff, kicker, icontasks/taskmanager,
-  windowlist, kimpanel, ...). kicker's QML also powers the fullscreen
-  Application Dashboard (kickerdash) via `X-Plasma-RootPath`.
-- `packages/custom/qml-patches/plasma-workspace-qml` — same fix for
-  plasma-workspace/plasma-nm/plasma-pa applets (systemtray, digitalclock,
-  networkmanagement, volume, ...).
-- `packages/custom/qml-patches/bluedevil-qml` — QML frontend for the bluetooth tray
-  applet (`org.kde.plasma.bluetooth`; C++ plugin already built by nixpkgs).
-- `packages/custom/qml-patches/kscreen-qml` — QML frontend for the screen/display tray
-  applet (`org.kde.kscreen`; C++ plugin already built by nixpkgs).
+Missing QML applet frontends (`kickoff`, `taskmanager`, `systemtray`,
+`networkmanagement`, `volume`, bluetooth, display, ...) that nixpkgs 26.05
+forgot to install are now fixed directly in `modules/system/desktop/kde.nix`:
+an overlay `overrideAttrs`s the upstream `kdePackages` packages
+(plasma-desktop / plasma-workspace / plasma-nm / plasma-pa / bluedevil /
+kscreen) and copies the QML from their build source into each applet's
+`contents/ui` — no separate patch packages any more.
+
 - `packages/custom/source/plasmoid-onlyrics` — the panel lyrics widget
   (`com.github.illuminate-dev.onlyrics`), patched to use LRCLIB
   (https://lrclib.net) as default lyrics source. Works with any
@@ -74,8 +79,8 @@ That caused repeated load failures in Plasma 6.6:
   the nixpkgs fcitx5 package (kimpanel is used instead).
 - `org.kde.plasma.icontasks` task bar: its QML lives under
   `org.kde.plasma.taskmanager` (X-Plasma-RootPath), and the nixpkgs
-  plasma-desktop build ships no applet QML at all (fixed separately by
-  `packages/custom/qml-patches/plasma-desktop-qml`).
+  plasma-desktop build ships no applet QML at all (fixed by the
+  `kdePackages` overlay in `modules/system/desktop/kde.nix`).
 - standalone network/volume/battery/bluetooth panel applets: folded into the
   system tray in the top-right corner.
 

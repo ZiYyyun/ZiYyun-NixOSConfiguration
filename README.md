@@ -118,6 +118,10 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |   `-- development.nix
 |   |-- home/
 |   `-- custom/
+|       |-- winapps/       # Windows apps packaged with Wine
+|       |-- dist/          # packages extracted from distro binaries (.deb, and .rpm/.aur later)
+|       |-- binary/        # official prebuilt binary tarballs
+|       `-- source/        # custom builds from source / npm / plugins
 |-- dotfiles/
 |   |-- ghostty/
 |   |-- kde/
@@ -342,7 +346,7 @@ User packages:
 
 Local derivations:
 
-- `packages/custom/deb/trae-code/default.nix`
+- `packages/custom/dist/trae-code/default.nix`
 
 ## Embedded Development
 
@@ -556,7 +560,7 @@ certification FAQ](https://docs.waydro.id/faq/google-play-certification).
 ## Windows Apps via Wine (WinApps)
 
 For Windows-only LAN software (飞秋 FeiQ, 红蜘蛛 Red Spider) that cannot use
-the WinBoat container network, `packages/custom/wine/` packages them with
+the WinBoat container network, `packages/custom/winapps/` packages them with
 Wine, Nix-reproducibly:
 
 ```bash
@@ -568,7 +572,7 @@ Both apps get KDE menu entries, use per-app Wine prefixes under
 `~/.local/share/winapps/`, and run directly on the host network (LAN UDP
 broadcast works — no container isolation). CJK fonts (`wqy-zenhei`,
 `noto-fonts-cjk-sans`) are enabled system-wide in `configuration.nix`.
-Details: `packages/custom/wine/README.md`.
+Details: `packages/custom/winapps/README.md`.
 
 ## Embedded Toolchains (No Keil)
 
