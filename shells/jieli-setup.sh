@@ -61,38 +61,46 @@ if [ -x "$JL_HOME/common/bin/clang" ]; then
 fi
 
 # ================= 2. SDK =================
-existing_sdks=()
+# 先列出已安装的 SDK，再显示选择菜单；选完芯片后才检测对应目录是否已存在
+# （这样已有 AC63 时也能再添加 AC79 等其它系列）。
+installed_sdks=()
 for d in "$SDK_DIR"/*/; do
-    [ -d "$d/.git" ] && existing_sdks+=("$(basename "$d")")
+    [ -d "$d/.git" ] && installed_sdks+=("$(basename "$d")")
 done
 
-if [ "${#existing_sdks[@]}" -gt 0 ]; then
-    echo "已有杰理 SDK：${existing_sdks[*]}"
-    echo "  （如需新增，可手动 git clone 到 $SDK_DIR，或删除后重新进入 shell）"
+echo "============================================="
+echo " 选择要安装/确保的杰理 SDK（目录: $SDK_DIR）"
+if [ "${#installed_sdks[@]}" -gt 0 ]; then
+    echo " 已安装: ${installed_sdks[*]}"
+fi
+echo "  1) AC63/AC69  蓝牙音频     https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK"
+echo "  2) AC79  AIoT (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"
+echo "  3) AC792 双模 (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC792_SDK"
+echo "  4) AC82N 通用 MCU          https://gitee.com/Jieli-Tech/AC82N"
+echo "  5) 自定义 URL"
+echo "  0) 跳过"
+echo "============================================="
+read -r -p " 请输入数字: " choice
+repo=""
+name=""
+case "$choice" in
+    1) repo="https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK";  name="fw-AC63_BT_SDK" ;;
+    2) repo="https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"; name="fw-AC79_AIoT_SDK" ;;
+    3) repo="https://gitee.com/Jieli-Tech/fw-AC792_SDK";   name="fw-AC792_SDK" ;;
+    4) repo="https://gitee.com/Jieli-Tech/AC82N";          name="AC82N" ;;
+    5) read -r -p "  输入 git URL: " repo; name="$(basename "$repo" .git)" ;;
+    *) repo="" ;;
+esac
+
+if [ -z "$repo" ]; then
+    echo "跳过 SDK 克隆。"
 else
-    echo "============================================="
-    echo " 选择要克隆的杰理 SDK（到 $SDK_DIR）"
-    echo "  1) AC63/AC69  蓝牙音频     https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK"
-    echo "  2) AC79  AIoT (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"
-    echo "  3) AC792 双模 (WiFi+BT)    https://gitee.com/Jieli-Tech/fw-AC792_SDK"
-    echo "  4) AC82N 通用 MCU          https://gitee.com/Jieli-Tech/AC82N"
-    echo "  5) 自定义 URL"
-    echo "  0) 跳过"
-    echo "============================================="
-    read -r -p " 请输入数字: " choice
-    repo=""
-    case "$choice" in
-        1) repo="https://gitee.com/Jieli-Tech/fw-AC63_BT_SDK"; name="fw-AC63_BT_SDK" ;;
-        2) repo="https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK"; name="fw-AC79_AIoT_SDK" ;;
-        3) repo="https://gitee.com/Jieli-Tech/fw-AC792_SDK";  name="fw-AC792_SDK" ;;
-        4) repo="https://gitee.com/Jieli-Tech/AC82N";         name="AC82N" ;;
-        5) read -r -p "  输入 git URL: " repo; name="$(basename "$repo" .git)" ;;
-        *) repo="" ;;
-    esac
-    if [ -n "$repo" ]; then
-        target="$SDK_DIR/$name"
+    target="$SDK_DIR/$name"
+    if [ -d "$target/.git" ]; then
+        echo "该系列已存在（跳过）: $target"
+    else
         # 清理之前 clone 失败残留的空/不完整目录，避免“目标已存在”
-        if [ -e "$target" ] && [ ! -d "$target/.git" ]; then
+        if [ -e "$target" ]; then
             echo "清理不完整的残留目录: $target"
             rm -rf "$target"
         fi
@@ -103,8 +111,6 @@ else
             echo "克隆失败。请手动执行（注意带目标目录）:"
             echo "  git clone $repo $target"
         fi
-    else
-        echo "跳过 SDK 克隆。"
     fi
 fi
 

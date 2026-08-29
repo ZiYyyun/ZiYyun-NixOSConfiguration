@@ -4,7 +4,7 @@
  * Date: 2026-08-23
  * Description: DSH web profile 插件挂载（与 dsh 本体分层的第二层）。
  *
- * 插件本体：packages/custom/deepseek-harness/plugins.nix 构建出扁平
+ * 插件本体：packages/custom/source/deepseek-harness/plugins.nix 构建出扁平
  * node_modules；本模块把每个包链接进 ~/.dsh/profiles/web/node_modules/，
  * 并生成 package.json 的 bundles 声明（cordis 加载依据）。
  *

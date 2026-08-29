@@ -29,7 +29,14 @@ in
 mkEmbeddedMcuShell {
   inherit pkgs;
   name = "jieli";
-  packages = embeddedPackages.jieli;
+  # jieli-setup：随时运行可添加/确保 SDK（先选芯片系列，再检测对应目录）
+  packages = embeddedPackages.jieli ++ [
+    (pkgs.writeShellScriptBin "jieli-setup" ''
+      export JL_HOME="$HOME/.local/share/jieli"
+      export SDK_DIR="$HOME/dev/jieli"
+      bash ${../../shells/jieli-setup.sh}
+    '')
+  ];
   env = {
     CHIP_VENDOR = "Zhuhai Jieli Technology (杰理)";
     TARGET_ARCH = "AC63/AC69(私有DSP) / AC79/AC792(Cortex-M33) / AC82N";
@@ -55,9 +62,10 @@ mkEmbeddedMcuShell {
   # 否则脚本代码会被折叠进 history，按上箭头会翻到长串代码）。
   extraShellHook = ''
     ulimit -n 8096
-    # 工具链 / SDK 未就绪时自动初始化
-    if [ ! -x "$HOME/.local/share/jieli/common/bin/clang" ] || [ -z "$(find "$HOME/dev/jieli" -maxdepth 2 -name .git -type d 2>/dev/null | head -1)" ]; then
-      echo "=== 杰理环境未就绪，运行初始化（工具链 + SDK）... ==="
+    # 仅工具链未就绪时自动初始化；SDK 随时可通过 jieli-setup 命令添加/确保
+    # （进入 shell 后直接运行 jieli-setup 即可选择 AC79 等其它系列）。
+    if [ ! -x "$HOME/.local/share/jieli/common/bin/clang" ]; then
+      echo "=== 杰理工具链未就绪，运行初始化（工具链 + SDK 选择）... ==="
       bash ${../../shells/jieli-setup.sh}
     fi
     # 工具链就绪后应用 PATH / ulimit（env.sh 由 jieli-setup.sh 生成，仅两行）

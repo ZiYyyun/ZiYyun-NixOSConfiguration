@@ -115,8 +115,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |-- system/
 |   |   |-- apps.nix
 |   |   |-- base.nix
-|   |   |-- development.nix
-|   |   `-- hardware/
+|   |   `-- development.nix
 |   |-- home/
 |   `-- custom/
 |-- dotfiles/
@@ -201,17 +200,24 @@ part of the Nix closure; download and initialize it with
 `shells/waydroid-init.sh` (supports `--proxy` and `--mirror` for faster
 downloads). See the "WayDroid" section below.
 
-### Desktop Profiles
+### Desktop Profiles (组合层)
 
-Desktop profiles live in `modules/system/profiles/` and compose one or more desktop modules:
+There are two layers for desktops, and they have different jobs:
 
-- `kde.nix`
-- `gnome.nix`
-- `niri.nix`
-- `noctalia.nix`
+- `modules/system/profiles/*.nix` — the **composition layer**. Each file picks a
+  set of desktop modules and bundles them into one profile that a host imports
+  directly.
+  - `kde.nix` → `desktop/kde.nix`
+  - `niri.nix` → `desktop/niri.nix` + `desktop/noctalia.nix`
+  - `gnome.nix` → `desktop/gnome.nix` + `desktop/niri.nix` + `desktop/noctalia.nix`
+  - `noctalia.nix` → `desktop/noctalia.nix`
+- `modules/system/desktop/*.nix` — the **atomic module layer** (see below).
 
 Hosts import one of these profiles and keep their own hardware layout locally.
 The KDE and GNOME profiles also include Niri + Noctalia as alternate sessions.
+
+Rule of thumb: tweak what a desktop *is* → `desktop/<name>.nix`; tweak *which*
+desktops a host gets → its `profiles/<name>.nix` (or the host's import list).
 
 ### Desktop Modules
 
@@ -226,10 +232,12 @@ There is intentionally no second desktop package layer now. If a package only ma
 
 ### ThinkPad Tools
 
-`packages/system/hardware/thinkpad.nix` only keeps ThinkPad-specific system packages:
-
-- `tpacpi-bat`
-- `hdapsd`
+ThinkPad-specific system packages (`tpacpi-bat`, `hdapsd`) and hardware tuning
+(keyboard backlight, touchpad, thermald) all live in
+`modules/system/hardware/thinkpad.nix`. Legacy-only tuning is in
+`modules/system/hardware/thinkpad-legacy.nix`. There is no `packages/system/hardware/`
+any more — system packages are merged together with the hardware module to keep
+single source of truth for ThinkPad setup.
 
 ## Home Manager
 
@@ -334,7 +342,7 @@ User packages:
 
 Local derivations:
 
-- `packages/custom/trae-code/default.nix`
+- `packages/custom/deb/trae-code/default.nix`
 
 ## Embedded Development
 
@@ -548,7 +556,7 @@ certification FAQ](https://docs.waydro.id/faq/google-play-certification).
 ## Windows Apps via Wine (WinApps)
 
 For Windows-only LAN software (飞秋 FeiQ, 红蜘蛛 Red Spider) that cannot use
-the WinBoat container network, `packages/custom/winapps/` packages them with
+the WinBoat container network, `packages/custom/wine/` packages them with
 Wine, Nix-reproducibly:
 
 ```bash
@@ -560,7 +568,7 @@ Both apps get KDE menu entries, use per-app Wine prefixes under
 `~/.local/share/winapps/`, and run directly on the host network (LAN UDP
 broadcast works — no container isolation). CJK fonts (`wqy-zenhei`,
 `noto-fonts-cjk-sans`) are enabled system-wide in `configuration.nix`.
-Details: `packages/custom/winapps/README.md`.
+Details: `packages/custom/wine/README.md`.
 
 ## Embedded Toolchains (No Keil)
 

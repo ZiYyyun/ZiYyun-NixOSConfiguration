@@ -8,20 +8,20 @@
 let
   # nixpkgs 26.05 的 plasma-desktop 构建漏装 applet QML，用补丁包补上
   # （taskmanager/icontasks/kickoff/windowlist 等小部件缺 contents/ui）。
-  plasmaDesktopQml = pkgs.callPackage ../../../packages/custom/plasma-desktop-qml { };
+  plasmaDesktopQml = pkgs.callPackage ../../../packages/custom/qml-patches/plasma-desktop-qml { };
 
   # 面板歌词小部件（LRCLIB 数据源），配合顶部面板「歌词显示」使用。
-  plasmoidOnlyrics = pkgs.callPackage ../../../packages/custom/plasmoid-onlyrics { };
+  plasmoidOnlyrics = pkgs.callPackage ../../../packages/custom/source/plasmoid-onlyrics { };
 
   # plasma-workspace/plasma-nm/plasma-pa 的 applet QML 同样被 nixpkgs 26.05
   # 漏装（digitalclock/systemtray/panelspacer/networkmanagement/volume...），
   # 与 plasma-desktop-qml 互补，缺了它们 plasmashell 会大面积报「软件包不存在」。
-  plasmaWorkspaceQml = pkgs.callPackage ../../../packages/custom/plasma-workspace-qml { };
+  plasmaWorkspaceQml = pkgs.callPackage ../../../packages/custom/qml-patches/plasma-workspace-qml { };
 
   # bluedevil / kscreen 的托盘 applet QML 前端也被 26.05 漏装（C++ 插件
   # 已构建），补上后系统托盘才有蓝牙 / 屏幕(显示设置)图标。
-  bluedevilQml = pkgs.callPackage ../../../packages/custom/bluedevil-qml { };
-  kscreenQml = pkgs.callPackage ../../../packages/custom/kscreen-qml { };
+  bluedevilQml = pkgs.callPackage ../../../packages/custom/qml-patches/bluedevil-qml { };
+  kscreenQml = pkgs.callPackage ../../../packages/custom/qml-patches/kscreen-qml { };
 in
 {
   services.xserver.enable = true;

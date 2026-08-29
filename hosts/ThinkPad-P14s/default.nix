@@ -15,7 +15,6 @@
     ../common/boot/uefi.nix
     ./hardware-configuration.nix
     ../../modules/system/profiles/kde.nix
-    ../../packages/system/hardware/thinkpad.nix
     ../../modules/system/hardware/thinkpad.nix
     ./nvidia.nix
     ../../modules/system/profiles/niri.nix

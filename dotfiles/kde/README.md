@@ -46,18 +46,18 @@ https://gitee.com/zhangchibang/ziyun_-arch_-kde_-config.git
 
 ## Related Packages
 
-- `packages/custom/plasma-desktop-qml` — QML applet frontends missing from
+- `packages/custom/qml-patches/plasma-desktop-qml` — QML applet frontends missing from
   the nixpkgs plasma-desktop build (kickoff, kicker, icontasks/taskmanager,
   windowlist, kimpanel, ...). kicker's QML also powers the fullscreen
   Application Dashboard (kickerdash) via `X-Plasma-RootPath`.
-- `packages/custom/plasma-workspace-qml` — same fix for
+- `packages/custom/qml-patches/plasma-workspace-qml` — same fix for
   plasma-workspace/plasma-nm/plasma-pa applets (systemtray, digitalclock,
   networkmanagement, volume, ...).
-- `packages/custom/bluedevil-qml` — QML frontend for the bluetooth tray
+- `packages/custom/qml-patches/bluedevil-qml` — QML frontend for the bluetooth tray
   applet (`org.kde.plasma.bluetooth`; C++ plugin already built by nixpkgs).
-- `packages/custom/kscreen-qml` — QML frontend for the screen/display tray
+- `packages/custom/qml-patches/kscreen-qml` — QML frontend for the screen/display tray
   applet (`org.kde.kscreen`; C++ plugin already built by nixpkgs).
-- `packages/custom/plasmoid-onlyrics` — the panel lyrics widget
+- `packages/custom/source/plasmoid-onlyrics` — the panel lyrics widget
   (`com.github.illuminate-dev.onlyrics`), patched to use LRCLIB
   (https://lrclib.net) as default lyrics source. Works with any
   MPRIS2-capable player. If your player reports lyrics in its own app but
@@ -75,7 +75,7 @@ That caused repeated load failures in Plasma 6.6:
 - `org.kde.plasma.icontasks` task bar: its QML lives under
   `org.kde.plasma.taskmanager` (X-Plasma-RootPath), and the nixpkgs
   plasma-desktop build ships no applet QML at all (fixed separately by
-  `packages/custom/plasma-desktop-qml`).
+  `packages/custom/qml-patches/plasma-desktop-qml`).
 - standalone network/volume/battery/bluetooth panel applets: folded into the
   system tray in the top-right corner.
 

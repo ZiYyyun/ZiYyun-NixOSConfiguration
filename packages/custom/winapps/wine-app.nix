@@ -52,6 +52,10 @@
   # family name ("Noto Sans CJK SC"), otherwise font substitution can't
   # resolve it and Wine falls back to the bitmap "System" font (boxes).
   cjkFont ? pkgs.noto-fonts-cjk-sans,
+  # Latin UI font (Arial / Times / Courier metrically-compatible subset).
+  # Wine ships only crude bitmap-ish "fake" Arial/Times; Liberation gives
+  # proper TTF outlines so Latin text renders crisp instead of aliased.
+  latinFont ? pkgs.liberation_ttf,
   forceX11 ? false,          # force the X11 driver (XWayland): fixes window
                              # interaction for apps whose windows misbehave
                              # under the native Wayland driver (e.g. Red Spider
@@ -76,21 +80,13 @@ assert mode == "firstrun-install" -> (installer != null || installCmd != null);
 let
   fontFile = "${cjkFont}/share/fonts/opentype/noto-cjk/NotoSansCJK-VF.otf.ttc";
 
-  # CJK font injection: runs on every launch until the marker exists, so it
-  # also repairs prefixes created before this feature.
-  #
-  # The recipe below is the one that actually works under Wine (verified with
-  # LuaTools, a wxPython app that draws its UI with the bitmap "System" font):
-  #   - copy Noto Sans CJK into the prefix (the file name is irrelevant, the
-  #     REGISTRY name is what matters);
-  #   - register it under its REAL family name "Noto Sans CJK SC" in BOTH the
-  #     64-bit and Wow6432Node registry views (a mismatched family name makes
-  #     Wine fall back to "System Regular", i.e. boxes again);
-  #   - substitute every common CJK / bitmap default font name (宋体, 黑体,
-  #     雅黑, SimSun, Tahoma, System, MS Sans Serif, MS Shell Dlg, ...) to it.
-  #   - add a FontLink (SystemLink) for "System" as a secondary fallback.
+  # CJK + Latin font injection: runs on every launch until the font files are
+  # in place, so it also repairs prefixes created by the OLD recipe (which only
+  # shipped wqy-zenhei and stopped after a marker file). Checking the actual
+  # font files (not a marker) lets those old prefixes upgrade to Noto too.
   fontInitBlock = ''
-    if [ ! -f "$WINEPREFIX/.cjk-fonts-installed" ]; then
+    if [ ! -f "$WINEPREFIX/drive_c/windows/Fonts/NotoSansCJK.ttc" ] || \
+       [ ! -f "$WINEPREFIX/drive_c/windows/Fonts/LiberationSans-Regular.ttf" ]; then
       wineboot -u >/dev/null 2>&1 || true
       FONTS_DIR="$WINEPREFIX/drive_c/windows/Fonts"
       mkdir -p "$FONTS_DIR"
@@ -100,10 +96,17 @@ let
       # misalign and look terrible ("辣眼睛"). Noto Sans Mono CJK SC covers
       # both ASCII and CJK at fixed width.
       cp "${cjkFont}/share/fonts/opentype/noto-cjk/NotoSansMonoCJK-VF.otf.ttc" "$FONTS_DIR/NotoSansMonoCJK.ttc"
+      # Liberation 拉丁字体（Arial/Times/Courier 兼容，替代 Wine 内置劣质 fake 字体）
+      cp "${latinFont}/share/fonts/truetype/LiberationSans-Regular.ttf" "$FONTS_DIR/"
+      cp "${latinFont}/share/fonts/truetype/LiberationSerif-Regular.ttf" "$FONTS_DIR/"
+      cp "${latinFont}/share/fonts/truetype/LiberationMono-Regular.ttf" "$FONTS_DIR/"
       for FONTVIEW in "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion" \
                       "HKLM\\Software\\Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion"; do
         wine reg add "$FONTVIEW\\Fonts" /v "Noto Sans CJK SC (TrueType)" /d "C:\\windows\\Fonts\\NotoSansCJK.ttc" /f >/dev/null 2>&1 || true
         wine reg add "$FONTVIEW\\Fonts" /v "Noto Sans Mono CJK SC (TrueType)" /d "C:\\windows\\Fonts\\NotoSansMonoCJK.ttc" /f >/dev/null 2>&1 || true
+        wine reg add "$FONTVIEW\\Fonts" /v "Liberation Sans (TrueType)" /d "C:\\windows\\Fonts\\LiberationSans-Regular.ttf" /f >/dev/null 2>&1 || true
+        wine reg add "$FONTVIEW\\Fonts" /v "Liberation Serif (TrueType)" /d "C:\\windows\\Fonts\\LiberationSerif-Regular.ttf" /f >/dev/null 2>&1 || true
+        wine reg add "$FONTVIEW\\Fonts" /v "Liberation Mono (TrueType)" /d "C:\\windows\\Fonts\\LiberationMono-Regular.ttf" /f >/dev/null 2>&1 || true
         # Keep the bitmap "System" font for Latin (preserves metrics/layout),
         # but let Chinese glyphs fall back to Noto.
         wine reg add "$FONTVIEW\\FontLink\\SystemLink" /v "System" /d "NotoSansCJK.ttc,Noto Sans CJK SC\\0" /f >/dev/null 2>&1 || true

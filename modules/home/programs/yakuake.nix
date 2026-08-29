@@ -4,7 +4,7 @@
  * Date: 2026-08-23
  * Description: Yakuake 下拉终端：皮肤集挂载 + F12 全局快捷键声明。
  *
- * 皮肤：packages/custom/yakuake-skins 构建出 15 个皮肤（商店 top + GitHub
+ * 皮肤：packages/custom/source/yakuake-skins 构建出 15 个皮肤（商店 top + GitHub
  * 官方），链接到 ~/.local/share/yakuake/skins（yakuake 一定扫描的目录）。
  * 在 Yakuake 设置 → 外观 → 皮肤 里切换。
  *
@@ -16,7 +16,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  yakuakeSkins = pkgs.callPackage ../../../packages/custom/yakuake-skins { };
+  yakuakeSkins = pkgs.callPackage ../../../packages/custom/source/yakuake-skins { };
 in
 {
   home.file = {

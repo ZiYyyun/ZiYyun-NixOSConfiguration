@@ -9,6 +9,8 @@
  *   - 键盘背光：普通用户可直接调节（udev uaccess + brightnessctl）
  *   - 触摸板：tap 点击、自然滚动、打字时禁用
  *   - Intel DPTF 热管理（thermald）
+ *   - ThinkPad 专用系统包（tpacpi-bat/hdapsd，原 packages/system/hardware
+ *     合并至此，避免与 packages/ 目录语义混淆）
  *
  * Fn 功能键说明：ThinkPad 的 FnLock（Fn+Esc）由 BIOS/EC 控制，
  * NixOS 无法在软件层切换；媒体键（亮度/音量/背光）由 thinkpad_acpi
@@ -18,8 +20,11 @@
 {
   # ---- 键盘背光 ----
   # brightnessctl 用于命令行调节背光（/sys/class/leds/tpacpi::kbd_backlight）。
+  # tpacpi-bat/hdapsd：ThinkPad 电池充电阈值与硬盘坠落保护。
   environment.systemPackages = with pkgs; [
     brightnessctl
+    tpacpi-bat
+    hdapsd
   ];
 
   # 授予登录用户（uaccess ACL）读写键盘背光 sysfs，无需 sudo。

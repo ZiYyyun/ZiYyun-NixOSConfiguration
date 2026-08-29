@@ -100,7 +100,7 @@ rec {
   ]);
 
   # 合宙 LuatOS（CSDK 工具链 + 烧录/调试/测试工具）。
-  # luatool 与 luatos-utils 来自 packages/custom/luatos-tools，由
+  # luatool 与 luatos-utils 来自 packages/custom/source/luatos-tools，由
   # dev_toolchains/embedded/luatos.nix 额外追加。
   luatos = buildCore ++ serialTools ++ (with pkgs; [
     pkgsCross.riscv64-embedded.stdenv.cc   # riscv64-none-elf (Air101/Air103 C906)

@@ -23,7 +23,7 @@
 let
   embeddedPackages = import ../libs/embedded-packages.nix { inherit pkgs; };
   mkEmbeddedMcuShell = import ../libs/embedded-mcu-shell.nix;
-  luatosTools = pkgs.callPackage ../../packages/custom/luatos-tools { };
+  luatosTools = pkgs.callPackage ../../packages/custom/source/luatos-tools { };
 in
 mkEmbeddedMcuShell {
   inherit pkgs;

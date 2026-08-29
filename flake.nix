@@ -70,24 +70,24 @@
         # DeepSeek Harness CLI (`dsh`) — standalone, kept out of dev shells.
         # Built first so dsh-plugins can symlink @deepseek-ai/dsh-tools from
         # the dsh host's node_modules (plugins import it as a peerDep).
-        dsh = pkgs.callPackage ./packages/custom/deepseek-harness { };
+        dsh = pkgs.callPackage ./packages/custom/source/deepseek-harness { };
       in
-      (import ./packages/custom/winapps {
+      (import ./packages/custom/wine {
         inherit (pkgs) callPackage;
       }) // {
         # TraeCode — TRAE AI IDE (GUI, deb packaging).
-        trae-code = pkgs.callPackage ./packages/custom/trae-code { };
+        trae-code = pkgs.callPackage ./packages/custom/deb/trae-code { };
         inherit dsh;
         # dsh 社区插件集（dshmarket 市场 / context-doctor / context-compass / dream-skin）。
-        dsh-plugins = pkgs.callPackage ./packages/custom/deepseek-harness/plugins.nix { inherit dsh; };
+        dsh-plugins = pkgs.callPackage ./packages/custom/source/deepseek-harness/plugins.nix { inherit dsh; };
         # Yakuake 下拉终端皮肤集（商店排名高的皮肤 + GitHub 官方皮肤）。
-        yakuake-skins = pkgs.callPackage ./packages/custom/yakuake-skins { };
+        yakuake-skins = pkgs.callPackage ./packages/custom/source/yakuake-skins { };
         # Qoder CN IDE — 阿里云通义 AI 编程 IDE（Electron，deb 提取）。
-        qoder-cn = pkgs.callPackage ./packages/custom/qoder { };
+        qoder-cn = pkgs.callPackage ./packages/custom/deb/qoder { };
         # Qoder Wake — 语音唤醒/智能体服务（linux 二进制 + qodercli）。
-        qoder-wake = pkgs.callPackage ./packages/custom/qoder-wake { };
+        qoder-wake = pkgs.callPackage ./packages/custom/binary/qoder-wake { };
         # Qoder CN CLI — 终端 AI 编程助手（Bun 单文件二进制）。
-        qoder-cli-cn = pkgs.callPackage ./packages/custom/qoder-cli { };
+        qoder-cli-cn = pkgs.callPackage ./packages/custom/binary/qoder-cli { };
       };
 
       homeManagerModule = {
