@@ -38,6 +38,7 @@
   xorg,
   libGL,
   libayatana-appindicator,
+  glib-networking,
 }:
 
 stdenv.mkDerivation rec {
@@ -50,6 +51,10 @@ stdenv.mkDerivation rec {
     libayatana-appindicator
     webkitgtk_4_1
   ];
+
+  # WebKitGTK 的 TLS 后端（glib-networking 提供 libgiognutls.so，经 GIO_EXTRA_MODULES
+  # 加载；缺了它界面白屏并报 "TLS support is not available"）。
+  gioModulesDir = "${glib-networking}/lib/gio/modules";
 
   src = fetchurl {
     url = "https://github.com/youssefvdel/qwen-studio/releases/download/v${version}/Qwen.Studio_${version}_amd64.deb";
@@ -115,9 +120,10 @@ stdenv.mkDerivation rec {
       fi
 
       # wrapper：用 makeWrapper 生成，注入运行时 dlopen 所需 LD_LIBRARY_PATH，
-      # 并保留 WebKitGTK 需要的组合/渲染禁用变量（见 desktop 里原有 env）。
+      # 并设 GIO_EXTRA_MODULES 让 WebKitGTK 找到 TLS 后端（否则白屏/TLS 不可用）。
       makeWrapper "$out/lib/$binname" $out/bin/$binname \
-        --prefix LD_LIBRARY_PATH : "$runtimeLibraryPath"
+        --prefix LD_LIBRARY_PATH : "$runtimeLibraryPath" \
+        --set GIO_EXTRA_MODULES "$gioModulesDir"
 
       # 修正 .desktop 的 Exec 指向我们的 wrapper（保留 WEBKIT 环境变量前缀）。
       sed -i "s|/usr/bin/$binname|$out/bin/$binname|g" \
