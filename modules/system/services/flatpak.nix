@@ -1,23 +1,16 @@
 /**
- * File: default.nix
+ * File: flatpak.nix
  * Author: ziyun
  * Date: 2026-08-21
- * Description: Flatpak 基础配置 + 分类应用聚合。
+ * Description: Flatpak 服务启用与仓库配置。
  *
- * Flatpak 应用按用途拆分，便于按需启用/裁剪：
- *   - daily.nix   日常/社交/娱乐
- *   - dev.nix     开发/专业工具
- *   - office.nix  办公/文档/笔记
+ * 只负责「启用 flatpak 服务 + 配置仓库/更新策略」。
+ * Flatpak 应用清单（按用途分类的 daily/dev/office）在
+ * packages/system/flatpak/，与其它软件清单放一起。
  */
 { ... }:
 
 {
-  imports = [
-    ./daily.nix
-    ./dev.nix
-    ./office.nix
-  ];
-
   # nix-flatpak provides the services.flatpak options used here.
   services.flatpak = {
     enable = true;
