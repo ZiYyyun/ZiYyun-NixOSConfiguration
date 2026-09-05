@@ -32,6 +32,12 @@
     customPackages.redspider-student
     customPackages.qoder-cn
     customPackages.qoder-wake
+    customPackages.codebuddy  # CodeBuddy IDE（腾讯 AI 编程 IDE）
+    customPackages.qwen       # Qwen Studio（通义千问桌面客户端）
+    customPackages.flex-movie # Flex Movie（跨平台媒体播放客户端）
+    customPackages.webapps.doubao     # 豆包（浏览器 PWA）
+    customPackages.webapps.qwen-chat  # 千问（浏览器 PWA）
+    customPackages.webapps.deepseek   # DeepSeek（浏览器 PWA）
     customPackages.qoder-cli-cn  # Qoder CN 终端 AI 编程助手
     customPackages.luatools  # 合宙 LuatOS 官方调试/烧录工具（Wine）
   ];

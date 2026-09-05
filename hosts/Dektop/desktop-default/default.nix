@@ -11,10 +11,10 @@
     inputs.nixos-hardware.nixosModules.common-pc
     inputs.nixos-hardware.nixosModules.common-pc-ssd
 
-    ../common/hardware-configuration.nix
-    ../common/boot/uefi.nix
+    ../../common/hardware-configuration.nix
+    ../../common/boot/uefi.nix
     ./hardware-configuration.nix
-    ../../modules/system/profiles/kde.nix
-    ../../modules/system/services/flatpak
+    ../../../modules/system/desktop/kde.nix
+    ../../../modules/system/services/flatpak.nix
   ];
 }

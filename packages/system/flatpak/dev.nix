@@ -21,7 +21,7 @@
     # Flatpak 管理
     "com.github.tchx84.Flatseal"
     "org.dupot.easyflatpak"
-
+    "io.github.prateekmedia.appimagepool"
     "com.zerobrane.studio"
   ];
 }

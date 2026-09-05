@@ -12,13 +12,15 @@
     # closest official ThinkPad profile for this generation.
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x230
 
-    ../common/hardware-configuration.nix
-    ../common/boot/legacy.nix
+    ../../common/hardware-configuration.nix
+    ../../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../modules/system/profiles/gnome.nix
-    ../../modules/system/hardware/thinkpad.nix
-    ../../modules/system/hardware/thinkpad-legacy.nix
-    ../../modules/system/services/flatpak
+    ../../../modules/system/desktop/gnome.nix
+    ../../../modules/system/desktop/niri.nix
+    ../../../modules/system/desktop/noctalia.nix
+    ../../../modules/system/hardware/thinkpad.nix
+    ../../../modules/system/hardware/thinkpad-legacy.nix
+    ../../../modules/system/services/flatpak.nix
   ];
 
   # Keep GNOME installed, but use SDDM as the session picker so Niri is

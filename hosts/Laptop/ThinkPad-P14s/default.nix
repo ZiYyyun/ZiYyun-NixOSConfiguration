@@ -11,16 +11,17 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 
 
-    ../common/hardware-configuration.nix
-    ../common/boot/uefi.nix
+    ../../common/hardware-configuration.nix
+    ../../common/boot/uefi.nix
     ./hardware-configuration.nix
-    ../../modules/system/profiles/kde.nix
-    ../../modules/system/hardware/thinkpad.nix
+    ../../../modules/system/desktop/kde.nix
+    ../../../modules/system/hardware/thinkpad.nix
     ./nvidia.nix
-    ../../modules/system/profiles/niri.nix
-    ../../modules/system/services/flatpak
-    ../../modules/system/services/winboat.nix
-    ../../modules/system/services/fprintd.nix
-    ../../modules/system/services/waydroid.nix
+    ../../../modules/system/desktop/niri.nix
+    ../../../modules/system/desktop/noctalia.nix
+    ../../../modules/system/services/flatpak.nix
+    ../../../modules/system/services/winboat.nix
+    ../../../modules/system/services/fprintd.nix
+    ../../../modules/system/services/waydroid.nix
   ];
 }

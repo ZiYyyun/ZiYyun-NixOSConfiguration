@@ -54,14 +54,11 @@ does not need a separate `git.lix.systems` flake input.
 
 | Flake output | Desktop/session | Hardware profile | Storage notes |
 | --- | --- | --- | --- |
-| `kde-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | none | default KDE layout, root `/dev/sda1` |
 | `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1` |
-| `gnome-default` | GNOME + GDM, also includes Niri + Noctalia | none | default GNOME layout, root `/dev/sda1` |
 | `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
 | `x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `x230` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `p14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
-| `docker-test` | no desktop | none | test-only fake root, no bootloader |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
@@ -79,22 +76,16 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |   |   `-- uefi.nix
 |   |   |-- hardware-configuration.nix
 |   |   `-- installation-boot.nix
-|   |-- kde-default/
-|   |-- niri-default/
-|   |-- gnome-default/
-|   |-- desktop-default/
-|   |-- docker-test/
-|   |-- ThinkPad-x270/
-|   |-- ThinkPad-x230i/
-|   `-- ThinkPad-P14s/
+|   |-- Laptop/
+|   |   |-- ThinkPad-P14s/
+|   |   |-- ThinkPad-x230i/
+|   |   `-- ThinkPad-x270/
+|   `-- Dektop/
+|       |-- niri-default/
+|       `-- desktop-default/
 |-- modules/
 |   |-- system/
 |   |   |-- desktop/
-|   |   |   |-- kde.nix
-|   |   |   |-- gnome.nix
-|   |   |   |-- niri.nix
-|   |   |   `-- noctalia.nix
-|   |   |-- profiles/
 |   |   |   |-- kde.nix
 |   |   |   |-- gnome.nix
 |   |   |   |-- niri.nix
@@ -204,33 +195,19 @@ part of the Nix closure; download and initialize it with
 `shells/waydroid-init.sh` (supports `--proxy` and `--mirror` for faster
 downloads). See the "WayDroid" section below.
 
-### Desktop Profiles (组合层)
-
-There are two layers for desktops, and they have different jobs:
-
-- `modules/system/profiles/*.nix` — the **composition layer**. Each file picks a
-  set of desktop modules and bundles them into one profile that a host imports
-  directly.
-  - `kde.nix` → `desktop/kde.nix`
-  - `niri.nix` → `desktop/niri.nix` + `desktop/noctalia.nix`
-  - `gnome.nix` → `desktop/gnome.nix` + `desktop/niri.nix` + `desktop/noctalia.nix`
-  - `noctalia.nix` → `desktop/noctalia.nix`
-- `modules/system/desktop/*.nix` — the **atomic module layer** (see below).
-
-Hosts import one of these profiles and keep their own hardware layout locally.
-The KDE and GNOME profiles also include Niri + Noctalia as alternate sessions.
-
-Rule of thumb: tweak what a desktop *is* → `desktop/<name>.nix`; tweak *which*
-desktops a host gets → its `profiles/<name>.nix` (or the host's import list).
-
 ### Desktop Modules
 
-Desktop modules live in `modules/system/desktop/*.nix`. Each file keeps desktop enablement and that desktop's specific packages together:
+Desktop enablement lives in `modules/system/desktop/*.nix`. Each file keeps
+a desktop's enablement and package set together:
 
-- KDE: X server, SDDM, Plasma 6, KDE apps, icon/cursor/theme resources
-- GNOME: X server, GDM, GNOME, GNOME-specific apps
-- Niri: Wayland compositor, portals, graphics support, Niri helper tools
-- Noctalia: Noctalia module settings
+- `kde.nix` — X server, SDDM, Plasma 6, KDE apps, icon/cursor/theme resources
+- `gnome.nix` — X server, GDM, GNOME, GNOME-specific apps
+- `niri.nix` — Wayland compositor, portals, graphics support, Niri helper tools
+- `noctalia.nix` — Noctalia module settings
+
+Hosts import the desktop module(s) they want directly (no `profiles/` wrapper
+layer any more). For example a host wanting GNOME as main + Niri/Noctalia as
+alternate sessions imports all three. A host wanting only KDE imports `kde.nix`.
 
 There is intentionally no second desktop package layer now. If a package only makes sense for KDE, edit `modules/system/desktop/kde.nix`; if it should be installed everywhere, edit `packages/system/apps.nix` or `packages/system/development.nix`.
 
@@ -448,10 +425,11 @@ Details are in [wiki/Dev-Programming-Toolchains.md](wiki/Dev-Programming-Toolcha
 
 ## Flatpak
 
-Flatpak is configured in:
+Flatpak is split in two places:
 
 ```text
-modules/system/services/flatpak.nix
+modules/system/services/flatpak.nix      # 启用服务 + 仓库 + 更新策略
+packages/system/flatpak/                 # 应用清单（daily/dev/office 按用途分类）
 ```
 
 Current remote:

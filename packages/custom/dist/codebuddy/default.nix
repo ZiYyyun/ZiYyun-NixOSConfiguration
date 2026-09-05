@@ -148,14 +148,14 @@ stdenv.mkDerivation rec {
     autoPatchelf $out
 
     # 生成启动 wrapper（--no-sandbox 避免依赖 chrome-sandbox setuid）。
-    # 缩放：显式设 1.6 与 KDE 系统缩放(kwinrc Scale=1.6)一致。Electron 自动
-    # 缩放在高分屏(2560x1600)下会误判过大，强制 1.0 又太小。
+    # 缩放：固定 1.0 交由系统 DPI/QT 缩放处理（KDE Scale=1.6 / niri 自动放大）。
+    # 不要用 --force-device-scale-factor，否则会和系统缩放叠加导致界面过大。
     cat > $out/bin/codebuddy <<EOF
     #!/usr/bin/env bash
     export ELECTRON_FORCE_IS_PACKAGED=1
     export ELECTRON_DISABLE_SANDBOX=1
     export ELECTRON_OZONE_PLATFORM_HINT=auto
-    exec "$mainbin" --no-sandbox --force-device-scale-factor=1.6 "\$@"
+    exec "$mainbin" --no-sandbox --force-device-scale-factor=1.0 "\$@"
     EOF
     chmod +x $out/bin/codebuddy
 

@@ -77,7 +77,15 @@
       }) // {
         # TraeCode — TRAE AI IDE (GUI, deb packaging).
         trae-code = pkgs.callPackage ./packages/custom/dist/trae-code { };
+        # CodeBuddy IDE — 腾讯 AI 全栈 IDE（Electron，deb 提取，官方 Linux CDN）。
+        codebuddy = pkgs.callPackage ./packages/custom/dist/codebuddy { };
+        # Qwen Studio — 通义千问桌面客户端（Tauri v2，社区 Linux 版 deb）。
+        qwen = pkgs.callPackage ./packages/custom/dist/qwen { };
+        # Flex Movie — 跨平台媒体播放客户端（Tauri，deb 打包）。
+        flex-movie = pkgs.callPackage ./packages/custom/dist/flex-movie { };
         inherit dsh;
+        # 浏览器原生 PWA 网页应用（豆包/千问/DeepSeek，Chromium --app 独立窗口）。
+        webapps = pkgs.callPackage ./packages/custom/dist/webapps { };
         # dsh 社区插件集（dshmarket 市场 / context-doctor / context-compass / dream-skin）。
         dsh-plugins = pkgs.callPackage ./packages/custom/source/deepseek-harness/plugins.nix { inherit dsh; };
         # Yakuake 下拉终端皮肤集（商店排名高的皮肤 + GitHub 官方皮肤）。
@@ -148,43 +156,26 @@
       };
     in
     {
-      nixosConfigurations.kde-default = mkSystem [
-        ./hosts/kde-default
-      ];
-
+      # 台式机。
       nixosConfigurations.niri-default = mkSystem [
-        ./hosts/niri-default
-      ];
-
-      nixosConfigurations.gnome-default = mkSystem [
-        ./hosts/gnome-default
+        ./hosts/Dektop/niri-default
       ];
 
       nixosConfigurations.desktop-default = mkSystem [
-        ./hosts/desktop-default
+        ./hosts/Dektop/desktop-default
       ];
 
-      # Use this when nix-flatpak blocks evaluation and you want to test the
-      # rest of the configuration in a container-like build environment.
-      nixosConfigurations.docker-test = mkSystem [
-        ./hosts/docker-test
-      ];
-
+      # 笔记本。
       nixosConfigurations.x270 = mkSystem [
-        ./hosts/ThinkPad-x270
+        ./hosts/Laptop/ThinkPad-x270
       ];
 
       nixosConfigurations.x230 = mkSystem [
-        ./hosts/ThinkPad-x230i
+        ./hosts/Laptop/ThinkPad-x230i
       ];
 
       nixosConfigurations.p14s = mkSystem [
-        ./hosts/ThinkPad-P14s
-      ];
-
-      # 云服务器（headless，x86_64，UEFI）。
-      nixosConfigurations.cloud-server = mkSystem [
-        ./hosts/cloud-server
+        ./hosts/Laptop/ThinkPad-P14s
       ];
 
       devShells.${system} = {

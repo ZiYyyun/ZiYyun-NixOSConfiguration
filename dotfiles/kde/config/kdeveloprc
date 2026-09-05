@@ -1,0 +1,17 @@
+/**
+ * KDevelop 编辑器偏好（dotfiles 托管）。
+ *
+ * 仅声明「编辑器显示」相关的 KTextEditor 配置段。
+ * 由 modules/home/config-files/kde.nix 的 activation 读取本文件的
+ * [KTextEditor Editor] 段，用 kwriteconfig6 合并进 ~/.config/kdeveloprc，
+ * 从而不影响 KDevelop 的会话/最近文件等动态内容。
+ *
+ * 字体：Mononoki（圆润等宽编程字体，system fonts 已装）
+ * 主题：Breeze Dark（暗色护眼，配合紫色系 KDE 整体风格）
+ *
+ * 若想改字体/主题，改这里的值后 nixos-rebuild switch 即生效。
+ * QFont::toString 格式：Family,PointSize,-1,Weight,Style,...（见 KDE 文档）。
+ */
+[KTextEditor Editor]
+Text Font=Mononoki,12,-1,5,50,0,0,0,0,0,Regular
+Color Theme=Breeze Dark

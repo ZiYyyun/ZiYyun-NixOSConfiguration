@@ -10,5 +10,6 @@
     ./base.nix
     ./apps.nix
     ./development.nix
+    ./flatpak
   ];
 }

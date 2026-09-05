@@ -34,6 +34,15 @@ let
 
   copyOne = f: "${pkgs.coreutils}/bin/cp -f \"${configRoot}/${f}\" \"$HOME/.config/${f}\"";
   copyCmds = lib.concatStringsSep "\n" (map copyOne managedFiles);
+
+  # KDevelop 编辑器偏好：用 kwriteconfig6 精确合并进 ~/.config/kdeveloprc，
+  # 只写 [KTextEditor Editor] 段（字体 + 配色），不影响 KDevelop 的
+  # 会话/最近文件等动态配置。值声明见 dotfiles/kde/config/kdeveloprc。
+  kwriteconfig6 = "${pkgs.kdePackages.kconfig}/bin/kwriteconfig6";
+  kdevelopEditorCmds = with pkgs.kdePackages; [
+    "${kwriteconfig6} --file kdeveloprc --group 'KTextEditor Editor' --key 'Text Font' 'Mononoki,12,-1,5,50,0,0,0,0,0,Regular'"
+    "${kwriteconfig6} --file kdeveloprc --group 'KTextEditor Editor' --key 'Color Theme' 'Breeze Dark'"
+  ];
 in
 {
   home.pointerCursor = {
@@ -53,5 +62,6 @@ in
 
   home.activation.kdeConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${copyCmds}
+    ${lib.concatStringsSep "\n" kdevelopEditorCmds}
   '';
 }

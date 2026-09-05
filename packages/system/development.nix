@@ -12,6 +12,8 @@
     eclipses.eclipse-embedcpp
     kicad
     codeblocks
+    # clangd / clang-tidy：KDevelop 的 C++ 强化插件（Clangd/补全/静态分析）依赖它。
+    clang-tools
     # Keep large vendor IDEs out of the default system switch path. They fetch
     # from external CDNs and can make a normal rebuild hang for a long time.
     # jetbrains.clion
