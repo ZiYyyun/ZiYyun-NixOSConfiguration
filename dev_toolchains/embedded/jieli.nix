@@ -16,7 +16,8 @@
  *
  * 使用：
  *   nix develop .#jieli
- *   # 进入 SDK 根目录后
+ *   # 进入后自动 cd 到已安装 SDK（多个 SDK 会列菜单选择）
+ *   jcd fw-AC79_AIoT_SDK     # 或 jl / jieli-cd：按名字/菜单快速切换 SDK
  *   make            # 编译（SDK 顶层 Makefile）
  *   make -j $(nproc)
  *   # Linux 端官方只支持编译；烧录/下载需 Windows 杰理工具（可试 Wine）。
@@ -72,5 +73,8 @@ mkEmbeddedMcuShell {
     if [ -f "$HOME/.local/share/jieli/env.sh" ]; then
       source "$HOME/.local/share/jieli/env.sh"
     fi
+    # SDK 导航增强（须在交互 shell 内 source）：自动 cd 到已安装 SDK，并
+    # 提供 jcd / jl / jieli-cd 切换命令。
+    source ${../../shells/jieli-hook.sh}
   '';
 }

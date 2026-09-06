@@ -42,9 +42,12 @@ let
     "https://registry.npmjs.org/dshmarket/-/dshmarket-1.0.0.tgz"
     "sha256-EH9cjn24g/oRAF1msNEIQFooDl84toEGfSK0uuAEqx0=";
 
+  # 注意：dsh-context-doctor 未发布到 npm（registry 无该包），只能拉 GitHub main
+  # 滚动 tar。main 分支 HEAD 会更新 → 固定 hash 会 mismatch。上游变动时代起 bump：
+  #   nix-build 报 got: sha256-... 后，把下面 hash 替换为 got 值即可。
   doctor = tgz "dsh-context-doctor"
     "https://ghfast.top/https://github.com/Zhenyu98/dsh-context-doctor/archive/refs/heads/main.tar.gz"
-    "sha256-E+I9v3/vp/dske2FED7TAZZetnt2T+Sr4XKGFx5CAnE=";
+    "sha256-lFPCznXULuO30e5TmpNygjDpCeZXp5VSxaSaXOwHHYw=";
 
   compass = tgz "dsh-context-compass"
     "https://registry.npmjs.org/dsh-context-compass/-/dsh-context-compass-0.7.14.tgz"
