@@ -59,6 +59,7 @@ does not need a separate `git.lix.systems` flake input.
 | `x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `x230` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `p14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
+| `xiaomi-book-air13` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI layout; Alder Lake 翻转本, OLED backlight, touch+flip sensor (iio), kbd backlight via companion `modules/system/hardware/xiaomi-book-air13.nix` |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
@@ -79,7 +80,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |-- Laptop/
 |   |   |-- ThinkPad-P14s/
 |   |   |-- ThinkPad-x230i/
-|   |   `-- ThinkPad-x270/
+|   |   |-- ThinkPad-x270/
+|   |   `-- Xiaomi-Book-Air13/
 |   `-- Dektop/
 |       |-- niri-default/
 |       `-- desktop-default/

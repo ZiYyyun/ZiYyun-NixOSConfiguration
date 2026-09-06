@@ -178,6 +178,11 @@
         ./hosts/Laptop/ThinkPad-P14s
       ];
 
+      # 小米翻转本 Xiaomi Book Air 13（2022，Alder Lake）。
+      nixosConfigurations.xiaomi-book-air13 = mkSystem [
+        ./hosts/Laptop/Xiaomi-Book-Air13
+      ];
+
       devShells.${system} = {
         default = mkDevShell ./dev_toolchains/compilers/c-cpp.nix;
 
