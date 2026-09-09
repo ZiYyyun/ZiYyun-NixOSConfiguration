@@ -50,7 +50,7 @@
 
 stdenv.mkDerivation rec {
   pname = "flex-movie";
-  version = "1.4.22";
+  version = "1.4.23";
 
   # 运行时需 dlopen 的库（Tauri 的 appindicator 不读 RPATH），经 LD_LIBRARY_PATH 提供。
   runtimeLibraryPath = lib.makeLibraryPath [
@@ -77,7 +77,10 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://flex-download.pages.dev/updates/flex-movie_${version}_amd64.deb";
-    hash = "sha256-OuPdbz3yIpEziJetwqFX563kt2bH8ou7BBAhFBNJQD4=";
+    # 更新：版本号以 Tauri 更新清单 https://flex-download.pages.dev/updates/latest.json
+    # 的 linux-x86_64.url 为准（旧版本文件会下架，URL 返回站点 HTML）。hash 用
+    # `nix store prefetch-file <url>` 预取获取。
+    hash = "sha256-n9P/hLno6GwKnv+6zl9FU2VCNXH714xPqb5WQhf/230=";
   };
 
   nativeBuildInputs = [
