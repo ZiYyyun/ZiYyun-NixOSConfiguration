@@ -65,11 +65,11 @@
 
 stdenv.mkDerivation rec {
   pname = "codebuddy";
-  version = "4.11.2";
+  version = "4.11.3";
 
   src = fetchurl {
-    url = "https://download.codebuddy.cn/aiide/linux-x64/CodeBuddy-linux-x64-4.11.2.36529961-74e2511a-cn.deb";
-    hash = "sha256-Mnh9dY9L6E5/opps7S16M213/Gif9Ta/pmSympLBSos=";
+    url = "https://download.codebuddy.cn/aiide/linux-x64/CodeBuddy-linux-x64-4.11.3.37298507-2345dde1-cn.deb";
+    hash = "sha256-0HcKRWNTUibarOClfzmBK8iiOqdYBzoG+3eFfv6oiOg=";
   };
 
   nativeBuildInputs = [

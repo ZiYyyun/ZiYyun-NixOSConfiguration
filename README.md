@@ -27,7 +27,7 @@ Current target release: **NixOS 26.05**.
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
-| Embedded | MCU/vendor/SoC toolchain definitions live in Flake devShells, not in the global system profile |
+| auto-update | systemd timer (`flake-auto-update`) runs daily on all hosts: checks upstream versions, bumps hashes, verifies with `nix build`, auto-commits and pushes |
 
 ## Flake Inputs
 
@@ -96,6 +96,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |       |-- dbus.nix
 |   |       |-- input-method.nix
 |   |       |-- sddm.nix
+|   |       |-- auto-update.nix
 |   |       |-- flatpak.nix
 |   |       |-- winboat.nix
 |   |       |-- fprintd.nix
@@ -111,6 +112,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |   `-- development.nix
 |   |-- home/
 |   `-- custom/
+|       |-- update.sh       # check/bump 上游版本（--bump --all --verify）
 |       |-- winapps/       # Windows apps packaged with Wine
 |       |-- dist/          # packages extracted from distro binaries (.deb, and .rpm/.aur later)
 |       |-- binary/        # official prebuilt binary tarballs
@@ -176,6 +178,7 @@ System packages now live in `packages/system/base.nix`, `packages/system/apps.ni
 - `dbus.nix`: sets `services.dbus.implementation = "dbus"`
 - `input-method.nix`: Fcitx5, Rime, Chinese addons, config tool, input method environment variables
 - `sddm.nix`: SDDM Astronaut theme
+- `auto-update.nix`: systemd timer `flake-auto-update` (enabled by default on all hosts)
 
 `flatpak.nix` is imported only by host profiles that enable `nix-flatpak`.
 
@@ -669,6 +672,66 @@ Temporary rebuild with explicit substituters:
 ```bash
 sudo nixos-rebuild switch --flake .#p14s --option substituters "https://cache.nixos.org/ https://mirror.sjtu.edu.cn/nix-channels/store https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://mirrors.ustc.edu.cn/nix-channels/store"
 ```
+
+## Custom Package Auto-Update
+
+All hosts run a systemd timer (`flake-auto-update`) that **daily** checks
+upstream versions of custom packages in `packages/custom/`, bumps version +
+hash, verifies with `nix build`, and auto-commits + pushes. The next
+`nixos-rebuild` picks up the new versions automatically.
+
+The timer is enabled by default on all hosts. To disable on a specific host:
+
+```nix
+services.flake-auto-update.enable = false;
+```
+
+### How it works
+
+```text
+systemd timer flake-auto-update (daily, Persistent=true)
+  └── packages/custom/update.sh --bump --all --verify
+        1. Probe upstream version (npm dist-tags / GitHub releases / Tauri manifest / Makefile)
+        2. nix store prefetch-file → real SRI hash
+        3. sed version + hash in derivation
+        4. nix build verification (fail → git checkout revert)
+        5. git add + commit + push
+```
+
+### Manual usage
+
+```bash
+# Check upstream versions without changing anything
+packages/custom/update.sh
+
+# Bump a single package (auto-detect version)
+packages/custom/update.sh --bump codebuddy
+
+# Bump a single package (manual version, for packages without a registry)
+packages/custom/update.sh --bump trae-code 2.4.12345
+
+# Bump all auto-detectable packages, with build verification
+packages/custom/update.sh --bump --all --verify
+
+# Trigger the systemd service immediately
+sudo systemctl start flake-auto-update
+
+# View logs
+journalctl -u flake-auto-update
+```
+
+### Package update sources
+
+| Package | Version source | Automated |
+| --- | --- | --- |
+| flex-movie | Tauri `latest.json` manifest | fully automatic |
+| codebuddy | GitHub Makefile (`CB_VERSION`/`CB_BUILD`/`CB_HASH`) | fully automatic |
+| qwen | GitHub releases tag | fully automatic |
+| dsh | npm dist-tags (`@deepseek-ai/dsh`) | fully automatic (lock regenerated, npmDepsHash auto-calibrated) |
+| dsh-plugins | npm + GitHub main rolling hash-drift detection | fully automatic |
+| qoder | URL has no version (always latest) | needs explicit `--bump qoder <ver>` |
+| trae-code | no machine-readable manifest | needs explicit `--bump trae-code <ver>` |
+| webapps / winapps / vendored | static packages | no update needed |
 
 ## Updating Packages And Modules
 

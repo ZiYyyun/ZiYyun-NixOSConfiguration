@@ -44,7 +44,7 @@
   desktopName ? pname,
   description ? "",
   categories ? "Network;",
-  winePkg ? pkgs.wineWowPackages.wayland,
+  winePkg ? pkgs.wineWow64Packages.wayland,
   # CJK font for Wine. NB: must be a font Wine's text engine can actually
   # rasterise — wqy-zenhei/wqy-microhei (TrueType collections) hit Wine's
   # "unsupported font format" path and render every CJK glyph as a box;

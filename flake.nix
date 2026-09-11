@@ -83,6 +83,8 @@
         qwen = pkgs.callPackage ./packages/custom/dist/qwen { };
         # Flex Movie — 跨平台媒体播放客户端（Tauri，deb 打包）。
         flex-movie = pkgs.callPackage ./packages/custom/dist/flex-movie { };
+        # CC Switch — Claude Code/Codex/Gemini CLI 配置与供应商切换（Tauri，AppImage）。
+        cc-switch = pkgs.callPackage ./packages/custom/dist/cc-switch { };
         inherit dsh;
         # 浏览器原生 PWA 网页应用（豆包/千问/DeepSeek，Chromium --app 独立窗口）。
         webapps = pkgs.callPackage ./packages/custom/dist/webapps { };

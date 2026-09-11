@@ -35,7 +35,10 @@
   harfbuzz,
   fontconfig,
   freetype,
-  xorg,
+  libxcb,
+  libx11,
+  libxrender,
+  libxi,
   libGL,
   libayatana-appindicator,
   glib-networking,
@@ -83,10 +86,10 @@ stdenv.mkDerivation rec {
     harfbuzz
     fontconfig
     freetype
-    xorg.libxcb
-    xorg.libX11
-    xorg.libXrender
-    xorg.libXi
+    libxcb
+    libx11
+    libxrender
+    libxi
     libGL
     # 系统托盘指示器：Tauri 用 dlopen 加载 ayatana-appindicator3（不读 RPATH），
     # 因此必须在 wrapper 里通过 LD_LIBRARY_PATH 提供。

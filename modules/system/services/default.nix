@@ -10,5 +10,6 @@
     ./dbus.nix
     ./input-method.nix
     ./sddm.nix
+    ./auto-update.nix
   ];
 }

@@ -35,6 +35,7 @@
     customPackages.codebuddy  # CodeBuddy IDE（腾讯 AI 编程 IDE）
     customPackages.qwen       # Qwen Studio（通义千问桌面客户端）
     customPackages.flex-movie # Flex Movie（跨平台媒体播放客户端）
+    customPackages.cc-switch  # CC Switch（Claude Code/Codex/Gemini 切换，AppImage）
     customPackages.webapps.doubao     # 豆包（浏览器 PWA）
     customPackages.webapps.qwen-chat  # 千问（浏览器 PWA）
     customPackages.webapps.deepseek   # DeepSeek（浏览器 PWA）
