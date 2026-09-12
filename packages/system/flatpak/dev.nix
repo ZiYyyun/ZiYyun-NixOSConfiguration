@@ -18,10 +18,13 @@
     "org.wireshark.Wireshark"
     # AI 开发
     "com.cherry_ai.CherryStudio"
+    "dev.zed.Zed"
     # Flatpak 管理
     "com.github.tchx84.Flatseal"
     "org.dupot.easyflatpak"
     "io.github.prateekmedia.appimagepool"
     "com.zerobrane.studio"
+
+    "com.jetbrains.IntelliJ-IDEA-Ultimate"
   ];
 }

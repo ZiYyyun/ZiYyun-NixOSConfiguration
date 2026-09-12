@@ -31,16 +31,22 @@ let
     hash = "sha256-Ubhx8rNGRCn+GZWGE/4b9js772iEmbVnbOeoWeZLXxI=";
   };
 
-  # wrapType2：解包 squashfs → patchelf 解释器 → 生成调 AppRun 的 wrapper
+  # wrapType2：在 bubblewrap FHS 环境里运行 AppImage（自动提供 /lib64 等
+  # 标准路径，免去对内联库逐个 patchelf），runScript 调 appimage-exec → AppRun
   appimage = appimageTools.wrapType2 {
-    name = pname;
-    inherit src;
+    inherit pname version src;
+
+    # 在 bwrap 边界剥离宿主注入的 LD_PRELOAD。某些 IDE / 命令沙箱（如 Trae 的
+    # modules/sandbox/sbox.so）会对每个 exec 强制 LD_PRELOAD，而 sbox.so 的
+    # RUNPATH 指向自带的旧 libstdc++（ckg/binary），它先被载入并占用符号表，
+    # 导致 AppImage 内联的 webkit2gtk 拿不到 GLIBCXX_3.4.26/29/30。AppImage
+    # 完全自包含，无需任何 preload，这里直接清掉最稳妥。
+    extraBwrapArgs = [ "--unsetenv" "LD_PRELOAD" ];
   };
 
   # extractType2：仅为取出 .desktop 和图标
   contents = appimageTools.extractType2 {
-    name = "${pname}-${version}";
-    inherit src;
+    inherit pname version src;
   };
 in
 stdenv.mkDerivation {
