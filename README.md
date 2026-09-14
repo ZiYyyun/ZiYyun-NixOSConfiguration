@@ -9,7 +9,7 @@ Current target release: **NixOS 26.05**.
 | Area | Current State |
 | --- | --- |
 | Nix | Flakes enabled, `nix-command` enabled, Lix enabled from nixpkgs, `nixpkgs` pinned to the `nixos-26.05` Git branch |
-| Binary cache | Official `cache.nixos.org` first, domestic university mirrors as fallback |
+| Binary cache | Domestic university mirrors first, official `cache.nixos.org` as fallback |
 | User | Normal user `ziyun`, wheel/networkmanager groups, Home Manager enabled |
 | Locale | `zh_CN.UTF-8`, timezone `Asia/Shanghai`, XKB layout `cn` |
 | Network | NetworkManager, OpenSSH |
@@ -59,7 +59,7 @@ does not need a separate `git.lix.systems` flake input.
 | `x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `x230` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `p14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
-| `xiaomi-book-air13` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI layout; Alder Lake 翻转本, OLED backlight, touch+flip sensor (iio), kbd backlight via companion `modules/system/hardware/xiaomi-book-air13.nix` |
+| `xiaomi-book-air13` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI; AX211 Wi-Fi/Bluetooth, ALC256 audio firmware, Thunderbolt authorization, Koga touch/pen, Intel ISH/IIO rotation; Goodix `27c6:5812` fingerprint is not supported by upstream libfprint |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
@@ -75,8 +75,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |   |-- boot/
 |   |   |   |-- legacy.nix
 |   |   |   `-- uefi.nix
-|   |   |-- hardware-configuration.nix
-|   |   `-- installation-boot.nix
+|   |   `-- hardware-configuration.nix
 |   |-- Laptop/
 |   |   |-- ThinkPad-P14s/
 |   |   |-- ThinkPad-x230i/
@@ -125,10 +124,7 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |   |-- libs/
 |   |-- compilers/
 |   `-- embedded/
-|-- shells/
-|   |-- bootstrap.sh
-|   |-- install.sh
-|   `-- export-dotfiles.sh
+|-- shells/                 # runtime helpers used by dev shells / WayDroid
 |-- wiki/
 |   |-- Dev-Embedded-Toolchains.md
 |   |-- Dev-Programming-Toolchains.md
@@ -278,8 +274,6 @@ Caveats:
   first if you want to keep the new values.
 - Text editors that write in place (VS Code, vim, nano) keep the symlink
   intact.
-- `shells/export-dotfiles.sh` is kept as a one-shot export for one-time
-  migrations (e.g. first import of a running session's config).
 
 ## Nixvim
 
@@ -382,9 +376,6 @@ nix develop .#allwinner
 nix develop .#rockchip
 ```
 
-`nix develop .#esp` and `nix develop .#esp-idf` enter the same unified ESP32
-shell (see below).
-
 `devShells.default`, `.#c`, `.#cpp`, and `.#c-cpp` point to the same C/C++ shell, so plain `nix develop` is useful for clangd/pthread/libmodbus/Paho MQTT C/CMake projects.
 
 ### ESP-IDF (VSCode + idf.py)
@@ -395,10 +386,10 @@ the unified `esp` shell provides the complete ESP-IDF framework plus toolchains
 for all ESP32 targets (from
 [mirrexagon/nixpkgs-esp-dev](https://github.com/mirrexagon/nixpkgs-esp-dev)),
 merged with the flashing/serial tools (`esptool`, `espflash`, `platformio`,
-`openocd`, serial tools). `esp` and `esp-idf` are the same shell.
+`openocd`, serial tools).
 
 ```bash
-nix develop .#esp        # == nix develop .#esp-idf
+nix develop .#esp
 ```
 
 Inside the shell, `idf.py` is ready:
@@ -570,40 +561,6 @@ shells instead:
   `stm32flash` / `openocd`
 - ESP32: `nix develop .#esp` (ESP-IDF + esptool/espflash/platformio)
 
-## Install From Live ISO
-
-Boot into a NixOS live ISO, connect to the network, then run:
-
-```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash
-```
-
-The default path assumes you already partitioned, formatted, and mounted the target system at `/mnt`. The installer prepares the repo under `/mnt/etc/nixos` and installs the default flake output.
-
-To specify a disk without erasing it:
-
-```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash -s -- -- --disk /dev/nvme0n1
-```
-
-To erase, partition, format, and mount a disk, pass `--erase` explicitly:
-
-```bash
-curl -L https://raw.githubusercontent.com/ZiYyyun/ZiYyun-NixOSConfiguration/main/shells/bootstrap.sh | sudo bash -s -- -- --disk /dev/sda --erase
-```
-
-The script asks for an explicit confirmation such as:
-
-```text
-ERASE /dev/sda
-```
-
-To prepare files but skip installation:
-
-```bash
-sudo bash shells/install.sh --mountpoint /mnt --skip-install
-```
-
 ## Rebuild
 
 From the repository root:
@@ -627,19 +584,19 @@ nix build .#nixosConfigurations.p14s.config.system.build.toplevel
 Useful host commands:
 
 ```bash
-sudo nixos-rebuild switch --flake .#kde-default
 sudo nixos-rebuild switch --flake .#niri-default
-sudo nixos-rebuild switch --flake .#gnome-default
 sudo nixos-rebuild switch --flake .#desktop-default
 sudo nixos-rebuild switch --flake .#x270
 sudo nixos-rebuild switch --flake .#x230
 sudo nixos-rebuild switch --flake .#p14s
+sudo nixos-rebuild switch --flake .#xiaomi-book-air13
 ```
 
-If you only want a lightweight evaluation target:
+For the Xiaomi Book Air 13, build first and then activate it temporarily:
 
 ```bash
-nix build .#nixosConfigurations.docker-test.config.system.build.toplevel
+nix build .#nixosConfigurations.xiaomi-book-air13.config.system.build.toplevel
+sudo nixos-rebuild test --flake .#xiaomi-book-air13
 ```
 
 ## Lix
@@ -660,8 +617,8 @@ normal nixpkgs update path.
 | nixpkgs input | Git-pinned `github:NixOS/nixpkgs/nixos-26.05` |
 | GitHub flake inputs | Official `github:owner/repository` references |
 | Lix | from nixpkgs |
-| Nix binary cache | official `https://cache.nixos.org/` first |
-| Domestic cache fallback | SJTU, TUNA, USTC Nix channel stores |
+| Nix binary cache | SJTU, TUNA, USTC Nix channel stores first |
+| Official cache fallback | `https://cache.nixos.org/` |
 | Flatpak | SJTU Flathub mirror |
 
 Do not pin `nixpkgs` to a channel tarball mirror. Mirrors may repack tarballs,
@@ -800,7 +757,6 @@ build.
 - KDE dotfiles may require logout/login after rebuild.
 - If KDE icons or cursors look wrong, verify both the config name and the package providing the resources.
 - If `dbus-broker` errors return during `nixos-rebuild switch`, keep using `services.dbus.implementation = "dbus"`.
-- `docker-test` is intentionally not a real desktop or installable machine profile.
 
 ## TODO
 

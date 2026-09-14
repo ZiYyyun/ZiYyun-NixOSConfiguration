@@ -101,7 +101,7 @@ let
   ];
 
   # org.kde.panel 面板容器（缺了它 plasmashell 无法创建任何面板）。
-  panelFix = old: (old.postInstall or "") + ''
+  panelFix = ''
     srcDir=/tmp/plasma-fix-src
     rm -rf "$srcDir" && mkdir -p "$srcDir"
     tar xJf "$src" -C "$srcDir" --strip-components=1
@@ -127,7 +127,7 @@ in
     (final: prev: {
       kdePackages = prev.kdePackages // {
         plasma-desktop = (prev.kdePackages.plasma-desktop).overrideAttrs (old: {
-          postInstall = makeQmlInstall old plasmaDesktopApplets + panelFix old;
+          postInstall = makeQmlInstall old plasmaDesktopApplets + panelFix;
         });
         plasma-workspace = (prev.kdePackages.plasma-workspace).overrideAttrs (old: {
           postInstall = makeQmlInstall old workspaceApplets;

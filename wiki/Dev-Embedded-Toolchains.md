@@ -15,7 +15,6 @@ MCU/vendor environments:
 ```bash
 nix develop .#stm
 nix develop .#esp          # unified ESP32 shell: ESP-IDF + flashing/serial tools
-nix develop .#esp-idf      # same shell as .#esp (alias)
 nix develop .#nordic
 nix develop .#segger
 ```

@@ -85,9 +85,9 @@ That caused repeated load failures in Plasma 6.6:
   system tray in the top-right corner.
 
 If you want more Plasma customizations, configure them in the running session
-and export with `shells/export-dotfiles.sh`, or hand-edit the appletsrc
-above. Note that Home Manager links are read-only; Plasma cannot persist
-widget moves back into the store path.
+and copy the relevant settings back into this directory, or hand-edit the
+appletsrc above. Note that Home Manager links are read-only; Plasma cannot
+persist widget moves back into the store path.
 
 Home Manager links these files through:
 

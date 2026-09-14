@@ -5,8 +5,7 @@
 { pkgs, ... }:
 
 {
-  # Prefer the official cache, with domestic university mirrors as fallbacks
-  # when cache.nixos.org is slow from the current network.
+  # Prefer domestic university mirrors, with the official cache as fallback.
   nix.settings.substituters = [
     "https://mirror.sjtu.edu.cn/nix-channels/store"
     "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"

@@ -6,8 +6,8 @@
  *
  * Wayland note: environment.sessionVariables alone does not reach GUI apps
  * launched through the systemd user instance on KDE Plasma 6 Wayland.
- * Use systemd.user.environmentFile to inject IM environment variables for
- * systemd user services, start fcitx5 as a user service.
+ * Put the variables in environment.d so the systemd user manager and GUI
+ * services inherit them, then start fcitx5 as a user service.
  */
 { pkgs, lib, ... }:
 
@@ -20,9 +20,6 @@ let
     GLFW_IM_MODULE = "fcitx";
   };
 
-  # 生成环境变量文件，供给 systemd user 全局加载
-  imEnvFile = pkgs.writeText "fcitx5-im-env.conf"
-    (lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "${k}=${v}") imEnv));
 in
 {
   # ========== 输入法核心配置 ==========
@@ -40,19 +37,18 @@ in
 
   # ========== 系统包（顶层选项，和 i18n.inputMethod 同级！）==========
   environment.systemPackages = with pkgs; [
-    kdePackages.fcitx5-configtool   # 图形配置工具（kde 版本）
+    qt6Packages.fcitx5-configtool   # Qt6 图形配置工具
     fcitx5-gtk                      # GTK 应用的输入法支持
-    kdePackages.fcitx5-qt           # Qt 应用的输入法支持
+    qt6Packages.fcitx5-qt           # Qt6 应用的输入法支持
   ];
 
   # ========== 环境变量（顶层选项！）==========
   environment.sessionVariables = imEnv;
 
-  # ========== systemd 用户实例配置（顶层选项！）==========
-  # 让所有 systemd user 单元继承输入法环境变量（解决 KDE Wayland 问题）
-  systemd.user.extraConfig = ''
-    EnvironmentFile=${imEnvFile}
-  '';
+  # systemd user manager reads environment.d when it starts. EnvironmentFile
+  # is a service-unit directive and is invalid in systemd/user.conf.
+  environment.etc."environment.d/90-fcitx5.conf".text =
+    lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "${k}=${v}") imEnv) + "\n";
 
   # Keep fcitx5 running for the whole graphical session.
   systemd.user.services.fcitx5 = {

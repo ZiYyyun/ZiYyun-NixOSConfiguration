@@ -124,7 +124,6 @@
 
         ./configuration.nix
 
-        ./hosts/common/installation-boot.nix
         ./modules/system
         ./packages/system
 
