@@ -14,7 +14,7 @@
 #   qwen         GitHub releases (youssefvdel/qwen-studio)
 #   codebuddy    JipZeonGit/codebuddy-ide-cn-linux 的 Makefile (CB_*)
 #   dsh          npm dist-tags (@deepseek-ai/dsh)
-#   dsh-plugins  dshmarket=npm；dsh-context-doctor=GitHub main 滚动(hash 漂移检测)
+#   dsh-plugins  固定到 GitHub main 当前提交（doctor + deep-whale）
 #   qoder        URL 不带版本号(永远最新)，check 仅提示；bump 需显式给版本号
 #   trae-code    无机器可读清单，bump 需显式给版本号
 #   webapps/winapps/其余 vendored 静态包  无上游版本，跳过
@@ -64,6 +64,7 @@ up_flex_movie()  { curl -sL "https://flex-download.pages.dev/updates/latest.json
 up_qwen()        { curl -sL "https://api.github.com/repos/youssefvdel/qwen-studio/releases/latest" | jq -r .tag_name | sed 's/^v//'; }
 up_dsh()         { curl -sL "https://registry.npmjs.org/@deepseek-ai/dsh" | jq -r '."dist-tags".latest'; }
 up_dshmarket()   { curl -sL "https://registry.npmjs.org/dshmarket" | jq -r '."dist-tags".latest'; }
+up_git_head()    { git ls-remote "$GH_PROXY/https://github.com/$1.git" refs/heads/main | awk '{print $1}'; }
 # codebuddy: Makefile 的 CB_VERSION/CB_BUILD/CB_HASH → "4.11.3.37298507-2345dde1"
 up_codebuddy()   { local mk v b h
                    mk=$(curl -sL "$GH_PROXY/https://raw.githubusercontent.com/JipZeonGit/codebuddy-ide-cn-linux/main/Makefile")
@@ -128,12 +129,24 @@ bump_dsh() { # $1=newver。dsh 特殊：vendored lock 需按新 tarball 重新�
     fi
 }
 
-bump_doctor() { # 滚动 main：hash 漂移即更新
+bump_dsh_plugins() { # 将 GitHub 插件更新到 main 当前提交，并保持 URL 固定
     local f="packages/custom/source/deepseek-harness/plugins.nix"
-    local new_hash
-    new_hash=$(prefetch "$GH_PROXY/https://github.com/Zhenyu98/dsh-context-doctor/archive/refs/heads/main.tar.gz")
-    sed -i "/dsh-context-doctor\/archive\/refs\/heads\/main.tar.gz\"/,+1s|sha256-[A-Za-z0-9+/=]*|$new_hash|" "$f"
-    echo "  已更新 plugins.nix 中 dsh-context-doctor → hash=${new_hash:0:20}..."
+    local doctor_rev whale_rev doctor_url whale_url doctor_hash whale_hash
+    doctor_rev=$(up_git_head Zhenyu98/dsh-context-doctor)
+    whale_rev=$(up_git_head Small-tailqwq/dsh-deep-whale)
+    doctor_url="$GH_PROXY/https://github.com/Zhenyu98/dsh-context-doctor/archive/$doctor_rev.tar.gz"
+    whale_url="$GH_PROXY/https://github.com/Small-tailqwq/dsh-deep-whale/archive/$whale_rev.tar.gz"
+    doctor_hash=$(prefetch "$doctor_url")
+    whale_hash=$(prefetch "$whale_url")
+    sed -i "/doctor = tgz \"dsh-context-doctor\"/,+2 {
+      s|https://[^\"]*|$doctor_url|
+      s|sha256-[A-Za-z0-9+/=]*|$doctor_hash|
+    }" "$f"
+    sed -i "/deepWhale = tgz \"dsh-deep-whale\"/,+2 {
+      s|https://[^\"]*|$whale_url|
+      s|sha256-[A-Za-z0-9+/=]*|$whale_hash|
+    }" "$f"
+    echo "  已更新 dsh 插件：doctor=${doctor_rev:0:12} deep-whale=${whale_rev:0:12}"
 }
 
 # —— 定义自动化包表: attr|类型|上游探测函数名 ——
@@ -180,15 +193,15 @@ check)
         [ "$name" = codebuddy ] && latest="${latest%.*-*}"  # attr 只存短版本，比对前去掉 .build-hash
         check_one "$attr" "$latest"
     done
-    # dsh-plugins：doctor 滚动源 hash 漂移检测 + dshmarket 版本
-    pinned=$(sed -n '/dsh-context-doctor\/archive\/refs\/heads\/main.tar.gz\"/{n;s|.*sha256-\([A-Za-z0-9+/=]*\).*|\1|p}' \
-        packages/custom/source/deepseek-harness/plugins.nix)
-    upstream=$(prefetch "$GH_PROXY/https://github.com/Zhenyu98/dsh-context-doctor/archive/refs/heads/main.tar.gz")
-    upstream=${upstream#sha256-}
-    if [ "$pinned" = "$upstream" ]; then
-        echo "  dsh-plugins   dshmarket=$(up_dshmarket) / doctor (=)   滚动源无漂移"
+    # dsh-plugins：比较固定提交与两个仓库的 main HEAD。
+    doctor_pinned=$(sed -n '/doctor = tgz "dsh-context-doctor"/,+2s|.*/archive/\([0-9a-f]\{40\}\)\.tar\.gz.*|\1|p' packages/custom/source/deepseek-harness/plugins.nix)
+    whale_pinned=$(sed -n '/deepWhale = tgz "dsh-deep-whale"/,+2s|.*/archive/\([0-9a-f]\{40\}\)\.tar\.gz.*|\1|p' packages/custom/source/deepseek-harness/plugins.nix)
+    doctor_upstream=$(up_git_head Zhenyu98/dsh-context-doctor)
+    whale_upstream=$(up_git_head Small-tailqwq/dsh-deep-whale)
+    if [ "$doctor_pinned" = "$doctor_upstream" ] && [ "$whale_pinned" = "$whale_upstream" ]; then
+        echo "  dsh-plugins   dshmarket=$(up_dshmarket) / GitHub 插件 (=)   已是最新提交"
     else
-        echo "  dsh-plugins   (→)   dshmarket=$(up_dshmarket) / doctor 上游有漂移，可 --bump dsh-plugins"
+        echo "  dsh-plugins   (→)   GitHub 插件有新提交，可 --bump dsh-plugins"
     fi
     echo "  qoder         $(cur qoder-cn)  (i)   URL 无版本号，需 --bump qoder <版本> 手动升级"
     echo "  trae-code     $(cur trae-code)  (i)   无清单源，需 --bump trae-code <版本> 手动升级"
@@ -202,7 +215,7 @@ bump)
             local_ver=$(cur "$attr"); latest=$(up_"$name")
             if [ "$local_ver" != "$latest" ]; then
                 echo "→ $attr $local_ver → $latest"
-                local nf="packages/custom/dist/$attr/default.nix"
+                nf="packages/custom/dist/$attr/default.nix"
                 case "$kind" in
                     simple)    bump_simple "$attr" "$attr" "$latest" "$(file_url "$nf")"
                                maybe_verify "$attr" "$nf" ;;
@@ -215,14 +228,14 @@ bump)
         done
         if [ -n "$PKG" ]; then
             echo "→ $PKG (滚动/指定)"
-            local pf="packages/custom/source/deepseek-harness/plugins.nix"
+            pf="packages/custom/source/deepseek-harness/plugins.nix"
             case "$PKG" in
-                dsh-plugins) bump_doctor; maybe_verify dsh-plugins "$pf" ;;
+                dsh-plugins) bump_dsh_plugins; maybe_verify dsh-plugins "$pf" ;;
                 *) echo "  未知的 --all 附加包: $PKG" >&2; exit 1 ;;
             esac
         fi
     elif [ -n "$PKG" ]; then
-        local nf
+        nf=""
         case "$PKG" in
             flex-movie|qwen)
                 v="${EXPLICIT_VER:-$(up_"$PKG")}"
@@ -249,7 +262,7 @@ bump)
                 bump_dsh "$v"   # 内部已自验
                 OK=$((OK+1)) ;;
             dsh-plugins)
-                bump_doctor
+                bump_dsh_plugins
                 nf="packages/custom/source/deepseek-harness/plugins.nix"
                 maybe_verify dsh-plugins "$nf" ;;
             *) echo "未知包: $PKG（支持: $AUTO_PKGS 的首列 + qoder/trae-code/dsh-plugins）" >&2; exit 1 ;;

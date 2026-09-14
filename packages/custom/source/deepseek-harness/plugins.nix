@@ -42,12 +42,11 @@ let
     "https://registry.npmjs.org/dshmarket/-/dshmarket-1.0.0.tgz"
     "sha256-EH9cjn24g/oRAF1msNEIQFooDl84toEGfSK0uuAEqx0=";
 
-  # 注意：dsh-context-doctor 未发布到 npm（registry 无该包），只能拉 GitHub main
-  # 滚动 tar。main 分支 HEAD 会更新 → 固定 hash 会 mismatch。上游变动时代起 bump：
-  #   nix-build 报 got: sha256-... 后，把下面 hash 替换为 got 值即可。
+  # dsh-context-doctor is not published to npm. Pin its GitHub revision so an
+  # upstream main-branch update cannot break an unrelated system rebuild.
   doctor = tgz "dsh-context-doctor"
-    "https://ghfast.top/https://github.com/Zhenyu98/dsh-context-doctor/archive/refs/heads/main.tar.gz"
-    "sha256-lFPCznXULuO30e5TmpNygjDpCeZXp5VSxaSaXOwHHYw=";
+    "https://ghfast.top/https://github.com/Zhenyu98/dsh-context-doctor/archive/41d5c2e4bbe0611b7928c4007bb28545f7ace38f.tar.gz"
+    "sha256-5LF9pnU4148Uxp1gybRZ6LWp8wRv+axr6wkP6qmH7sw=";
 
   compass = tgz "dsh-context-compass"
     "https://registry.npmjs.org/dsh-context-compass/-/dsh-context-compass-0.7.14.tgz"
@@ -76,9 +75,12 @@ let
   # 鲸鱼娘皮肤（深海女仆工坊）—— Small-tailqwq/dsh-deep-whale 仓库的
   # maid-atelier 子目录即完整皮肤包（自带构建产物），包名
   # @dsh-external/dsh-client-ui-skin-maid-atelier。
+  # Pin the repository revision. Fetching the moving main branch made every
+  # upstream commit break otherwise unrelated NixOS rebuilds with a hash
+  # mismatch.
   deepWhale = tgz "dsh-deep-whale"
-    "https://ghfast.top/https://github.com/Small-tailqwq/dsh-deep-whale/archive/refs/heads/main.tar.gz"
-    "sha256-P1K/NDcpC/PGbo9/jqFXP1hucVvxKxuoEyozeMXm3wA=";
+    "https://ghfast.top/https://github.com/Small-tailqwq/dsh-deep-whale/archive/7ad8d99e9a2a8802916be4c1d528116af9c0342c.tar.gz"
+    "sha256-MgoozvM8hXC+7E3cy4NKotOdZX1+kGGZjFL+F4L/vY0=";
 
   # 多平台订阅/API 接入：SuperGrok/Grok Build、ChatGPT Plus Codex、Kimi Code、
   # Claude Code 订阅 OAuth + OpenAI/Anthropic API-key 网关共存。

@@ -64,41 +64,9 @@
         config.allowUnfree = true;
       };
 
-      # Custom-packaged GUI apps (Wine apps + TraeCode) shared between the
-      # flake `packages` output and Home Manager (home.packages → desktop menu).
-      customPackages = let
-        # DeepSeek Harness CLI (`dsh`) — standalone, kept out of dev shells.
-        # Built first so dsh-plugins can symlink @deepseek-ai/dsh-tools from
-        # the dsh host's node_modules (plugins import it as a peerDep).
-        dsh = pkgs.callPackage ./packages/custom/source/deepseek-harness { };
-      in
-      (import ./packages/custom/winapps {
-        inherit (pkgs) callPackage;
-      }) // {
-        # TraeCode — TRAE AI IDE (GUI, deb packaging).
-        trae-code = pkgs.callPackage ./packages/custom/dist/trae-code { };
-        # CodeBuddy IDE — 腾讯 AI 全栈 IDE（Electron，deb 提取，官方 Linux CDN）。
-        codebuddy = pkgs.callPackage ./packages/custom/dist/codebuddy { };
-        # Qwen Studio — 通义千问桌面客户端（Tauri v2，社区 Linux 版 deb）。
-        qwen = pkgs.callPackage ./packages/custom/dist/qwen { };
-        # Flex Movie — 跨平台媒体播放客户端（Tauri，deb 打包）。
-        flex-movie = pkgs.callPackage ./packages/custom/dist/flex-movie { };
-        # CC Switch — Claude Code/Codex/Gemini CLI 配置与供应商切换（Tauri，AppImage）。
-        cc-switch = pkgs.callPackage ./packages/custom/dist/cc-switch { };
-        inherit dsh;
-        # 浏览器原生 PWA 网页应用（豆包/千问/DeepSeek，Chromium --app 独立窗口）。
-        webapps = pkgs.callPackage ./packages/custom/dist/webapps { };
-        # dsh 社区插件集（dshmarket 市场 / context-doctor / context-compass / dream-skin）。
-        dsh-plugins = pkgs.callPackage ./packages/custom/source/deepseek-harness/plugins.nix { inherit dsh; };
-        # Yakuake 下拉终端皮肤集（商店排名高的皮肤 + GitHub 官方皮肤）。
-        yakuake-skins = pkgs.callPackage ./packages/custom/source/yakuake-skins { };
-        # Qoder CN IDE — 阿里云通义 AI 编程 IDE（Electron，deb 提取）。
-        qoder-cn = pkgs.callPackage ./packages/custom/dist/qoder { };
-        # Qoder Wake — 语音唤醒/智能体服务（linux 二进制 + qodercli）。
-        qoder-wake = pkgs.callPackage ./packages/custom/binary/qoder-wake { };
-        # Qoder CN CLI — 终端 AI 编程助手（Bun 单文件二进制）。
-        qoder-cli-cn = pkgs.callPackage ./packages/custom/binary/qoder-cli { };
-      };
+      # Independently packaged applications shared by flake outputs and Home
+      # Manager. Keep package registration out of the system configuration.
+      customPackages = import ./packages/custom { inherit pkgs; };
 
       homeManagerModule = {
         home-manager.backupFileExtension = "hm-backup";
@@ -216,7 +184,7 @@
         rockchip = mkDevShell ./dev_toolchains/embedded/rockchip.nix;
       };
 
-      # Windows apps packaged with Wine (FeiQ, Red Spider, ...) + TraeCode + dsh.
+      # Independently packaged applications, also available through `nix run`.
       packages.${system} = customPackages;
     };
 }

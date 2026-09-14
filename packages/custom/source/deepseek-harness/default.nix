@@ -2,10 +2,10 @@
  * File: default.nix
  * Author: ziyun
  * Date: 2026-08-21
- * Description: DeepSeek Harness CLI (`dsh`) as a standalone package.
+ * Description: DeepSeek Harness (`dsh`) as a standalone desktop application.
  *
  * 从 node 开发 shell 中独立出来：不再污染 `nix develop .#node`，
- * 需要时通过 `nix run .#dsh` 或（若加入 home.packages）直接使用 `dsh`。
+ * 可通过桌面菜单启动 Web UI，也可用 `dsh` 命令或 `nix run .#dsh`。
  *
  * 来源：https://github.com/deepseek-ai/deepseek-harness
  * 更新：`packages/custom/update.sh --bump dsh` 一键完成（重新生成 vendored
@@ -35,7 +35,24 @@ pkgs.buildNpmPackage rec {
     ${pkgs.nodejs}/bin/node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));delete p.devDependencies;fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
   '';
 
-  nativeBuildInputs = [ pkgs.makeWrapper ];
+  nativeBuildInputs = [
+    pkgs.makeWrapper
+    pkgs.copyDesktopItems
+  ];
+
+  desktopItems = [
+    (pkgs.makeDesktopItem {
+      name = "deepseek-harness";
+      desktopName = "DeepSeek Harness";
+      genericName = "AI coding agent";
+      comment = "Launch the DeepSeek Harness browser interface";
+      exec = "dsh web";
+      icon = "applications-development";
+      terminal = false;
+      categories = [ "Development" "Utility" ];
+      keywords = [ "AI" "DeepSeek" "coding" "agent" ];
+    })
+  ];
 
   # The HMR service in the web profile needs Node's internal modules, so
   # re-wrap the generated `dsh` bin to start node with --expose-internals.
@@ -46,7 +63,7 @@ pkgs.buildNpmPackage rec {
   '';
 
   meta = with lib; {
-    description = "DeepSeek Harness CLI (dsh)";
+    description = "DeepSeek Harness AI coding agent";
     homepage = "https://github.com/deepseek-ai/deepseek-harness";
     license = licenses.mit;
     platforms = platforms.linux;

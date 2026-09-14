@@ -323,6 +323,9 @@ User packages:
 Local derivations:
 
 - `packages/custom/dist/trae-code/default.nix`
+- `packages/custom/source/deepseek-harness/default.nix` builds DeepSeek Harness
+  as the independent `.#dsh` package. Home Manager installs its CLI and a
+  desktop entry that launches `dsh web`; it is not part of the Node dev shell.
 
 ## Embedded Development
 
@@ -685,7 +688,7 @@ journalctl -u flake-auto-update
 | codebuddy | GitHub Makefile (`CB_VERSION`/`CB_BUILD`/`CB_HASH`) | fully automatic |
 | qwen | GitHub releases tag | fully automatic |
 | dsh | npm dist-tags (`@deepseek-ai/dsh`) | fully automatic (lock regenerated, npmDepsHash auto-calibrated) |
-| dsh-plugins | npm + GitHub main rolling hash-drift detection | fully automatic |
+| dsh-plugins | npm metadata + pinned GitHub revisions | `--bump dsh-plugins` updates both GitHub plugins safely |
 | qoder | URL has no version (always latest) | needs explicit `--bump qoder <ver>` |
 | trae-code | no machine-readable manifest | needs explicit `--bump trae-code <ver>` |
 | webapps / winapps / vendored | static packages | no update needed |
