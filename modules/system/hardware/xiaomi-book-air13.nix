@@ -45,6 +45,13 @@
   # intel-media-driver 作 VAAPI 后端（硬解 HEVC/AV1）。选项由 nixos-hardware 提供。
   hardware.intelgpu.vaapiDriver = lib.mkDefault "intel-media-driver";
 
+  # The camera is an ACPI HYV0847 (Hynix HI847) behind IPU6.  The kernel sees
+  # the IPU6 controller, but the pinned Intel IPU6EP userspace HAL has no HI847
+  # sensor profile, AIQ tuning data, or graph settings.  Enabling the generic
+  # relay creates a plausible /dev/video50 but falls back to AR0234 and cannot
+  # stream frames.  Keep it disabled until upstream gains HI847 support.
+  hardware.ipu6.enable = false;
+
   # ---- 电源 / 热管理 ----
   # Plasma 默认使用 power-profiles-daemon；明确关闭与它互斥的 TLP，避免
   # 两边的默认值随上游变化后触发 NixOS assertion。
@@ -58,12 +65,8 @@
     brightnessctl
   ];
 
-  # ---- 键盘背光 ----
-  # 通配匹配小米的键盘背光 LED 节点（实测节点名待装机后 ls /sys/class/leds/ 收紧）。
-  # 授 uaccess 让普通用户可调，无需 sudo。
-  services.udev.extraRules = ''
-    SUBSYSTEM=="leds", KERNEL=="*_kbd_backlight", TAG+="uaccess"
-  '';
+  # The firmware exposes hotkeys through redmi_wmi, but no keyboard-backlight
+  # LED device.  Do not install an ineffective udev permission rule.
 
   # ---- 触摸板 ----
   services.libinput = {
