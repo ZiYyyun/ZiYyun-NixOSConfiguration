@@ -6,8 +6,8 @@ This repository exposes multiple NixOS host entries from `flake.nix`.
 
 | Host | Host File | Purpose |
 |---|---|---|
-| `niri-default` | `hosts/Dektop/niri-default/default.nix` | Generic Niri desktop |
-| `desktop-default` | `hosts/Dektop/desktop-default/default.nix` | Generic KDE desktop |
+| `niri-default` | `hosts/Dektop/niri-default/default.nix` | Generic desktop using the shared KDE/Niri stack |
+| `desktop-default` | `hosts/Dektop/desktop-default/default.nix` | Generic desktop using the shared KDE/Niri stack |
 | `x270` | `hosts/Laptop/ThinkPad-x270/default.nix` | Lenovo ThinkPad X270 |
 | `x230` | `hosts/Laptop/ThinkPad-x230i/default.nix` | Lenovo ThinkPad X230i, using the official X230 profile |
 | `p14s` | `hosts/Laptop/ThinkPad-P14s/default.nix` | Lenovo ThinkPad P14s Gen 5 Intel |
@@ -52,6 +52,9 @@ inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p14s-intel-gen5
 There is no upstream Xiaomi Book Air profile. That host composes the generic
 Intel CPU, laptop, and SSD profiles, then applies device-specific settings from
 `modules/system/hardware/xiaomi-book-air13.nix`.
+
+All graphical hosts import `modules/system/desktop/workstation.nix`, so KDE,
+Niri, Noctalia, SDDM, and their Home Manager configuration stay consistent.
 
 For the current X230i disk layout, the NTFS disk labeled `系统` is not part of
 the NixOS installation. The `x230` profile mounts root and swap by

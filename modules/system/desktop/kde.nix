@@ -4,16 +4,12 @@
  * Date: 2026-08-07
  * Description: KDE desktop enablement, session configuration, and desktop-specific packages.
  */
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
-  # 面板歌词小部件（LRCLIB 数据源），配合顶部面板「歌词显示」使用。
-  # 这是真正的第三方 plasmoid（Onlyrics），不是上游漏装补丁，单独打包。
-  plasmoidOnlyrics = pkgs.callPackage ../../../packages/custom/source/plasmoid-onlyrics { };
-
   # ============================================================
   # QML applet 前端补装（根治 nixpkgs 26.05 plasma 漏装问题）
   # ============================================================
-  # nixpkgs 26.05 (rev 02e08985) 构建 plasma-desktop/workspace/plasma-nm/
+  # nixpkgs 26.05 的 Plasma 6.6.6 构建 plasma-desktop/workspace/plasma-nm/
   # plasma-pa/bluedevil/kscreen 时把各 applet 的 plasmoid 目录整个漏装了
   # （share/plasma/plasmoids/<id> 完全不存在，连 metadata.json 都没有），
   # 导致 plasmashell 报「软件包不存在」，面板/托盘小部件全挂。
@@ -31,6 +27,12 @@ let
     promote() {
       local srcdir="$1" id="$2"
       local target="$outP/$id"
+      # Newer nixpkgs may package the applet correctly. Never overwrite an
+      # upstream copy from the same Plasma build.
+      if [ -f "$target/metadata.json" ] && \
+         find "$target/contents/ui" -type f -name '*.qml' -print -quit 2>/dev/null | grep -q .; then
+        return 0
+      fi
       mkdir -p "$target/contents/ui" "$target/contents/config"
       # metadata.json
       [ -f "$srcdir/metadata.json" ] && cp "$srcdir/metadata.json" "$target/"
@@ -52,6 +54,8 @@ let
       if [ -f "$target/metadata.json" ] && ! grep -q '"KPackageStructure"' "$target/metadata.json"; then
         sed -i '1s/^{/{\n    "KPackageStructure": "Plasma\/Applet",/' "$target/metadata.json"
       fi
+      test -f "$target/metadata.json"
+      find "$target/contents/ui" -type f -name '*.qml' -print -quit | grep -q .
     }
   '';
 
@@ -60,10 +64,10 @@ let
   makeQmlInstall = old: applets: (old.postInstall or "") + (let
     promotes = builtins.concatStringsSep "\n" (map (a: "promote ${a.srcdir} ${a.id}") applets);
   in ''
-    # 解压源码到 /tmp/plasma-fix（绝对路径，不依赖当前工作目录）。
-    srcDir=/tmp/plasma-fix-src
+    # 解压源码到当前 derivation 的临时目录，不依赖当前工作目录。
+    srcDir="$TMPDIR/plasma-fix-src"
     rm -rf "$srcDir" && mkdir -p "$srcDir"
-    tar xJf "$src" -C "$srcDir" --strip-components=1 || { echo "plasma-fix: tar failed for $src"; exit 1; }
+    tar xf "$src" -C "$srcDir" --strip-components=1 || { echo "plasma-fix: tar failed for $src"; exit 1; }
     cd "$srcDir"
     outP=$out/share/plasma/plasmoids
     ${promoteApplet}
@@ -102,26 +106,50 @@ let
 
   # org.kde.panel 面板容器（缺了它 plasmashell 无法创建任何面板）。
   panelFix = ''
-    srcDir=/tmp/plasma-fix-src
-    rm -rf "$srcDir" && mkdir -p "$srcDir"
-    tar xJf "$src" -C "$srcDir" --strip-components=1
     tgt=$out/share/plasma/containments/org.kde.panel
-    mkdir -p "$tgt/contents/ui"
-    cp -r "$srcDir/containments/panel/"*.qml "$tgt/contents/ui/" 2>/dev/null || true
-    cp -r "$srcDir/containments/panel/"*.js "$tgt/contents/ui/" 2>/dev/null || true
-    if [ -f "$srcDir/containments/panel/metadata.json" ]; then
-      cp "$srcDir/containments/panel/metadata.json" "$tgt/"
-      if ! grep -q '"KPackageStructure"' "$tgt/metadata.json"; then
-        sed -i '1s/^{/{\n    "KPackageStructure": "Plasma\/Containment",/' "$tgt/metadata.json"
+    if ! { [ -f "$tgt/metadata.json" ] && \
+           find "$tgt/contents/ui" -type f -name '*.qml' -print -quit 2>/dev/null | grep -q .; }; then
+      srcDir="$TMPDIR/plasma-fix-src"
+      rm -rf "$srcDir" && mkdir -p "$srcDir"
+      tar xf "$src" -C "$srcDir" --strip-components=1
+      mkdir -p "$tgt/contents/ui"
+      cp -r "$srcDir/containments/panel/"*.qml "$tgt/contents/ui/" 2>/dev/null || true
+      cp -r "$srcDir/containments/panel/"*.js "$tgt/contents/ui/" 2>/dev/null || true
+      if [ -f "$srcDir/containments/panel/metadata.json" ]; then
+        cp "$srcDir/containments/panel/metadata.json" "$tgt/"
+        if ! grep -q '"KPackageStructure"' "$tgt/metadata.json"; then
+          sed -i '1s/^{/{\n    "KPackageStructure": "Plasma\/Containment",/' "$tgt/metadata.json"
+        fi
       fi
+      [ -f "$srcDir/containments/panel/main.xml" ] && {
+        mkdir -p "$tgt/contents/config"
+        cp "$srcDir/containments/panel/main.xml" "$tgt/contents/config/main.xml"
+      }
     fi
-    [ -f "$srcDir/containments/panel/main.xml" ] && {
-      mkdir -p "$tgt/contents/config"
-      cp "$srcDir/containments/panel/main.xml" "$tgt/contents/config/main.xml"
-    }
+    test -f "$tgt/metadata.json"
+    find "$tgt/contents/ui" -type f -name '*.qml' -print -quit | grep -q .
   '';
+
+  # Plasma libraries, shell, and applets must come from one release. This
+  # catches accidental stable/unstable mixing before it reaches plasmashell.
+  plasmaPackages = with pkgs.kdePackages; [
+    plasma-desktop
+    plasma-workspace
+    plasma-nm
+    plasma-pa
+    bluedevil
+    kscreen
+  ];
+  plasmaVersions = lib.unique (map (package: package.version) plasmaPackages);
 in
 {
+  assertions = [
+    {
+      assertion = builtins.length plasmaVersions == 1;
+      message = "KDE Plasma components must use one version, got: ${lib.concatStringsSep ", " plasmaVersions}";
+    }
+  ];
+
   # 用 overlay 根治上游 plasma 包漏装的 QML（关闭服务方 plasma6.enable 也生效）。
   nixpkgs.overlays = [
     (final: prev: {
@@ -175,8 +203,6 @@ in
     kdePackages.okular
     kdePackages.breeze-icons
     oreo-cursors-plus
-    plasmoidOnlyrics
-    plasma-panel-colorizer   # 社区插件：面板着色（顶栏右上角，替代歌词）
     kdePackages.yakuake
     kdePackages.kdevelop
   ];

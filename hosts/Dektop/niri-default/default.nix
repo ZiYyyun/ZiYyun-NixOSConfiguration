@@ -12,14 +12,7 @@
     ../../common/hardware-configuration.nix
     ../../common/boot/legacy.nix
     ./hardware-configuration.nix
-    ../../../modules/system/desktop/niri.nix
-    ../../../modules/system/desktop/noctalia.nix
+    ../../../modules/system/desktop/workstation.nix
     ../../../modules/system/services/flatpak.nix
   ];
-
-  services.displayManager.defaultSession = "niri";
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-  };
 }

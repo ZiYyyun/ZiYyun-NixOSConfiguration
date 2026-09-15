@@ -14,7 +14,7 @@
     ../../common/hardware-configuration.nix
     ../../common/boot/uefi.nix
     ./hardware-configuration.nix
-    ../../../modules/system/desktop/kde.nix
+    ../../../modules/system/desktop/workstation.nix
     ../../../modules/system/services/flatpak.nix
   ];
 }

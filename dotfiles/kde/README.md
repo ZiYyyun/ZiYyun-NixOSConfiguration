@@ -62,12 +62,10 @@ an overlay `overrideAttrs`s the upstream `kdePackages` packages
 kscreen) and copies the QML from their build source into each applet's
 `contents/ui` — no separate patch packages any more.
 
-- `packages/custom/source/plasmoid-onlyrics` — the panel lyrics widget
-  (`com.github.illuminate-dev.onlyrics`), patched to use LRCLIB
-  (https://lrclib.net) as default lyrics source. Works with any
-  MPRIS2-capable player. If your player reports lyrics in its own app but
-  the panel shows "No lyrics available!", check the song exists on LRCLIB
-  or set a custom `{time,words}` API URL in the widget's settings.
+Third-party panel widgets are not installed by default. The current layout
+uses only Plasma components from the locked nixpkgs release; this avoids QML
+API mismatches during Plasma upgrades. The vendored Onlyrics source remains
+available under `packages/custom/source/plasmoid-onlyrics` for optional use.
 
 ## What Was Removed And Why
 

@@ -25,7 +25,7 @@ Current target release: **NixOS 26.05**.
 | Embedded IDEs | STM32CubeMX is kept out of the global system closure because it is a large vendor download that can fail during rebuild; install it only when needed |
 | Terminal | Ghostty installed and configured; VM may need software GL, real machines are the priority |
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
-| Desktop shells | KDE Plasma 6, GNOME, Niri, Noctalia |
+| Desktop shells | Shared KDE Plasma 6 + Niri + Noctalia stack on every host |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
 | auto-update | systemd timer (`flake-auto-update`) runs daily on all hosts: checks upstream versions, bumps hashes, verifies with `nix build`, auto-commits and pushes |
 
@@ -54,12 +54,12 @@ does not need a separate `git.lix.systems` flake input.
 
 | Flake output | Desktop/session | Hardware profile | Storage notes |
 | --- | --- | --- | --- |
-| `niri-default` | Niri + Noctalia, SDDM default session set to Niri | none | default Niri layout, root `/dev/sda1` |
-| `desktop-default` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
-| `x270` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x270` | root `/dev/sda2` |
-| `x230` | GNOME main desktop + SDDM session picker, also includes Niri + Noctalia | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
-| `p14s` | KDE Plasma 6 + SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
-| `xiaomi-book-air13` | KDE Plasma 6 + SDDM, also includes Niri + Noctalia | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI; AX211 Wi-Fi/Bluetooth, ALC256 audio firmware, Thunderbolt authorization, Koga touch/pen, Intel ISH/IIO rotation; Goodix `27c6:5812` fingerprint is not supported by upstream libfprint |
+| `niri-default` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | none | default layout, root `/dev/sda1` |
+| `desktop-default` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `common-pc`, `common-pc-ssd` | Desktop PC layout, root `/dev/nvme0n1p2` |
+| `x270` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-x270` | root `/dev/sda2` |
+| `x230` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
+| `p14s` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
+| `xiaomi-book-air13` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI; AX211 Wi-Fi/Bluetooth, ALC256 audio firmware, Thunderbolt authorization, Koga touch/pen, Intel ISH/IIO rotation; Goodix `27c6:5812` fingerprint is not supported by upstream libfprint |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
@@ -87,8 +87,8 @@ Hardware-specific disk choices stay inside each host directory. Bootloader selec
 |-- modules/
 |   |-- system/
 |   |   |-- desktop/
+|   |   |   |-- workstation.nix
 |   |   |   |-- kde.nix
-|   |   |   |-- gnome.nix
 |   |   |   |-- niri.nix
 |   |   |   `-- noctalia.nix
 |   |   `-- services/
@@ -198,17 +198,16 @@ downloads). See the "WayDroid" section below.
 
 ### Desktop Modules
 
-Desktop enablement lives in `modules/system/desktop/*.nix`. Each file keeps
-a desktop's enablement and package set together:
+Desktop enablement lives in `modules/system/desktop/*.nix`. Every host imports
+the shared `workstation.nix` entrypoint:
 
+- `workstation.nix` — common KDE + Niri + Noctalia session stack
 - `kde.nix` — X server, SDDM, Plasma 6, KDE apps, icon/cursor/theme resources
-- `gnome.nix` — X server, GDM, GNOME, GNOME-specific apps
 - `niri.nix` — Wayland compositor, portals, graphics support, Niri helper tools
 - `noctalia.nix` — Noctalia module settings
 
-Hosts import the desktop module(s) they want directly (no `profiles/` wrapper
-layer any more). For example a host wanting GNOME as main + Niri/Noctalia as
-alternate sessions imports all three. A host wanting only KDE imports `kde.nix`.
+Host modules do not select these pieces independently. This keeps Plasma/Niri
+packages, SDDM sessions, and the Home Manager dotfiles identical everywhere.
 
 There is intentionally no second desktop package layer now. If a package only makes sense for KDE, edit `modules/system/desktop/kde.nix`; if it should be installed everywhere, edit `packages/system/apps.nix` or `packages/system/development.nix`.
 
@@ -756,7 +755,8 @@ build.
 - Do not hide boot mode inside common hardware config; choose `hosts/common/boot/legacy.nix` or `hosts/common/boot/uefi.nix` from each host.
 - Prefer system packages for resources needed before login or by the display manager.
 - Prefer Home Manager for user preferences, dotfiles, editor config, and per-user app config.
-- Physical machines keep one main desktop environment but also include Niri + Noctalia as an alternate SDDM session.
+- Every graphical host imports `desktop/workstation.nix`, keeping KDE Plasma,
+  Niri, Noctalia, SDDM, and repository-managed desktop settings consistent.
 - KDE dotfiles may require logout/login after rebuild.
 - If KDE icons or cursors look wrong, verify both the config name and the package providing the resources.
 - If `dbus-broker` errors return during `nixos-rebuild switch`, keep using `services.dbus.implementation = "dbus"`.

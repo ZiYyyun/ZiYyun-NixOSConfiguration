@@ -32,7 +32,7 @@
     SUBSYSTEM=="leds", KERNEL=="tpacpi::kbd_backlight", TAG+="uaccess"
   '';
 
-  # ---- 触摸板增强（Xorg 会话生效；Wayland 下由 KDE/GNOME 各自接管）----
+  # ---- 触摸板增强（Xorg 会话生效；Wayland 下由 KDE/Niri 各自接管）----
   services.libinput = {
     enable = true;
     touchpad = {
