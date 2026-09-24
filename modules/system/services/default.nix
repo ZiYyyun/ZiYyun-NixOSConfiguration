@@ -8,6 +8,7 @@
 {
   imports = [
     ./dbus.nix
+    ./edge.nix
     ./input-method.nix
     ./sddm.nix
     ./auto-update.nix

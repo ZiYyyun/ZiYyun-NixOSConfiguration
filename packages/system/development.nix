@@ -20,5 +20,6 @@
     # claude-code
     # dotnet-runtime_7
     # dotnet-runtime_6
+    podman
   ];
 }

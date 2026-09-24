@@ -16,10 +16,21 @@
     enable = true;
 
     # This replaces the default remote, so keep the name flathub explicit.
+    # nix-flatpak renders each remote into
+    #   flatpak remote-add --system --if-not-exists <name> <location>
+    # `location` may be a direct repo URL (preferred) or a .flatpakrepo file.
+    #
+    # Use the USTC Flathub cache as the repo URL. Important: nix-flatpak only
+    # runs `remote-add --if-not-exists` and never `remote-modify`, so the URL
+    # is fixed the first time the remote is created. If flathub was already
+    # added from a different URL (e.g. the old SJTU .flatpakrepo, whose
+    # Url= still resolved to dl.flathub.org), the running system must be
+    # corrected once manually:
+    #   sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
     remotes = [
       {
         name = "flathub";
-        location = "https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo";
+        location = "https://mirrors.ustc.edu.cn/flathub";
       }
     ];
 
