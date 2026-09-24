@@ -7,7 +7,13 @@
  * Wayland note: environment.sessionVariables alone does not reach GUI apps
  * launched through the systemd user instance on KDE Plasma 6 Wayland.
  * Put the variables in environment.d so the systemd user manager and GUI
- * services inherit them, then start fcitx5 as a user service.
+ * services inherit them.
+ *
+ * Do NOT add a systemd user service for fcitx5: KDE Plasma 6 (kwin) already
+ * autostarts it via [Wayland] InputMethod in kwinrc using the wrapped
+ * fcitx5-with-addons binary. A custom service races with KDE's autostart for
+ * the org.fcitx.Fcitx5 DBus name, and ${pkgs.fcitx5} lacks the pinyin/rime
+ * addons, so whichever wins the race decides whether Chinese input works.
  */
 { pkgs, lib, ... }:
 
@@ -49,17 +55,4 @@ in
   # is a service-unit directive and is invalid in systemd/user.conf.
   environment.etc."environment.d/90-fcitx5.conf".text =
     lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "${k}=${v}") imEnv) + "\n";
-
-  # Keep fcitx5 running for the whole graphical session.
-  systemd.user.services.fcitx5 = {
-    description = "Fcitx5 Input Method Framework";
-    after = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.fcitx5}/bin/fcitx5 --replace";
-      Restart = "on-failure";
-      RestartSec = 3;
-    };
-  };
 }

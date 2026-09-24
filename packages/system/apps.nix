@@ -21,5 +21,6 @@
     # the default rebuild path until we move heavyweight GUI apps to an optional
     # package profile.
     # lmstudio
+    saber
   ];
 }
