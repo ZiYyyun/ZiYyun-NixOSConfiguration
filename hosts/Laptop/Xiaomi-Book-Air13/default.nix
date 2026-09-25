@@ -23,5 +23,6 @@
     ../../../modules/system/desktop/workstation.nix
     ../../../modules/system/hardware/xiaomi-book-air13.nix
     ../../../modules/system/services/flatpak.nix
+    ../../../modules/system/services/winboat.nix
   ];
 }

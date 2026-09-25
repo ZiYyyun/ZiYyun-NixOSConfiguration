@@ -6,8 +6,10 @@
  */
 { lib, pkgs, ... }:
 let
+  # embeddedTheme 可选内置主题；动态壁纸的有：hyprland_kath(mp4)、
+  # jake_the_dog(mp4)、pixel_sakura(gif)。
   astronautTheme = (pkgs.sddm-astronaut.override {
-    embeddedTheme = "astronaut";
+    embeddedTheme = "pixel_sakura";
   }).overrideAttrs (oldAttrs: {
     postInstall = (oldAttrs.postInstall or "") + ''
       if [ -d "$out/share/sddm/themes/sddm-astronaut-theme/Fonts" ]; then

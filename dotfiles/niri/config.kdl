@@ -19,6 +19,15 @@ window-rule {
     default-window-height { fixed 920; }
 }
 
+input {
+    touchpad {
+        // niri 默认关闭轻点点击（tap），必须显式开启，否则触摸板按下无响应。
+        tap
+        // 打字时暂停触摸板，避免误触。
+        dwt
+    }
+}
+
 debug {
     honor-xdg-activation-with-invalid-serial
 }

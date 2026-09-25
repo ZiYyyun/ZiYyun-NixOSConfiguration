@@ -9,6 +9,13 @@
  * require('electron') 失败（SyntaxError: ... does not provide an export
  * named 'BrowserWindow'），winboat 启动即崩。用 overlay 给 winboat 的
  * wrapper 加 unset，保证从任何终端/KDE 菜单启动都正常。
+ *
+ * 2026-09-25 修复：winboat 用 Podman 拉取 ghcr.io/dockur/windows 镜像时报
+ * "no policy.json file found"。NixOS 上 podman 强制要求 /etc/containers/
+ * policy.json；virtualisation.podman 模块会自动开启
+ * virtualisation.containers 生成该文件。同时彻底放弃 docker 方案改用
+ * 纯 podman：移除 virtualisation.docker、docker-compose 与 docker 兼容
+ * 别名，winboat 配置里 containerRuntime 保持 "Podman" 即可。
  */
 { pkgs, ... }:
 {
@@ -29,7 +36,7 @@
     "tun"
   ];
 
-  virtualisation.docker = {
+  virtualisation.podman = {
     enable = true;
     autoPrune = {
       enable = true;
@@ -41,13 +48,12 @@
   programs.virt-manager.enable = true;
 
   users.users."ziyun".extraGroups = [
-    "docker"
+    "podman"
     "kvm"
     "libvirtd"
   ];
 
   environment.systemPackages = with pkgs; [
-    docker-compose
     virt-manager
   ];
 }

@@ -22,6 +22,7 @@
     # 网络/下载
     "org.torproject.torbrowser-launcher"
     "com.baidu.NetDisk"
+    "org.freedownloadmanager.Manager"
     "org.desktop_plus.desktop-plus"
   ];
 }

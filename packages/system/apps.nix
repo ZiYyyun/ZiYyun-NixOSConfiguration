@@ -14,9 +14,7 @@
     nix-search        # Nix 包搜索（CLI）
     nixos-option      # 查询 NixOS 配置选项
     warehouse
-    docker
     filezilla
-    freedownloadmanager   # 原 Flatpak 版 extra-data 直连官网下载易卡死，改用 nixpkgs
     honeyfetch
     # LM Studio is a large AppImage fetched from the vendor CDN. Keep it out of
     # the default rebuild path until we move heavyweight GUI apps to an optional
