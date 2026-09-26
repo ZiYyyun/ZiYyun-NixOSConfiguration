@@ -44,8 +44,11 @@ let
       else
         cp "$srcdir"/*.qml "$target/contents/ui/" 2>/dev/null || true
       fi
-      # code/ 等额外 QML 源
-      [ -d "$srcdir/code" ] && cp -r "$srcdir/code" "$target/contents/"
+      # code/ 等额外 QML 源：必须放 contents/ui/code/ —— kickoff/kicker 的
+      # QML 用相对导入 import "code/tools.js"，从 contents/ui/*.qml 解析即
+      # contents/ui/code/tools.js；放 contents/code/ 会报 "Script ...
+      # unavailable"（上游 ecm_target_qml_sources PATH code 同理）。
+      [ -d "$srcdir/code" ] && cp -r "$srcdir/code" "$target/contents/ui/"
       # main.xml → contents/config/
       if [ -f "$srcdir/main.xml" ]; then
         cp "$srcdir/main.xml" "$target/contents/config/main.xml"
