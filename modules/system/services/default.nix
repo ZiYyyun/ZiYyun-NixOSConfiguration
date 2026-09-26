@@ -10,6 +10,7 @@
     ./dbus.nix
     ./edge.nix
     ./input-method.nix
+    ./linyaps.nix
     ./sddm.nix
     ./auto-update.nix
   ];
