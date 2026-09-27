@@ -2,10 +2,12 @@
   description = "ZiYyun NixOS configuration";
 
   inputs = {
-    # Keep nixpkgs pinned by Git revision. Do not use channel tarballs here:
-    # mirror tarballs can be re-packed and then fail narHash verification during
-    # installation.
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    # Keep nixpkgs pinned by Git revision. Fetched from TUNA's git mirror of
+    # NixOS/nixpkgs because github.com is unreachable from this network; a git
+    # mirror keeps the same commit/narHash semantics as the official repo (do
+    # NOT use channel tarball mirrors here — they can be re-packed and then
+    # fail narHash verification during installation).
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05";
 
     # Unstable channel for packages that haven't been backported to the stable
     # branch yet (e.g. cc-switch). Exposed to modules as the `unstable` argument.

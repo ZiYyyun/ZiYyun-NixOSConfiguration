@@ -1,9 +1,10 @@
 # Two-panel layout (declarative):
-#   bottom (Containment 2): kickerdash (fullscreen Application Dashboard) +
+#   bottom (Containment 2): kickoff (Application Menu) +
 #     KDE Connect + icon-only task manager + media player controller +
 #     pager (virtual desktop switcher, bottom-right) + edge separator.
 #   top (Containment 30): window list | panel colorizer removed |
-#     net speed + CPU + system tray | network + bluetooth + battery
+#     net speed + CPU + system tray | keyboard layout + brightness
+#     + network + bluetooth + battery
 #     (independent icons, so tray no longer shows them) + clock.
 # Tray items live on the systemtray applet itself (Plasma 6 native; no
 # private.systemtray containment — that was a Plasma 5 construct).
@@ -23,12 +24,13 @@ location=4
 plugin=org.kde.panel
 wallpaperplugin=org.kde.image
 
-# 左下角全屏启动器：org.kde.plasma.kickerdash（Application Dashboard），
-# 其 metadata 通过 X-Plasma-RootPath 复用 kicker 的 QML（含 isDash 全屏分支），
-# 点击后弹出覆盖全屏的应用菜单。Alt+F1 快捷键保持。
+# 左下角非全屏启动器：org.kde.plasma.kickoff（Application Menu）。
+# 历史：曾因 kickoff/kicker 报 "ui/code/tools.js unavailable" 临时换过
+# kicker —— 根因是 modules/system/desktop/kde.nix 的 promote() 把 code/
+# 装错到 contents/code/（正确位置 contents/ui/code/），已修复，两者均可用。
 [Containments][2][Applets][3]
 immutability=1
-plugin=org.kde.plasma.kickerdash
+plugin=org.kde.plasma.kickoff
 
 [Containments][2][Applets][3][Configuration]
 PreloadWeight=100
@@ -65,7 +67,7 @@ immutability=1
 plugin=org.kde.plasma.icontasks
 
 [Containments][2][Applets][5][Configuration][General]
-launchers=applications:systemsettings.desktop,applications:org.kde.discover.desktop,preferred://filemanager,preferred://browser
+launchers=preferred://filemanager,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:microsoft-edge.desktop
 
 # media player controller (right of the taskbar)
 [Containments][2][Applets][78]
@@ -195,8 +197,22 @@ plugin=org.kde.plasma.digitalclock
 [Containments][30][Applets][8][Configuration][General]
 showSeconds=true
 
+# keyboard layout switcher — independent icon (between tray and brightness)
+[Containments][30][Applets][98]
+immutability=1
+plugin=org.kde.plasma.keyboardlayout
+
+# brightness — independent icon (right of keyboard layout)
+[Containments][30][Applets][102]
+immutability=1
+plugin=org.kde.plasma.brightness
+
+[Containments][30][Applets][102][Configuration]
+popupHeight=400
+popupWidth=560
+
 [Containments][30][General]
-AppletOrder=34;42;40;49;7;75;73;72;8
+AppletOrder=34;42;40;49;7;98;102;73;75;72;8
 
 [ScreenMapping]
 itemsOnDisabledScreens=

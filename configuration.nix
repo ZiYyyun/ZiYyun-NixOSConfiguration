@@ -110,5 +110,17 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # networking.firewall.enable = false;
 
+  # 每周自动更新系统（nix flake update + nixos-rebuild switch，不自动重启）。
+  # nixpkgs 输入走 TUNA git 镜像，无需访问 github.com；内核更新后手动
+  # 选择合适时机 reboot。日志：journalctl -u nixos-upgrade。
+  system.autoUpgrade = {
+    enable = true;
+    flake = "/home/ziyun/Documents/GitHub/ZiYyun-NixOSConfiguration";
+    dates = "weekly";
+    # 先更新 flake.lock 里的 nixpkgs 再构建（其余 github 输入保持锁定不动）。
+    flags = [ "--update-input" "nixpkgs" ];
+    allowReboot = false;  # 内核更新后不自动重启，避免打断工作
+  };
+
   system.stateVersion = "26.05";
 }

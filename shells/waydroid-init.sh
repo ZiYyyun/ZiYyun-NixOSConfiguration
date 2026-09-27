@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-# WayDroid 镜像下载 + 初始化脚本。
+# WayDroid 镜像工具脚本。
+#
+# 提示：当前主机已改全声明式（modules/system/services/waydroid.nix），
+# 镜像由 Nix 从清华 archlinuxcn 下载并链接到 /var/lib/waydroid/images，
+# rebuild 即自动就位，通常不需要本脚本。本脚本保留用于：
+#   1. 手动下载/初始化（非 Nix 管理的主机）
+#   2. 更新 waydroid.nix 里的镜像版本/hash（见 --prefetch-hashes）
 #
 # NixOS 只声明了 waydroid 运行时，Android 系统镜像（约 1.4 GB）需要手动
 # 下载到 /var/lib/waydroid/images/。本脚本支持换源和代理，面向国内网络。
@@ -13,6 +19,9 @@
 #
 #   # 指定自定义镜像前缀（你自己的镜像站）
 #   sudo bash shells/waydroid-init.sh --mirror https://example.com/waydroid
+#
+#   # 计算当前版本镜像的 nix sha256（填入 waydroid.nix 后 rebuild）
+#   sudo bash shells/waydroid-init.sh --prefetch-hashes
 #
 set -euo pipefail
 
@@ -35,6 +44,7 @@ MIRROR_BASE=""                  # 自定义镜像前缀（若设置，忽略 SF_
 PROXY=""                        # 代理，如 http://127.0.0.1:7897
 SKIP_DOWNLOAD="false"
 FORCE_INIT="true"
+PREFETCH_HASHES="false"
 
 usage() {
   cat <<'EOF'
@@ -48,6 +58,7 @@ Options:
   --images-dir DIR    镜像目录（默认 /var/lib/waydroid/images）
   --skip-download     已手动放好 system.img/vendor.img，只跑 init
   --no-init           只下载解压，不执行 waydroid init
+  --prefetch-hashes   只下载两个 zip 并打印 nix sha256（供 waydroid.nix 填 hash）
   -h, --help          帮助
 EOF
 }
@@ -60,6 +71,7 @@ while [[ $# -gt 0 ]]; do
     --images-dir) IMAGES_DIR="${2:?missing value for --images-dir}"; shift 2 ;;
     --skip-download) SKIP_DOWNLOAD="true"; shift ;;
     --no-init) FORCE_INIT="false"; shift ;;
+    --prefetch-hashes) PREFETCH_HASHES="true"; SKIP_DOWNLOAD="true"; FORCE_INIT="false"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -97,6 +109,23 @@ full_url() { # path -> url
 
 mkdir -p "${IMAGES_DIR}"
 cd "${IMAGES_DIR}"
+
+if [[ "${PREFETCH_HASHES}" == "true" ]]; then
+  # 仅下载并打印 nix sha256，供 waydroid.nix 的 fetchurl 使用。
+  require_command nix
+  while read -r name path; do
+    if [[ ! -s "${name}" ]]; then
+      echo "==> 下载 ${name}"
+      downloader "$(full_url "${path}")" "${name}"
+    fi
+    echo "==> ${name} sha256（填进 waydroid.nix）:"
+    nix hash file "${name}"
+  done <<EOF
+${VENDOR_ZIP} ${VENDOR_PATH}
+${SYSTEM_ZIP} ${SYSTEM_PATH}
+EOF
+  exit 0
+fi
 
 if [[ "${SKIP_DOWNLOAD}" != "true" ]]; then
   # 已下载过的 zip 直接跳过，避免重复下载 1.4 GB

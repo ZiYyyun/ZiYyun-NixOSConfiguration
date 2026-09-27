@@ -24,5 +24,9 @@
     ../../../modules/system/hardware/xiaomi-book-air13.nix
     ../../../modules/system/services/flatpak.nix
     ../../../modules/system/services/winboat.nix
+    ../../../modules/system/services/waydroid.nix
   ];
+
+  # 全声明式 waydroid（镜像走 Nix store，见 waydroid.nix）。
+  services.waydroid.enable = true;
 }

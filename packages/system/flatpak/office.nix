@@ -11,8 +11,8 @@
     # 办公套件
     "org.onlyoffice.desktopeditors"
     "com.wps.Office"
-    # 邮件
-    "org.mozilla.thunderbird"
+    # 邮件：Thunderbird 已迁移到 home-manager 原生包（modules/home/programs/thunderbird.nix），
+    # 便于 dotfiles 声明式复现配置。
     # 笔记/知识管理
     "md.obsidian.Obsidian"
 

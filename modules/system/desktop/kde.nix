@@ -44,11 +44,20 @@ let
       else
         cp "$srcdir"/*.qml "$target/contents/ui/" 2>/dev/null || true
       fi
-      # code/ 等额外 QML 源：必须放 contents/ui/code/ —— kickoff/kicker 的
-      # QML 用相对导入 import "code/tools.js"，从 contents/ui/*.qml 解析即
-      # contents/ui/code/tools.js；放 contents/code/ 会报 "Script ...
-      # unavailable"（上游 ecm_target_qml_sources PATH code 同理）。
-      [ -d "$srcdir/code" ] && cp -r "$srcdir/code" "$target/contents/ui/"
+      # 根目录下的 QML 子目录（code/、components/、delegates/、global/ 等）：
+      # 上游 ecm_target_qml_sources 以 PATH <sub> 安装到 contents/ui/<sub>/，
+      # QML 相对导入（import "code/tools.js"、"delegates/BaseDelegate.qml"）
+      # 全部依赖该布局；装到 contents/<sub>/ 或缺失都会报 "unavailable"。
+      for sub in "$srcdir"/*/; do
+        [ -d "$sub" ] || continue
+        subname=$(basename "$sub")
+        case "$subname" in
+          contents|qml|po|docs|tests|images|icons|data|plugin) continue ;;
+        esac
+        if find "$sub" -maxdepth 1 \( -name '*.qml' -o -name '*.js' \) -print -quit 2>/dev/null | grep -q .; then
+          cp -r "$sub" "$target/contents/ui/"
+        fi
+      done
       # main.xml → contents/config/
       if [ -f "$srcdir/main.xml" ]; then
         cp "$srcdir/main.xml" "$target/contents/config/main.xml"

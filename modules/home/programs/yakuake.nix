@@ -23,6 +23,17 @@ in
     ".local/share/yakuake/skins".source = "${yakuakeSkins}/share/yakuake/skins";
   };
 
+  # 开机自启：KDE 登录时从 ~/.config/autostart/ 执行 yakuake。
+  xdg.configFile."autostart/yakuake.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Yakuake
+    Comment=下拉式终端
+    Exec=yakuake
+    Terminal=false
+    X-GNOME-Autostart-enabled=true
+  '';
+
   home.activation.yakuakeF12Shortcut = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     f="$HOME/.config/kglobalshortcutsrc"
     touch "$f"

@@ -27,13 +27,13 @@ Current target release: **NixOS 26.05**.
 | Package GUIs | KDE Discover, GNOME Software, Warehouse, KDE Flatpak KCM, `nix-search-tv` |
 | Desktop shells | Shared KDE Plasma 6 + Niri + Noctalia stack on every host |
 | Theme resources | SDDM Astronaut, Fluent purple icons, Breeze/hicolor icon fallback, Oreo purple cursor |
-| auto-update | systemd timer (`flake-auto-update`) runs daily on all hosts: checks upstream versions, bumps hashes, verifies with `nix build`, auto-commits and pushes |
+| auto-update | systemd timer (`flake-auto-update`) runs daily on all hosts: checks upstream versions, bumps hashes, verifies with `nix build`, auto-commits and pushes; `system.autoUpgrade` runs weekly to update `nixpkgs` (TUNA mirror) and rebuild the system without rebooting |
 
 ## Flake Inputs
 
 | Input | Purpose |
 | --- | --- |
-| `nixpkgs` | Main package set, pinned to the `nixos-26.05` Git branch |
+| `nixpkgs` | Main package set, `nixos-26.05` branch fetched from TUNA's git mirror |
 | `flake-parts` | Shared transitive input for nixvim and VS Code Server |
 | `nixpkgs-lib` | Shared flake-parts library input |
 | `systems` | Shared systems list for nixvim |
@@ -45,7 +45,13 @@ Current target release: **NixOS 26.05**.
 | `nixvim` | Flake-based Neovim configuration |
 
 GitHub-backed inputs use the official `github:owner/repository` flake
-references. No third-party GitHub proxy is configured by this repository.
+references. The main `nixpkgs` input is fetched from TUNA's git mirror
+(`git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05`)
+because github.com is unreachable from this network; a git mirror keeps the
+same commit/narHash semantics as the official repo (do not use channel tarball
+mirrors for this input — they can be re-packed and fail narHash verification).
+Other inputs stay pinned in `flake.lock` and are only re-fetched when you run
+`nix flake update <name>` manually.
 
 Lix is enabled with `nix.package = pkgs.lix`, so it is fetched from nixpkgs and
 does not need a separate `git.lix.systems` flake input.
@@ -59,7 +65,7 @@ does not need a separate `git.lix.systems` flake input.
 | `x270` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-x270` | root `/dev/sda2` |
 | `x230` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-x230` | legacy GRUB on `/dev/sdb`; root and swap mounted by UUID so the NTFS disk labeled `系统` is not touched |
 | `p14s` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `lenovo-thinkpad-p14s-intel-gen5` | UEFI layout: ESP `/dev/sda1` mounted at `/boot`, root `/dev/sda2`, swap `/dev/sda3`; WinBoat state is managed by the WinBoat app; fingerprint reader enabled via `fprintd`; WayDroid runtime enabled |
-| `xiaomi-book-air13` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI; AX211 Wi-Fi/Bluetooth, ALC256 audio firmware, Thunderbolt authorization, Koga touch/pen, Intel ISH/IIO rotation; Goodix `27c6:5812` fingerprint is not supported by upstream libfprint |
+| `xiaomi-book-air13` | KDE Plasma 6 + Niri + Noctalia through shared SDDM | `common-cpu-intel`, `common-pc-laptop`, `common-pc-ssd` (no Xiaomi Book profile in nixos-hardware) | UEFI; AX211 Wi-Fi/Bluetooth, ALC256 audio firmware, Thunderbolt authorization, Koga touch/pen, Intel ISH/IIO rotation; Goodix `27c6:5812` fingerprint is not supported by upstream libfprint; WayDroid runtime enabled (declarative GAPPS images) |
 
 Hardware-specific disk choices stay inside each host directory. Bootloader selection is explicit: import `hosts/common/boot/legacy.nix` for BIOS/MBR machines, or `hosts/common/boot/uefi.nix` for UEFI machines.
 
@@ -190,11 +196,11 @@ PAM login integration is automatic (`fprintAuth` defaults to
 service), swaylock, and sudo all accept a fingerprint, falling back to
 password. Enroll with `fprintd-enroll` and check with `fprintd-list`.
 
-`waydroid.nix` is imported by `ThinkPad-P14s` only. It enables the WayDroid
-runtime (`virtualisation.waydroid.enable`). The Android system image is not
-part of the Nix closure; download and initialize it with
-`shells/waydroid-init.sh` (supports `--proxy` and `--mirror` for faster
-downloads). See the "WayDroid" section below.
+`waydroid.nix` is imported by `ThinkPad-P14s` and `Xiaomi-Book-Air13`
+(`services.waydroid.enable = true`). It enables the WayDroid runtime
+(`virtualisation.waydroid.enable`) and provisions the GAPPS Android images
+declaratively from the Tsinghua archlinuxcn mirror (see the "WayDroid" section
+below). `shells/waydroid-init.sh` is kept only for non-Nix-managed machines.
 
 ### Desktop Modules
 
@@ -501,33 +507,53 @@ state, and installation progress are app-managed state, so do not rely on
 
 ## WayDroid
 
-`ThinkPad-P14s` enables the WayDroid runtime (`virtualisation.waydroid.enable`).
-The default nixpkgs kernel already ships the required `ANDROID_BINDER_IPC`,
-`ANDROID_BINDERFS`, `MEMFD_CREATE`, and PSI support, so no custom kernel is
-needed.
+`services.waydroid.enable = true` (declared in `modules/system/services/waydroid.nix`)
+is enabled on `ThinkPad-P14s` and `Xiaomi-Book-Air13`. It turns on the WayDroid
+runtime (`virtualisation.waydroid.enable`). The default nixpkgs kernel already
+ships the required `ANDROID_BINDER_IPC`, `ANDROID_BINDERFS`, `MEMFD_CREATE`,
+and PSI support, so no custom kernel is needed.
 
-The Android image is a ~1.4 GB download that does not belong in the Nix store.
-Fetch and initialize it with:
+### 全声明式镜像（GAPPS）
+
+The Android images are provisioned **declaratively** — no manual download:
+
+- `waydroid.nix` `fetchurl`s the `waydroid-image-gapps` package from the
+  Tsinghua archlinuxcn mirror (`waydroid-image-gapps-20.0_20260403`
+  = official `lineage-20.0-20260403-GAPPS`), with a pinned sha256.
+- A derivation extracts `system.img` + `vendor.img` into the Nix store.
+- `systemd.tmpfiles` symlinks them into the **preinstalled images path**
+  `/usr/share/waydroid-extra/images/` — WayDroid only treats
+  `/etc/waydroid-extra/images` and `/usr/share/waydroid-extra/images` as
+  preinstalled; symlinking into `/var/lib/waydroid/images` instead makes
+  WayDroid consider itself uninitialized and re-download via OTA.
+- A oneshot `waydroid-init.service` runs `waydroid init -s GAPPS` once at
+  boot; with preinstalled images present it skips all OTA downloads and
+  finishes locally in seconds (idempotent: re-runs are no-ops).
+
+`nixos-rebuild` therefore downloads and stages the images automatically (the
+~1.5 GB image comes from a domestic mirror, so it is fast in China). To bump
+the image version, replace the `url`/`sha256` in `waydroid.nix` (compute the
+new hash with `sudo bash shells/waydroid-init.sh --prefetch-hashes`, or fetch
+the package from
+<https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/x86_64/> and run
+`nix hash file <pkg.tar.zst>`).
+
+Start inside a Wayland session (KDE Plasma 6 or Niri):
 
 ```bash
-# direct sourceforge (slow), or use your clash proxy (fast):
-sudo bash shells/waydroid-init.sh --proxy http://127.0.0.1:7897
-
-# or a custom mirror prefix (needs vendor/ and system/lineage/ layout):
-sudo bash shells/waydroid-init.sh --mirror https://your-mirror.example/waydroid
-```
-
-The script downloads the GApps variant of LineageOS 20.0 (Android 13) by
-default, extracts `system.img`/`vendor.img` into `/var/lib/waydroid/images/`,
-and runs `waydroid init -f -s GAPPS`.
-
-After init, run inside a Wayland session (KDE Plasma 6 or Niri):
-
-```bash
-sudo waydroid container start
+waydroid session start &   # keep running in background
 waydroid show-full-ui
 waydroid app list
 ```
+
+> Note: `waydroid session start` is a long-running process; closing it stops
+> the container session. `waydroid show-full-ui` requires an active Wayland
+> desktop. The container may report `FROZEN` when idle — it unfreezes on UI
+> interaction.
+
+`shells/waydroid-init.sh` is kept for non-Nix-managed machines (manual
+download/init with `--proxy`/`--mirror`) and for hash computation
+(`--prefetch-hashes`).
 
 GApps note: logging into Google requires device certification first, otherwise
 the Play Store reports an uncertified device. See the [WayDroid Google Play
@@ -616,12 +642,12 @@ normal nixpkgs update path.
 
 | Component | Mirror |
 | --- | --- |
-| nixpkgs input | Git-pinned `github:NixOS/nixpkgs/nixos-26.05` |
-| GitHub flake inputs | Official `github:owner/repository` references |
+| nixpkgs input | TUNA git mirror `https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git` (branch `nixos-26.05`) |
+| GitHub flake inputs | Official `github:owner/repository` references (pinned, re-fetched only on `nix flake update`) |
 | Lix | from nixpkgs |
 | Nix binary cache | SJTU, TUNA, USTC Nix channel stores first |
 | Official cache fallback | `https://cache.nixos.org/` |
-| Flatpak | SJTU Flathub mirror |
+| Flatpak | USTC Flathub mirror |
 
 Do not pin `nixpkgs` to a channel tarball mirror. Mirrors may repack tarballs,
 which changes the `narHash` and breaks fresh installations.
@@ -692,6 +718,36 @@ journalctl -u flake-auto-update
 | trae-code | no machine-readable manifest | needs explicit `--bump trae-code <ver>` |
 | webapps / winapps / vendored | static packages | no update needed |
 
+## System Auto-Upgrade
+
+`system.autoUpgrade` is enabled in `configuration.nix` (shared by every host):
+every week it runs `nix flake update nixpkgs` + `nixos-rebuild switch` on the
+repo flake, without rebooting. Because `nixpkgs` points at TUNA's git mirror,
+the update does not need github.com. Kernel upgrades land in the bootloader
+after the switch; reboot whenever you are ready (`system.autoUpgrade.allowReboot`
+is intentionally `false`).
+
+```nix
+system.autoUpgrade = {
+  enable = true;
+  flake = "/home/ziyun/Documents/GitHub/ZiYyun-NixOSConfiguration";
+  dates = "weekly";
+  flags = [ "--update-input" "nixpkgs" ];  # update nixpkgs before building
+  allowReboot = false;
+};
+```
+
+Manual trigger and logs:
+
+```bash
+sudo systemctl start nixos-upgrade.service   # 立即执行一次
+journalctl -u nixos-upgrade                  # 查看日志
+```
+
+Only `nixpkgs` is auto-updated. Other inputs (home-manager, nixos-hardware,
+noctalia, nixvim, ...) stay at their pinned revisions and are bumped manually
+with `nix flake update <name>` — keep `flake.lock` committed after that.
+
 ## Updating Packages And Modules
 
 All system packages, Home Manager modules, nixos-hardware profiles, nixvim,
@@ -704,14 +760,14 @@ Update every flake input:
 nix flake update
 ```
 
-After migrating from an old repository revision that used a mirror tarball for
-`nixpkgs`, regenerate that input from the official GitHub branch once:
+> Note: because github.com is unreachable from this network, a full
+> `nix flake update` will fail on the GitHub-backed inputs. Update only
+> `nixpkgs` (fetched from TUNA) automatically via `system.autoUpgrade`, or
+> manually with the commands below; for other inputs, open your proxy and
+> update them one at a time.
 
-```bash
-nix flake lock --update-input nixpkgs
-```
-
-Update one input only:
+Update one input only (nixpkgs is fetched from TUNA, no proxy needed; the
+GitHub-backed inputs need your proxy):
 
 ```bash
 nix flake update home-manager

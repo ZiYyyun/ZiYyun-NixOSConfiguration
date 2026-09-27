@@ -11,6 +11,7 @@
     ./dsh.nix
     ./nixvim.nix
     ./qoder-cli.nix
+    ./thunderbird.nix
     ./vscode-server.nix
     ./yakuake.nix
   ];
